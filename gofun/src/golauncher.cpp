@@ -25,6 +25,7 @@
 #include <qmessagebox.h>
 
 #include "gofun_misc.h"
+#include "gofun_process_logger.h"
 #include "golauncher.h"
 
 Golauncher::Golauncher()
@@ -76,11 +77,13 @@ void Golauncher::launch()
 		file.close();
 	}
 	proc->setArguments(arguments);
+	QString proc_output;
+	GofunProcessLogger::get()->connectProcToBuffer(proc,&proc_output);
 	proc->start();
 	if(!proc->isRunning())
 		if(!proc->normalExit() || proc->exitStatus() != 0)
 		{
-			if(QMessageBox::critical(0,QObject::tr("Start failed"),QObject::tr("Failure information:\nNormal exit: " + GofunMisc::boolToString(proc->normalExit()) + "\nExit status: "+ QString::number(proc->exitStatus())),QObject::tr("Try again"),QObject::tr("Give up")) == 0)
+			if(QMessageBox::critical(0,QObject::tr("Start failed"),QObject::tr("Failure information:\nNormal exit: " + GofunMisc::boolToString(proc->normalExit()) + "\nExit status: "+ QString::number(proc->exitStatus()) + "\nOutput: "+proc_output),QObject::tr("Try again"),QObject::tr("Give up")) == 0)
 			{
 				launch();
 			}

@@ -18,67 +18,30 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qurl.h>
-#include <qdialog.h>
-#include <qlineedit.h>
+#include <qprocess.h>
+ 
+#ifndef GOFUN_PROCESS_LOGGER
+#define GOFUN_PROCESS_LOGGER
 
-#ifndef GOFUN_URL_COMPOSER
-#define GOFUN_URL_COMPOSER
-
-class QComboBox;
-class GofunLinkItem;
-
-class GofunClipboardLineEdit : public QLineEdit
-{
-	public:
-	GofunClipboardLineEdit(QWidget*);
-	
-	private:
-	void focusInEvent(QFocusEvent*);
-	
-	QUrl last_ignored;
-};
-
-class GofunURLComposer : public QDialog
+class GofunProcessLogger : public QObject
 {
 	Q_OBJECT
-	
 	public:
-	GofunURLComposer();
-	void setStartURL(const QUrl&);
-	void setLinkItem(GofunLinkItem*);
-	QUrl getURL();
-	
-	private slots:
-	void test();
-	void fetchFile();
-	void fetchWithWebBrowser();
-	void fetchDirectory();
-	
-	void otherSchemeChanged(const QString&);
-	void schemeChanged(const QString&);
-	void hostChanged(const QString&);
-	void portChanged(const QString&);
-	void queryChanged(const QString&);
-	void pathChanged(const QString&);
-	void composedChanged(const QString&);
-	
-	bool isComposedCurrent();
+	static GofunProcessLogger* get() { _instance ? _instance : _instance = new GofunProcessLogger(); return _instance; }
+	void connectProcToStdout(const QProcess*);
+	void connectProcToBuffer(const QProcess*,QString*);
 		
+	public slots:
+	void readProcStdoutToStdout();
+	void readProcStderrToStdout();
+	void readProcStdoutToBuffer();
+	void readProcStderrToBuffer();
+	
 	private:
-	QUrl url;
+	GofunProcessLogger() {}; //Singleton
 	
-	QLineEdit* host;
-	QLineEdit* port;
-	QLineEdit* query;
-	QLineEdit* path;
-	QComboBox* scheme;
-	QLineEdit* other_scheme;
-	
-	GofunClipboardLineEdit* composed_url;
-	
-	GofunLinkItem* link_item;
+	QString* buffer;
+	static GofunProcessLogger* _instance;
 };
 
 #endif
-

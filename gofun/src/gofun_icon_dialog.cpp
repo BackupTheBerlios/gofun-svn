@@ -27,9 +27,11 @@
 #include <qpushbutton.h>
 #include <qapplication.h>
 #include <qprogressbar.h>
+#include <qfileinfo.h>
 
 #include "gofun_icon_dialog.h"
 #include "gofun_misc.h"
+#include "gofun_file_dialog.h"
 
 std::vector<GofunIconItemData*> GofunIconDialog::icon_pool;
 GofunIconLoad* GofunIconLoad::_instance = NULL;
@@ -117,7 +119,7 @@ GofunIconDialog::~GofunIconDialog()
 
 void GofunIconDialog::browseForIcon()
 {
-	QString file = GofunMisc::fileDialogGetImage(start_dir,tr("Pick an icon"),tr("Icons"));
+	QString file = GofunFileDialog::getOpenImageFileName(start_dir,tr("Pick an icon"),tr("Icons"));
 	if(!file.isEmpty())
 	{
 		icon_file->setText(file);

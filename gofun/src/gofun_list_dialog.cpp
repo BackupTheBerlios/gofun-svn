@@ -20,6 +20,9 @@
 
 #include <qstringlist.h>
 #include <qlayout.h>
+#include <qlistview.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
  
 #include "gofun_list_dialog.h"
 

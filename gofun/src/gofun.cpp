@@ -35,7 +35,6 @@
 #include "gofun_widget.h"
 #include "gofun_misc.h"
 #include "gofun_settings.h"
-#include "gofun_locale_string.h"
 
 using namespace std;
 

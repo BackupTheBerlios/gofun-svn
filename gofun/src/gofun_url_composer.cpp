@@ -21,7 +21,6 @@
 #include <qcombobox.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <qlineedit.h>
 #include <qlabel.h>
 #include <qvalidator.h>
 #include <qgroupbox.h>
@@ -32,8 +31,8 @@
 #include <qurlinfo.h>
 #include <qmessagebox.h>
 
-#include "gofun_link_item.h"
 #include "gofun_url_composer.h"
+#include "gofun_link_item.h"
 #include "gofun_settings.h"
 #include "gofun_directory_browser.h"
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2004 by Tobias Glaesser                                 *
+ *   Copyright (C) 2005 by Tobias Glaesser                                 *
  *   tobi.web@gmx.de                                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,68 +17,28 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+ 
+#include "gofun_file_dialog.h"
+#include "gofun_file_dialog_preview.h"
 
-#include <qurl.h>
-#include <qdialog.h>
-#include <qlineedit.h>
-
-#ifndef GOFUN_URL_COMPOSER
-#define GOFUN_URL_COMPOSER
-
-class QComboBox;
-class GofunLinkItem;
-
-class GofunClipboardLineEdit : public QLineEdit
+QString GofunFileDialog::getOpenImageFileName(const QString& start_dir,const QString& caption, const QString& filter_desc)
 {
-	public:
-	GofunClipboardLineEdit(QWidget*);
+	GofunFileDialogPreview* pre = new GofunFileDialogPreview;
+	GofunFileIconProvider* iconpro = new GofunFileIconProvider;
 	
-	private:
-	void focusInEvent(QFocusEvent*);
-	
-	QUrl last_ignored;
-};
-
-class GofunURLComposer : public QDialog
-{
-	Q_OBJECT
-	
-	public:
-	GofunURLComposer();
-	void setStartURL(const QUrl&);
-	void setLinkItem(GofunLinkItem*);
-	QUrl getURL();
-	
-	private slots:
-	void test();
-	void fetchFile();
-	void fetchWithWebBrowser();
-	void fetchDirectory();
-	
-	void otherSchemeChanged(const QString&);
-	void schemeChanged(const QString&);
-	void hostChanged(const QString&);
-	void portChanged(const QString&);
-	void queryChanged(const QString&);
-	void pathChanged(const QString&);
-	void composedChanged(const QString&);
-	
-	bool isComposedCurrent();
-		
-	private:
-	QUrl url;
-	
-	QLineEdit* host;
-	QLineEdit* port;
-	QLineEdit* query;
-	QLineEdit* path;
-	QComboBox* scheme;
-	QLineEdit* other_scheme;
-	
-	GofunClipboardLineEdit* composed_url;
-	
-	GofunLinkItem* link_item;
-};
-
-#endif
+	QFileDialog* fd = new QFileDialog(start_dir,filter_desc + " (*.png *.xpm *.jpg *.bmp *.ico)");
+	fd->setDir(start_dir);
+	fd->setCaption(caption);
+	fd->setContentsPreviewEnabled( TRUE );
+	fd->setContentsPreview( pre, pre );
+	fd->setIconProvider(iconpro);
+	fd->setPreviewMode( QFileDialog::Contents );
+	fd->exec();
+	QString file = fd->selectedFile();
+	delete fd;
+	if(QFileInfo(file).isFile())
+		return file;
+	else
+		return QString();
+}
 

@@ -22,11 +22,13 @@
 #include <qimage.h>
 #include <qapplication.h>
 #include <qprocess.h>
+#include <qwidget.h>
+#include <qtoolbutton.h>
 
 #include "gofun_misc.h" 
 #include "gofun_settings.h"
+#include "gofun_file_dialog_preview.h"
 
-GofunProcessLogger* GofunProcessLogger::_instance = 0;
 QStringList GofunMisc::icon_files = QStringList::split('\n',GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps"));
 
 QString GofunMisc::shell_call(const QString& call)
@@ -62,27 +64,6 @@ QString GofunMisc::bin_dir()
 void GofunMisc::center_window(QWidget* w, int width, int height)
 {
   w->setGeometry(QApplication::desktop()->screen()->width() / 2 - width/2, QApplication::desktop()->screen()->height() / 2 - height/2, width, height);
-}
-
-QString GofunMisc::fileDialogGetImage(const QString& start_dir,const QString& caption, const QString& filter_desc)
-{
-	GofunFileDialogPreview* pre = new GofunFileDialogPreview;
-	GofunFileIconProvider* iconpro = new GofunFileIconProvider;
-	
-	QFileDialog* fd = new QFileDialog(start_dir,filter_desc + " (*.png *.xpm *.jpg *.bmp *.ico)");
-	fd->setDir(start_dir);
-	fd->setCaption(caption);
-	fd->setContentsPreviewEnabled( TRUE );
-	fd->setContentsPreview( pre, pre );
-	fd->setIconProvider(iconpro);
-	fd->setPreviewMode( QFileDialog::Contents );
-	fd->exec();
-	QString file = fd->selectedFile();
-	delete fd;
-	if(QFileInfo(file).isFile())
-		return file;
-	else
-		return QString();
 }
 
 QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height)
@@ -122,33 +103,6 @@ QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height
 	QImage image(file);
 	QPixmap pixmap;
 	pixmap.convertFromImage(image.scale(pref_width,pref_height));
-	return pixmap;
-}
-
-void GofunFileDialogPreview::previewUrl(const QUrl& u)
-{
-	QString path = u.path();
-	QImage img( path );
-	if(img.width() > 200)
-		img = img.scaleWidth(200);
-	if(img.height() > 300)
-		img = img.scaleHeight(300);
-	QPixmap pix;
-	pix.convertFromImage(img);
-	if ( pix.isNull() )
-		setText(tr("This is not a pixmap"));
-	else
-		setPixmap( pix );
-}
-
-const QPixmap * GofunFileIconProvider::pixmap ( const QFileInfo & info )
-{
-	if(!info.isFile())
-		return NULL;
-	
-	QImage image(info.filePath());
-	QPixmap* pixmap = new QPixmap;
-	pixmap->convertFromImage(image.scale(16,16));
 	return pixmap;
 }
 
@@ -232,26 +186,6 @@ QString GofunMisc::boolToString(bool b)
 		return "true";
 	else
 		return "false";
-}
-
-void GofunProcessLogger::connectProcToStdout(const QProcess* proc)
-{
-	connect(proc,SIGNAL(readyReadStdout()),this,SLOT(readProcStdout()));
-	connect(proc,SIGNAL(readyReadStderr()),this,SLOT(readProcStderr()));
-}
-
-void GofunProcessLogger::readProcStderr()
-{
-	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
-	while(proc->canReadLineStderr())
-		qDebug(proc->readLineStderr());
-}
-
-void GofunProcessLogger::readProcStdout()
-{
-	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
-	while(proc->canReadLineStdout())
-		qDebug(proc->readLineStdout());
 }
 
 

@@ -18,8 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "gofun_application_item.h"
-
 #include <iostream> 
 
 #include <qapplication.h>
@@ -28,10 +26,8 @@
 #include <qprocess.h>
 #include <qpopupmenu.h>
 
+#include "gofun_application_item.h"
 #include "gofun_misc.h"
-#include "gofun_item.h"
-#include "gofun.h"
-#include "gofun_data.h"
 #include "gofun_iconview.h"
 #include "gofun_settings.h"
 #include "gofun_parameter_prompt.h"

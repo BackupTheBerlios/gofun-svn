@@ -26,8 +26,6 @@
 #include "gofun_item.h"
 #include "gofun_cat_button.h"
 #include "gofun_cat_settings.h"
-#include "gofun.h"
-#include "gofun_data.h"
 #include "gofun_iconview.h"
 #include "gofun_misc.h"
 #include "gofun_widget.h"

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2004 by Tobias Glaesser                                 *
+ *   Copyright (C) 2005 by Tobias Glaesser                                 *
  *   tobi.web@gmx.de                                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,67 +18,15 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qurl.h>
-#include <qdialog.h>
-#include <qlineedit.h>
+#include <qstring.h>
+ 
+#ifndef GOFUN_FILE_DIALOG
+#define GOFUN_FILE_DIALOG
 
-#ifndef GOFUN_URL_COMPOSER
-#define GOFUN_URL_COMPOSER
-
-class QComboBox;
-class GofunLinkItem;
-
-class GofunClipboardLineEdit : public QLineEdit
+class GofunFileDialog
 {
 	public:
-	GofunClipboardLineEdit(QWidget*);
-	
-	private:
-	void focusInEvent(QFocusEvent*);
-	
-	QUrl last_ignored;
-};
-
-class GofunURLComposer : public QDialog
-{
-	Q_OBJECT
-	
-	public:
-	GofunURLComposer();
-	void setStartURL(const QUrl&);
-	void setLinkItem(GofunLinkItem*);
-	QUrl getURL();
-	
-	private slots:
-	void test();
-	void fetchFile();
-	void fetchWithWebBrowser();
-	void fetchDirectory();
-	
-	void otherSchemeChanged(const QString&);
-	void schemeChanged(const QString&);
-	void hostChanged(const QString&);
-	void portChanged(const QString&);
-	void queryChanged(const QString&);
-	void pathChanged(const QString&);
-	void composedChanged(const QString&);
-	
-	bool isComposedCurrent();
-		
-	private:
-	QUrl url;
-	
-	QLineEdit* host;
-	QLineEdit* port;
-	QLineEdit* query;
-	QLineEdit* path;
-	QComboBox* scheme;
-	QLineEdit* other_scheme;
-	
-	GofunClipboardLineEdit* composed_url;
-	
-	GofunLinkItem* link_item;
+	static QString getOpenImageFileName(const QString& start_dir,const QString& caption, const QString& filter_desc);
 };
 
 #endif
-

@@ -19,13 +19,13 @@
  ***************************************************************************/
 
 #include <qstring.h>
-#include <qfiledialog.h>
-#include <qlabel.h>
-#include <qwidget.h>
-#include <qtoolbutton.h>
  
 #ifndef GOFUN_MISC
 #define GOFUN_MISC
+
+class QWidget;
+class QToolButton;
+class QLineEdit;
 
 enum Side {
 	D_Left,
@@ -44,7 +44,6 @@ struct GofunMisc
 	static QString ext_filestring(const QString&);
 	static QString bin_dir();
 	static void center_window(QWidget*, int, int);
-	static QString fileDialogGetImage(const QString& start_dir,const QString& caption, const QString& filter_desc);
 	static QPixmap get_icon(const QString&,int = 32,int = 32);
 	static void attach_window(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
 	static bool makeDir(const QString&);
@@ -53,37 +52,6 @@ struct GofunMisc
 	static QString boolToString(bool);
 	
 	static QStringList icon_files;
-};
-
-class GofunProcessLogger : public QObject
-{
-	Q_OBJECT
-	public:
-	static GofunProcessLogger* get() { _instance ? _instance : _instance = new GofunProcessLogger(); return _instance; }
-	void connectProcToStdout(const QProcess*);
-		
-	public slots:
-	void readProcStdout();
-	void readProcStderr();
-	
-	private:
-	GofunProcessLogger() {}; //Singleton
-	
-	static GofunProcessLogger* _instance;
-};
-
-class GofunFileDialogPreview : public QLabel, public QFilePreview
-{
-	public:
-        GofunFileDialogPreview( QWidget *parent=0 ) : QLabel( parent ) {}
-
-        void previewUrl( const QUrl &u );
-};
-
-class GofunFileIconProvider : public QFileIconProvider
-{
-	public:
-	virtual const QPixmap * pixmap ( const QFileInfo & info );
 };
 
 class GofunLineEdit : public QWidget

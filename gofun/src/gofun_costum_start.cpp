@@ -47,6 +47,7 @@ GofunCostumStart::GofunCostumStart()
 	connect(user,SIGNAL(toggled(bool)),user_name,SLOT(setEnabled(bool)));
 	
 	QPushButton* start_button = new QPushButton(tr("Start"), this);
+	QPushButton* cancel_button = new QPushButton(tr("Cancel"), this);
 
 	grid->addMultiCellWidget(caption,0,0,0,2);
 	grid->addWidget(command_label,1,0);
@@ -58,8 +59,10 @@ GofunCostumStart::GofunCostumStart()
 	grid->addMultiCellWidget(user,5,5,0,1);
 	grid->addWidget(user_name,5,2);
 	grid->addWidget(start_button,6,0);
+	grid->addWidget(cancel_button,6,2);
 	
 	connect(start_button, SIGNAL(clicked()),this, SLOT(start()));
+	connect(cancel_button, SIGNAL(clicked()),this, SLOT(reject()));
 	
 	item = 0;
 }
@@ -102,7 +105,10 @@ void GofunCostumStart::load(GofunApplicationItem* _item)
 		user_name->setCurrentText(item->data()->X_GoFun_User);
 	}
 	else
+	{
 		user->setChecked(false);
+		user_name->setEnabled(false);
+	}
 }
 
 

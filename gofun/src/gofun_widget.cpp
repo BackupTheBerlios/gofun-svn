@@ -28,7 +28,6 @@
  
 #include "gofun_iconview.h"
 #include "gofun_widget.h" 
-#include "gofun_costum_start.h"
 #include "gofun_settings.h"
 #include "gofun_misc.h"
 #include "gofun_data.h"

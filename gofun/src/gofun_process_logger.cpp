@@ -18,67 +18,49 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qurl.h>
-#include <qdialog.h>
-#include <qlineedit.h>
+#include "gofun_process_logger.h"
 
-#ifndef GOFUN_URL_COMPOSER
-#define GOFUN_URL_COMPOSER
+GofunProcessLogger* GofunProcessLogger::_instance = 0;
 
-class QComboBox;
-class GofunLinkItem;
-
-class GofunClipboardLineEdit : public QLineEdit
+void GofunProcessLogger::connectProcToStdout(const QProcess* proc)
 {
-	public:
-	GofunClipboardLineEdit(QWidget*);
-	
-	private:
-	void focusInEvent(QFocusEvent*);
-	
-	QUrl last_ignored;
-};
+	connect(proc,SIGNAL(readyReadStdout()),this,SLOT(readProcStdoutToStdout()));
+	connect(proc,SIGNAL(readyReadStderr()),this,SLOT(readProcStderrToStdout()));
+}
 
-class GofunURLComposer : public QDialog
+void GofunProcessLogger::connectProcToBuffer(const QProcess* proc,QString* buf)
 {
-	Q_OBJECT
+	buffer = buf;
 	
-	public:
-	GofunURLComposer();
-	void setStartURL(const QUrl&);
-	void setLinkItem(GofunLinkItem*);
-	QUrl getURL();
-	
-	private slots:
-	void test();
-	void fetchFile();
-	void fetchWithWebBrowser();
-	void fetchDirectory();
-	
-	void otherSchemeChanged(const QString&);
-	void schemeChanged(const QString&);
-	void hostChanged(const QString&);
-	void portChanged(const QString&);
-	void queryChanged(const QString&);
-	void pathChanged(const QString&);
-	void composedChanged(const QString&);
-	
-	bool isComposedCurrent();
-		
-	private:
-	QUrl url;
-	
-	QLineEdit* host;
-	QLineEdit* port;
-	QLineEdit* query;
-	QLineEdit* path;
-	QComboBox* scheme;
-	QLineEdit* other_scheme;
-	
-	GofunClipboardLineEdit* composed_url;
-	
-	GofunLinkItem* link_item;
-};
+	connect(proc,SIGNAL(readyReadStdout()),this,SLOT(readProcStdoutToBuffer()));
+	connect(proc,SIGNAL(readyReadStderr()),this,SLOT(readProcStderrToBuffer()));
+}
 
-#endif
+void GofunProcessLogger::readProcStderrToStdout()
+{
+	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
+	while(proc->canReadLineStderr())
+		qDebug(proc->readLineStderr());
+}
+
+void GofunProcessLogger::readProcStdoutToStdout()
+{
+	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
+	while(proc->canReadLineStdout())
+		qDebug(proc->readLineStdout());
+}
+
+void GofunProcessLogger::readProcStderrToBuffer()
+{
+	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
+	while(proc->canReadLineStderr())
+		*buffer += proc->readLineStderr();
+}
+
+void GofunProcessLogger::readProcStdoutToBuffer()
+{
+	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
+	while(proc->canReadLineStdout())
+		*buffer += proc->readLineStdout();
+}
 

@@ -24,6 +24,7 @@
 #include <qapplication.h> 
 #include <qheader.h>
 #include <qvbuttongroup.h>
+#include <qfiledialog.h>
 
 #include "gofun_command_editor.h"
 #include "gofun_misc.h"

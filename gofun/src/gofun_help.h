@@ -20,14 +20,15 @@
 
 #include <map>
  
-#include <qtextbrowser.h>
-#include <qhttp.h>
 #include <qdialog.h>
-#include <qtoolbutton.h>
-#include <qpushbutton.h>
+#include <qtextbrowser.h>
 
 #ifndef GOFUN_HELP
 #define GOFUN_HELP
+
+class QToolButton;
+class QPushButton;
+class QHttp;
 
 ///Specialised IconView for GoFun 
 class GofunHelp : public QDialog

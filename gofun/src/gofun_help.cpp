@@ -27,6 +27,9 @@
 #include <qimage.h>
 #include <qlabel.h>
 #include <qurl.h>
+#include <qtoolbutton.h>
+#include <qpushbutton.h>
+#include <qhttp.h>
 
 #include "gofun_help.h"
 

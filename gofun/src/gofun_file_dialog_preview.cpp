@@ -18,67 +18,34 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qurl.h>
-#include <qdialog.h>
-#include <qlineedit.h>
+#include <qimage.h>
+ 
+#include "gofun_file_dialog_preview.h"
 
-#ifndef GOFUN_URL_COMPOSER
-#define GOFUN_URL_COMPOSER
-
-class QComboBox;
-class GofunLinkItem;
-
-class GofunClipboardLineEdit : public QLineEdit
+void GofunFileDialogPreview::previewUrl(const QUrl& u)
 {
-	public:
-	GofunClipboardLineEdit(QWidget*);
-	
-	private:
-	void focusInEvent(QFocusEvent*);
-	
-	QUrl last_ignored;
-};
+	QString path = u.path();
+	QImage img( path );
+	if(img.width() > 200)
+		img = img.scaleWidth(200);
+	if(img.height() > 300)
+		img = img.scaleHeight(300);
+	QPixmap pix;
+	pix.convertFromImage(img);
+	if ( pix.isNull() )
+		setText(tr("This is not a pixmap"));
+	else
+		setPixmap( pix );
+}
 
-class GofunURLComposer : public QDialog
+const QPixmap * GofunFileIconProvider::pixmap ( const QFileInfo & info )
 {
-	Q_OBJECT
+	if(!info.isFile())
+		return NULL;
 	
-	public:
-	GofunURLComposer();
-	void setStartURL(const QUrl&);
-	void setLinkItem(GofunLinkItem*);
-	QUrl getURL();
-	
-	private slots:
-	void test();
-	void fetchFile();
-	void fetchWithWebBrowser();
-	void fetchDirectory();
-	
-	void otherSchemeChanged(const QString&);
-	void schemeChanged(const QString&);
-	void hostChanged(const QString&);
-	void portChanged(const QString&);
-	void queryChanged(const QString&);
-	void pathChanged(const QString&);
-	void composedChanged(const QString&);
-	
-	bool isComposedCurrent();
-		
-	private:
-	QUrl url;
-	
-	QLineEdit* host;
-	QLineEdit* port;
-	QLineEdit* query;
-	QLineEdit* path;
-	QComboBox* scheme;
-	QLineEdit* other_scheme;
-	
-	GofunClipboardLineEdit* composed_url;
-	
-	GofunLinkItem* link_item;
-};
-
-#endif
+	QImage image(info.filePath());
+	QPixmap* pixmap = new QPixmap;
+	pixmap->convertFromImage(image.scale(16,16));
+	return pixmap;
+}
 

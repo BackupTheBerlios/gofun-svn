@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 #include <qdialog.h>
-#include <qlistview.h>
-#include <qpushbutton.h>
-#include <qlineedit.h>
  
 #ifndef GOFUN_LIST_DIALOG
 #define GOFUN_LIST_DIALOG
 
 class QValidator;
+class QLineEdit;
+class QPushButton;
+class QListView;
 
 class GofunListWidget : public QWidget
 {

@@ -19,7 +19,6 @@
  ***************************************************************************/
 
 #include "gofun_item_settings.h"
-#include "gofun_data.h" 
 
 class GofunLinkItem;
 

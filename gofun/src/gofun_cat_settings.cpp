@@ -31,6 +31,7 @@
 #include "gofun_settings.h"
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_icon_dialog.h"
+#include "gofun_file_dialog.h"
 
 GofunCatSettings::GofunCatSettings()
 {
@@ -82,7 +83,7 @@ void GofunCatSettings::backgroundDialog()
 		start_dir = background->text();
 	else
 		start_dir = QDir::homeDirPath();
-	QString file = GofunMisc::fileDialogGetImage(start_dir,tr("Select background image"),tr("Images"));
+	QString file = GofunFileDialog::getOpenImageFileName(start_dir,tr("Select background image"),tr("Images"));
 	if(!file.isEmpty())
 	{
 		background->setText(file);
