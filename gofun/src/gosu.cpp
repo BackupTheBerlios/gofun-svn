@@ -204,7 +204,6 @@ correct_password (const struct passwd *pw)
   correct = pw->pw_passwd;
   if (getuid () == 0 || correct == 0 || correct[0] == '\0')
     return 1;
-   /*QString unenqt = QInputDialog::getText(QObject::tr("Password dialog"),QObject::tr("Password"),QLineEdit::Password);*/
    
    GofunPasswordDialog* password_dialog = new GofunPasswordDialog(Qt::WType_Dialog);
    password_dialog->setUser(pw->pw_name);
@@ -216,8 +215,6 @@ correct_password (const struct passwd *pw)
     	unenqt = password_dialog->getPassword();
     else
     	return 0;
-	
-	qDebug(unenqt);
 	
     if(unenqt.isNull())
     	continue;
