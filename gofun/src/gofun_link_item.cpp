@@ -20,6 +20,7 @@
 
 #include <qapplication.h>
 #include <qpopupmenu.h>
+#include <qurl.h>
  
 #include "gofun_link_item.h"
 #include "gofun_link_item_settings.h"
@@ -93,9 +94,17 @@ void GofunLinkItem::save()
 
 void GofunLinkItem::open()
 {
-	QProcess proc(GSC::get()->browser_cmd);
+	QUrl url(GofunMisc::ext_filestring(data()->URL));
+	QProcess proc;
+	if(url.protocol() == "file")
+		proc.addArgument(GSC::get()->filemanager_cmd);
+	else
+	{
+		proc.addArgument(GSC::get()->browser_cmd);
+		url = data()->URL;
+	}
 	if(!data()->URL.isEmpty())
-		proc.addArgument((GofunMisc::ext_filestring(data()->URL)).simplifyWhiteSpace());
+		proc.addArgument(url.toString());
 	else
 		proc.addArgument(QDir::homeDirPath());
 	if(!proc.start())

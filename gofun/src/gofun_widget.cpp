@@ -43,6 +43,43 @@
 
 QPalette GofunWidget::system_palette;
 
+class GofunVButtonGroup : public QVButtonGroup
+{
+	public:
+	GofunVButtonGroup(QWidget* widget) : QVButtonGroup(widget)
+	{}
+	
+	private:
+	void wheelEvent(QWheelEvent* e)
+	{
+		QButton* button;
+		if(selectedId() == -1)
+		{
+			if(count() > 1)
+				button = find(1);
+			else
+				button = 0;
+		}
+		else if(e->delta() > 0)
+		{
+			if(!(button = find(selectedId()+1)))
+				button = find(1);
+		}
+		else
+		{
+			if(selectedId() == 1)
+				button = find(count()-1);
+			else if(button = find(selectedId()-1))
+				;
+		}
+		if(button)
+		{
+			(dynamic_cast<GofunCatButton*>(button))->setOn(true);
+			dynamic_cast<GofunWidget*>(qApp->mainWidget())->changeCategory(selectedId());
+		}
+	}
+};
+
 //The main constructor.
 GofunWidget::GofunWidget()
 {    
@@ -53,7 +90,7 @@ GofunWidget::GofunWidget()
 	QHBoxLayout* hboxlabel = new QHBoxLayout();
     
 	//This button group contains the buttons for the different categories
-	cats_bg = new QVButtonGroup(this);
+	cats_bg = new GofunVButtonGroup(this);
 	cats_bg->setExclusive(true);
 	cats_bg->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding,false);
 	connect(cats_bg, SIGNAL(clicked(int)),this, SLOT(changeCategory(int)));
@@ -282,9 +319,6 @@ void GofunWidget::popupMenuSpace(int id)
 	GofunItemWizard* wizard = new GofunItemWizard();
 	switch(id)
 	{
-		case PID_Add:
-			GofunApplicationItem::createNewItem(current_cat);
-			break;
 		case PID_Add_Application:
 			GofunApplicationItem::createNewItem(current_cat);
 			break;
@@ -314,10 +348,10 @@ void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 		connect(popup,SIGNAL(activated(int)),this,SLOT(popupMenuSpace(int)));
 		connect(add_popup,SIGNAL(activated(int)),this,SLOT(popupMenuSpace(int )));
 	
-		add_popup->insertItem("Application",PID_Add_Application);
-		add_popup->insertItem("Device",PID_Add_Device);
-		add_popup->insertItem("Link",PID_Add_Link);
-		popup->insertItem("Add Entry",add_popup);
+		add_popup->insertItem(tr("Application"),PID_Add_Application);
+		add_popup->insertItem(tr("Device"),PID_Add_Device);
+		add_popup->insertItem(tr("Link"),PID_Add_Link);
+		popup->insertItem(tr("Add Entry"),add_popup);
 		popup->insertItem(tr("Add Entry Wizard"),PID_Add_Wizard);
 		popup->popup(pos);
 	}

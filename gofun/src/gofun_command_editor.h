@@ -20,9 +20,19 @@
 
 #include <qdialog.h>
 #include <qtextedit.h>
+#include <qlistview.h>
 
 #ifndef GOFUN_COMMAND_EDITOR
 #define GOFUN_COMMAND_EDITOR
+
+class GofunListPopup : public QListView
+{
+	public:
+	GofunListPopup();
+	
+	void popup();
+	
+};
 
 class GofunCommandEditor : public QDialog
 {
@@ -31,6 +41,9 @@ class GofunCommandEditor : public QDialog
 	GofunCommandEditor();
 	void setCommand(const QString&);
 	QString command();
+	
+	public slots:
+	void commandExpand();
 
 	private:
 	QTextEdit* text;

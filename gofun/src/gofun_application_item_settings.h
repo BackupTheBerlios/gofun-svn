@@ -40,6 +40,7 @@ public slots:
 	void addEnvVar(const QString&, const QString&);
 	void remEnvVar();
 	void envItemEdit(QListViewItem*,const QPoint&,int);
+	void envItemEditInterpreted(const QString&);
 	void envPredefinedPopup();
 	void envPredefinedPopupActivated(int);
 	void userChkToggled(bool);

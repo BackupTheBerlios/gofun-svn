@@ -140,11 +140,11 @@ bool GofunFSDeviceItem::isMounted()
 	return false;
 }
 
-void GofunFSDeviceItem::open() //TODO resolve code duplication between this and GofunApplicationItem::openDirectory()
+void GofunFSDeviceItem::open() //@TODO resolve code duplication between this and GofunApplicationItem::openDirectory()
 {
 	QProcess proc(GSC::get()->filemanager_cmd);
 	if(!data()->MountPoint.isEmpty())
-		proc.addArgument((GofunMisc::ext_filestring(data()->MountPoint)).simplifyWhiteSpace());
+		proc.addArgument((GofunMisc::ext_filestring(data()->MountPoint)));
 	else
 		proc.addArgument(QDir::homeDirPath());
 	if(!proc.start())

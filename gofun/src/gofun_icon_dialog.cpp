@@ -126,7 +126,7 @@ GofunIconItem::GofunIconItem(QIconView* iv,const QString& text, const QPixmap& p
 	file = _file;
 }
 
-void GofunIconLoadThread::run() //TODO: Fix segfault on deletion of the dialog (this method() doesn't know that it got deleted.
+void GofunIconLoadThread::run() //@TODO: Fix segfault on deletion of the dialog (this method() doesn't know that it got deleted.
 {
 	QStringList icon_paths = QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons -path \\*32\\*.png"));
 	icon_paths += QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons -maxdepth 1 -path \\*.png"));

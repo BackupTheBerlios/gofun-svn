@@ -32,7 +32,7 @@ class GofunIconView;
 #define GOFUN_CAT_BUTTON
 
 enum {
-	PID_MOVE_ITEM,
+	PID_MOVE_ITEM = 5, //@TODO FIXME: PID collisions
 	PID_COPY_ITEM,
 	PID_ADD_ENTRY,
 	PID_ADD_ENTRY_WIZARD,

@@ -47,7 +47,7 @@ QString GofunMisc::shellify_path(const QString& path)
 
 QString GofunMisc::ext_filestring(const QString& str)
 {
-	return shell_call("echo -n \""+ str+"\"");
+	return shell_call("echo -n \""+ str+"\"").simplifyWhiteSpace();
 }
 
 void GofunMisc::center_window(QWidget* w, int width, int height)
@@ -83,6 +83,8 @@ QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height
 		QString file;
 		if(QFile::exists(name))
 			file = name;
+		else if( QFile::exists(GofunMisc::ext_filestring(name)))
+			file = GofunMisc::ext_filestring(name);
 		else if(!(file = GofunMisc::shell_call("find /usr/share/icons -path *"+name+"*")).isEmpty())
 		{
 			//FIXME: that code still looks quite hackish

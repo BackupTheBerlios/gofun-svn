@@ -242,7 +242,7 @@ void GofunDirectory::setOpen( bool o )
 			while( (fi=it.current()) != 0 )
 			{
 				++it;
-				if (fi->fileName() == "." || fi->fileName() == ".." ) //TODO Code for making hidden files visible as option
+				if (fi->fileName() == "." || fi->fileName() == ".." )
 					; // nothing
 				else if ( fi->isSymLink() && !showDirsOnly )
 				{
@@ -578,7 +578,7 @@ void GofunDirectoryView::setDir( const QString &s )
 	QStringList::Iterator it2 = lst.begin();
 	
 	QListViewItemIterator it3( this );
-	for ( ; it2 != lst.end(); ++it2 ) //TODO: make sure this works like expected and there are no 'special' circumstances. Also speed-optimize and clean this code.
+	for ( ; it2 != lst.end(); ++it2 ) //@TODO: make sure this works like expected and there are no 'special' circumstances. Also speed-optimize and clean this code.
 	{
 		while ( it3.current() )
 		{

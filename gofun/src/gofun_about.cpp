@@ -32,6 +32,7 @@ GofunAbout::GofunAbout()
 	setCaption(tr("GoFun About"));
 	
 	QGridLayout* grid = new QGridLayout(this,4,1);
+	grid->setMargin(2);
 	
 	QGroupBox* gb_gpl = new QGroupBox(tr("License"),this);
 	gb_gpl->setColumnLayout(0, Qt::Vertical );

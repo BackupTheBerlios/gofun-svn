@@ -39,11 +39,12 @@
 GofunApplicationItemSettings::GofunApplicationItemSettings()
 {	
 	QWidget* widget_main = new QWidget(this);	
-	QGridLayout* grid = new QGridLayout(widget_main,5,3);
+	QGridLayout* grid = new QGridLayout(widget_main,6,3);
 	
 	tabwidget->addTab(widget_main,tr("Main"));
 		
 	caption = new QLineEdit(widget_main);
+	QLineEdit* genre = new QLineEdit(widget_main);
 	command = new QLineEdit(widget_main);
 	command_button = new QToolButton(widget_main);
 	directory = new QLineEdit(widget_main);
@@ -53,17 +54,24 @@ GofunApplicationItemSettings::GofunApplicationItemSettings()
 	comment = new QLineEdit(widget_main);
 	grid->addWidget(new QLabel(tr("Caption"),widget_main),0,0);
 	grid->addWidget(caption,0,1);
-	grid->addWidget(new QLabel(tr("Command"),widget_main),1,0);
-	grid->addWidget(command,1,1);
-	grid->addWidget(command_button,1,2);
-	grid->addWidget(new QLabel(tr("Directory"),widget_main),2,0);
-	grid->addWidget(directory,2,1);
-	grid->addWidget(dir_button,2,2);
+	grid->addWidget(new QLabel(tr("Genre"),widget_main),1,0);
+	grid->addWidget(genre,1,1);
+	grid->addWidget(new QLabel(tr("Comment"),widget_main),2,0);
+	grid->addWidget(comment,2,1);
 	grid->addWidget(new QLabel(tr("Icon"),widget_main),3,0);
 	grid->addWidget(icon,3,1);
 	grid->addWidget(icon_button,3,2);
-	grid->addWidget(new QLabel(tr("Comment"),widget_main),4,0);
-	grid->addWidget(comment,4,1);
+	QLabel* sep = new QLabel(widget_main);
+	sep->setFrameStyle( QFrame::HLine | QFrame::Raised );
+	sep->setLineWidth(2);
+	sep->setMaximumHeight(4);
+	grid->addMultiCellWidget(sep,4,4,0,2);
+	grid->addWidget(new QLabel(tr("Command"),widget_main),5,0);
+	grid->addWidget(command,5,1);
+	grid->addWidget(command_button,5,2);
+	grid->addWidget(new QLabel(tr("Directory"),widget_main),6,0);
+	grid->addWidget(directory,6,1);
+	grid->addWidget(dir_button,6,2);
 	
 	connect(command_button, SIGNAL(clicked()),this, SLOT(commandEditor()));
 	connect(icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
@@ -85,6 +93,8 @@ GofunApplicationItemSettings::GofunApplicationItemSettings()
 	grid_env->addMultiCellWidget(envvars,0,0,0,3);
 	grid_env->addWidget(envadd,1,0);
 	grid_env->addWidget(envrem,1,1);
+	QSpacerItem* envspacer = new QSpacerItem(40,20,QSizePolicy::Expanding,QSizePolicy::Minimum);
+	grid_env->addItem(envspacer,1,2);
 	grid_env->addWidget(envpre,1,3);
 		
 	connect(envvars, SIGNAL(doubleClicked(QListViewItem*,const QPoint&,int)), SLOT(envItemEdit(QListViewItem*,const QPoint&,int)));
@@ -112,6 +122,8 @@ GofunApplicationItemSettings::GofunApplicationItemSettings()
 	grid_par->addMultiCellWidget(tb_par,0,0,0,2);
 	grid_par->addWidget(paradd,2,0);
 	grid_par->addWidget(parrem,2,1);
+	QSpacerItem* parspacer = new QSpacerItem(40,20,QSizePolicy::Expanding,QSizePolicy::Minimum);
+	grid_par->addItem(parspacer,2,2);
 	
 	connect(paradd, SIGNAL(clicked()), this, SLOT(addParRow()));
 	connect(parrem, SIGNAL(clicked()), this, SLOT(remParRow()));
@@ -142,6 +154,9 @@ GofunApplicationItemSettings::GofunApplicationItemSettings()
 	
 	item = 0;
 }
+
+void GofunApplicationItemSettings::envItemEditInterpreted(const QString& string)
+{}
 
 void GofunApplicationItemSettings::envPredefinedPopup()
 {

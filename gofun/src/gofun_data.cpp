@@ -157,7 +157,7 @@ GofunCatData* GofunDataLoader::parse_cat_info(const QString& file)
 	return cdata;	
 }
 
-//TODO: implement general parser
+//@TODO: implement general parser
 bool GofunDataLoader::parse_desktop_file_line(GofunDesktopEntryData* ddata, const QString& line)
 {
 	if(parse_line("Name",line,ddata->Name)

@@ -240,7 +240,7 @@ void GofunApplicationItem::openDirectory()
 {
 	QProcess proc(GSC::get()->filemanager_cmd);
 	if(!data()->Path.isEmpty())
-		proc.addArgument((GofunMisc::ext_filestring(data()->Path)).simplifyWhiteSpace());
+		proc.addArgument((GofunMisc::ext_filestring(data()->Path)));
 	else
 		proc.addArgument(QDir::homeDirPath());
 	if(!proc.start())

@@ -20,8 +20,26 @@
  
 #include <qlayout.h>
 #include <qpushbutton.h>
+#include <qcursor.h>
  
 #include "gofun_command_editor.h"
+
+GofunListPopup::GofunListPopup() : QListView( 0, 0, WType_Popup )
+{
+        setFrameStyle( WinPanel|Raised );
+        resize(150,100);
+        setMouseTracking( TRUE );
+}
+
+void GofunListPopup::popup()
+{
+ /*   popupParent = parent;
+    setText("Move the mouse!");
+    if (popupParent)
+        move( popupParent->mapToGlobal( popupParent->rect().bottomLeft() ) );*/
+    move(QCursor::pos());
+    show();
+}
 
 GofunCommandEditor::GofunCommandEditor()
 {
@@ -33,6 +51,8 @@ GofunCommandEditor::GofunCommandEditor()
 	QPushButton* apply = new QPushButton(tr("Apply"),this);
 	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
 	
+	connect(text,SIGNAL(textChanged()),this,SLOT(commandExpand()));
+	
 	connect(apply,SIGNAL(clicked()),this,SLOT(accept()));
 	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
 	
@@ -40,6 +60,15 @@ GofunCommandEditor::GofunCommandEditor()
 	grid->addMultiCellWidget(text,1,1,0,2);
 	grid->addWidget(apply,2,0);
 	grid->addWidget(cancel,2,1);
+}
+
+void GofunCommandEditor::commandExpand()
+{
+	if( text->text()[text->text().length()-1] == '/' && text->text()[text->text().length()-2] == '.' )
+	{
+		GofunListPopup* expand_list = new GofunListPopup;
+		expand_list->popup();
+	}
 }
 
 void GofunCommandEditor::setCommand(const QString& _cmd)

@@ -33,6 +33,8 @@
 #include "gofun_widget.h"
 #include "gofun_item_wizard.h"
 #include "gofun_application_item.h"
+#include "gofun_fsdevice_item.h"
+#include "gofun_link_item.h"
  
 GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButton(str,widget)
 {
@@ -77,9 +79,15 @@ GofunCatButton::~GofunCatButton()
 void GofunCatButton::popupConfButton()
 {
 	QPopupMenu* popup = new QPopupMenu(this);
+	QPopupMenu* add_popup = new QPopupMenu(this);
 	connect(popup,SIGNAL(activated(int)),this,SLOT(popupCBActivated(int)));
-	popup->insertItem(tr("Add Entry"),PID_ADD_ENTRY);
-	popup->insertItem(tr("Add Entry Wizard"),PID_ADD_ENTRY_WIZARD);
+	connect(add_popup,SIGNAL(activated(int)),this,SLOT(popupMenuSpace(int )));
+	
+	add_popup->insertItem("Application",PID_Add_Application);
+	add_popup->insertItem("Device",PID_Add_Device);
+	add_popup->insertItem("Link",PID_Add_Link);
+	popup->insertItem(tr("Add Entry"),add_popup);
+	popup->insertItem(tr("Add Entry Wizard"),PID_Add_Wizard);
 	popup->insertSeparator();
 	popup->insertItem(tr("Settings"),PID_SETTINGS);
 	popup->popup(QCursor::pos());
@@ -92,10 +100,16 @@ void GofunCatButton::popupCBActivated(int id)
 {
 	switch(id)
 	{
-		case PID_ADD_ENTRY:
+		case PID_Add_Application:
 			GofunApplicationItem::createNewItem(this);
 			break;
-		case PID_ADD_ENTRY_WIZARD:
+		case PID_Add_Device:
+			GofunFSDeviceItem::createNewItem(this);
+			break;
+		case PID_Add_Link:
+			GofunLinkItem::createNewItem(this);
+			break;
+		case PID_Add_Wizard:
 			runNewItemWizard();
 			break;
 		case PID_SETTINGS:

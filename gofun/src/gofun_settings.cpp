@@ -140,22 +140,32 @@ GofunSettings::GofunSettings()
 	grid_general->addWidget(browser,3,1);
 	
 	QWidget* widget_laf = new QWidget(this);
-	QGridLayout* grid_laf = new QGridLayout(widget_laf,6,2);
+	QGridLayout* grid_laf = new QGridLayout(widget_laf,3,1);
 	tabwidget->addTab(widget_laf,tr("Look and feel"));
 	
-	QButtonGroup* col_group = new QButtonGroup(3,Qt::Horizontal,tr("Color"),widget_laf);
+	QButtonGroup* col_group = new QButtonGroup(widget_laf, tr("Color"));
+	col_group->setColumnLayout(0, Qt::Vertical );
+	col_group->setAlignment( int( QButtonGroup::AlignTop ) );
+	QGridLayout* grid_col = new QGridLayout(col_group->layout());
 	col_system = new QRadioButton(tr("System"),col_group);
 	col_random = new QRadioButton(tr("Random"),col_group);
 	col_costum = new QRadioButton(tr("Costum"),col_group);
-	costum_col_bt = new QToolButton(widget_laf);
+	costum_col_bt = new QToolButton(col_group);
+	costum_col_bt->setMaximumWidth(30);
+	grid_col->addWidget(col_system,0,0);
+	grid_col->addMultiCellWidget(col_costum,0,0,1,2);
+	grid_col->addWidget(col_random,0,3);
+	grid_col->addWidget(new QLabel(tr("Costum color"),col_group),1,0);
+	grid_col->addWidget(costum_col_bt,1,1);
+	QSpacerItem* spacer = new QSpacerItem(40,20,QSizePolicy::Expanding, QSizePolicy::Minimum);
+	grid_col->addMultiCell(spacer,1,1,2,3);
+	
 	save_main_geom = new QCheckBox(tr("Save main window geometry"),widget_laf);
 	
 	connect(costum_col_bt,SIGNAL(clicked()),this,SLOT(costumColorDialog()));
 		
-	grid_laf->addMultiCellWidget(col_group,0,0,0,1);
-	grid_laf->addWidget(new QLabel(tr("Costum color"),widget_laf),1,0);
-	grid_laf->addWidget(costum_col_bt,1,1);
-	grid_laf->addMultiCellWidget(save_main_geom,2,2,0,1);
+	grid_laf->addWidget(col_group,0,0);
+	grid_laf->addWidget(save_main_geom,1,0);
 }
 
 void GofunSettings::save()
