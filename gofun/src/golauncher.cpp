@@ -46,7 +46,7 @@ void Golauncher::launch()
 		proc->addArgument("-datafile");
 		proc->addArgument(datafile);
 		proc->addArgument("--");
-		QString xservnum = GofunMisc::shell_call("ps -Ac | grep X | wc -l").simplifyWhiteSpace();
+		QString xservnum = GofunMisc::shell_call("ps -Ac | grep X | wc -l").stripWhiteSpace();
 		proc->addArgument(":"+xservnum);
 		proc->start();
 

@@ -20,7 +20,8 @@
 
 #include <qwidget.h>
 
-#include "gofun_data.h"
+//#include "gofun_desktop_entry_data.h"
+class GofunDesktopEntryData;
 
 #ifndef GOFUN_DESKTOP_OBJECT
 #define GOFUN_DESKTOP_OBJECT

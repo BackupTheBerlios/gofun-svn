@@ -21,6 +21,7 @@
 #include <qlineedit.h>
  
 #include "gofun_item_settings.h"
+#include "gofun_application_entry_data.h"
 
 class GofunApplicationItem;
 
@@ -36,6 +37,25 @@ class GofunInterpretedLineEdit : public QLineEdit
 	
 	public slots:
 	void setText(const QString&);
+};
+
+class GofunApplicationItemSettingsAdvanced : public QWidget
+{
+	Q_OBJECT
+	
+	public:
+	GofunApplicationItemSettingsAdvanced(QWidget*parent=0);
+	void apply(GofunApplicationEntryData*);
+	void load(GofunApplicationEntryData*);
+	
+	private slots:
+	void userChkToggled(bool);
+	
+	private:	
+	QCheckBox* terminal_chk;
+	QCheckBox* user_chk;
+	QComboBox* user_combo;
+	QCheckBox* newx_chk;
 };
 
 ///Settings-dialog for items
@@ -57,7 +77,6 @@ public slots:
 	void envItemEditInterpreted(const QString&);
 	void envPredefinedPopup();
 	void envPredefinedPopupActivated(QListViewItem*);
-	void userChkToggled(bool);
 	void addParRow();
 	void remParRow();
 	void parEditDialog();
@@ -84,10 +103,7 @@ private:
 	QTable* tb_par;
 	QPushButton* paradd;
 	QPushButton* parrem;
-	QCheckBox* terminal_chk;
-	QCheckBox* user_chk;
-	QComboBox* user_combo;
-	QCheckBox* newx_chk;
+	GofunApplicationItemSettingsAdvanced* widget_adv;
 
 friend class GofunCommandEditor;
 };

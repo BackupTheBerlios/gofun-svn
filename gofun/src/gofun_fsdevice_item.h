@@ -19,7 +19,8 @@
  ***************************************************************************/
 
 #include "gofun_item.h"
- 
+#include "gofun_fsdevice_entry_data.h"
+
 #ifndef GOFUN_FSDEVICE_ITEM
 #define GOFUN_FSDEVICE_ITEM
 

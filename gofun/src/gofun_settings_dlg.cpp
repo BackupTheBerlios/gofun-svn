@@ -104,9 +104,9 @@ void GofunSettingsDlg::accept()
 		save();
 		
 		hide();
+		
+		QDialog::accept();
 	}
-	
-	QDialog::accept();
 }
 
 void GofunSettingsDlg::reject()

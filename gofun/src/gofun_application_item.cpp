@@ -100,7 +100,7 @@ void GofunApplicationItem::setData(GofunDesktopEntryData* d)
 	m_data = dynamic_cast<GofunApplicationEntryData*>(d);
 	
 	implementData();
-	if(!data()->TryExec.simplifyWhiteSpace().isEmpty() && !QFileInfo(data()->TryExec).isExecutable())
+	if(!data()->TryExec.stripWhiteSpace().isEmpty() && !QFileInfo(data()->TryExec).isExecutable())
 		iconView()->takeItem(this);	
 }
 
@@ -121,122 +121,9 @@ void GofunApplicationItem::interpretExecString(QString& exec)
 	}
 }
 
-void GofunApplicationItem::executeCommand(GofunApplicationEntryData* application_entry)
+void GofunApplicationItem::executeCommand()
 {
-	if(!application_entry)
-		application_entry = data();
-		
-	QString poststring;
-	QProcess proc;
-	QString exec = application_entry->Exec;
-		
-	interpretExecString(application_entry->Exec);
-	
-	if(!application_entry->X_GoFun_Parameter.empty())
-	{
-		GofunParameterPrompt* prompt = new GofunParameterPrompt();
-		for(std::map<int,GofunParameterData>::iterator it = application_entry->X_GoFun_Parameter.begin();it != application_entry->X_GoFun_Parameter.end(); ++it)
-		{
-			prompt->addParameter(&((*it).second));
-		}
-		if(prompt->exec() == QDialog::Accepted)
-		{
-			exec += prompt->parameterString();
-		}
-		else
-		{
-			return;
-		}
-	}
-	if(!application_entry->X_GoFun_Env.empty())
-	{
-		for(std::vector<QString>::iterator it = application_entry->X_GoFun_Env.begin(); it != application_entry->X_GoFun_Env.end(); ++it)
-		{
-			if((*it).isEmpty())
-			{
-				continue;
-			}
-			QStringList vk_pair = QStringList::split('=',(*it));
-			exec = "export " + vk_pair[0] + "='" + QString((*it)).remove(0,vk_pair[0].length()+1) + "';" + exec;
-		}
-	}
-	if(application_entry->Terminal == "true")
-	{ 
-		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
-		if(exec[exec.length()-1] == ';')
-			exec.setLength(exec.length()-1);
-		exec += ";echo -e \"\\E[${2:-44};${3:-7}m\n" + QObject::tr("End of execution has been reached. Press any key to remove this terminal\";");
-		exec += "read -n 1";
-		
-	}
-	if(application_entry->Path.isEmpty())
-	{
-		proc.setWorkingDirectory(QDir::homeDirPath());
-		proc.addArgument("/bin/sh");
-		proc.addArgument("-c");
-		exec = "cd " + GofunMisc::shellify_path(QDir::homeDirPath()) + ";" + exec;
-		proc.addArgument(exec);
-	}
-	else
-	{
-		proc.setWorkingDirectory(QDir(application_entry->Path));
-		proc.addArgument("/bin/sh");
-		proc.addArgument("-c");
-		exec = "cd " + GofunMisc::shellify_path(application_entry->Path) + ";" + exec;
-		proc.addArgument(exec);
-	}
-	if(!application_entry->X_GoFun_User.isEmpty())
-	{		
-		QString spa_file = saveProcArguments(&proc);
-		
-		QProcess proc_gosu;
-		
-		proc_gosu.addArgument("gosu");
-		proc_gosu.addArgument(application_entry->X_GoFun_User);
-		proc_gosu.addArgument("--color");
-		proc_gosu.addArgument(qApp->palette().color(QPalette::Active,QColorGroup::Background).name());
-		proc_gosu.addArgument("-l");
-		proc_gosu.addArgument("-g");
-		proc_gosu.start();
-		
-	}
-	else
-	{
-		saveProcArguments(&proc);
-		proc.clearArguments();
-		proc.addArgument("golauncher");
-		proc.addArgument("-datafile");
-		proc.addArgument(QDir::homeDirPath() + "/.gofun/tmp_proc_exec");
-		if(application_entry->X_GoFun_NewX == "true")
-			proc.addArgument("-xstart");
-		proc.start();
-	}
-}
-
-void GofunApplicationItem::addSplittedProcArgument(QProcess* proc,const QString& argument)
-{
-	QStringList arguments = QStringList::split(' ',argument);
-	for(QStringList::Iterator it = arguments.begin(); it != arguments.end(); ++it)
-	{
-		proc->addArgument((*it));
-	}
-}
-
-QString GofunApplicationItem::saveProcArguments(QProcess* proc)
-{
-	QStringList arguments = proc->arguments();
-	QString tmp = QString(getenv("HOME")) + QString("/.gofun/tmp_proc_exec"); //You'll probably wonder "wtf is this tmp needed"? The answer is "cause gcc is mucking around without this ugly code on some systems"
-	QFile file(tmp);
-	if(file.open( IO_WriteOnly ))
-	{
-		QTextStream stream(&file);
-		for(QStringList::Iterator it = arguments.begin(); it != arguments.end(); ++it)
-		{
-			stream << (*it) << '\0';
-		}
-		file.close();
-	}
-	return file.name();
+	data()->execute();
 }
 
 //Open the (working)-directory of a Desktop Entry in a file-manager.
@@ -270,8 +157,9 @@ QPopupMenu* GofunApplicationItem::rightClickPopup(const QPoint& pos)
 	popup->insertSeparator(1);
 	popup->insertItem(tr("\" in Terminal"),PID_Execute_in_terminal,2);
 	popup->insertItem(tr("\" in new XServer"),PID_Execute_with_xinit,3);
-	popup->insertItem(tr("Open directory"),PID_Open_directory,4);
-	popup->insertItem(tr("Customized start"),PID_Costumized_start,5);
+	popup->insertItem(tr("Customized start"),PID_Costumized_start,4);
+	if(!data()->Path.isEmpty())
+		popup->insertItem(tr("Open directory"),PID_Open_directory,5);
 
 	popup->popup(pos);
 	
@@ -323,7 +211,7 @@ void GofunApplicationItem::execute(const QString& option)
 			eo->X_GoFun_NewX = "true";
 		}
 	}
-	executeCommand(eo);
+	eo->execute();
 }
 
 void GofunApplicationItem::createNewItem(GofunCatButton* cat)

@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "gofun_item_settings.h"
+#include "gofun_fsdevice_entry_data.h"
 
 class GofunFSDeviceItem;
  

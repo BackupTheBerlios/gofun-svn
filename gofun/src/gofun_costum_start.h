@@ -24,6 +24,7 @@
 #include <qlabel.h>
 
 class GofunApplicationItem;
+class GofunApplicationItemSettingsAdvanced;
 
 #ifndef GOFUN_CSTART
 #define GOFUN_CSTART
@@ -43,12 +44,9 @@ private:
 	QLabel* caption;
 	QLineEdit* command;
 	QLineEdit* directory;
-	QCheckBox* terminal;
-	QCheckBox* newxserver;
-	QCheckBox* user;
-	QComboBox* user_name;
 	QComboBox* nxs_depth;
 	QComboBox* nxs_resolution;
+	GofunApplicationItemSettingsAdvanced* widget_adv;
 	
 	GofunApplicationItem* item;
 };

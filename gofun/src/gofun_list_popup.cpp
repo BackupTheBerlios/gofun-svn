@@ -91,3 +91,9 @@ void GofunListPopup::keyPressEvent(QKeyEvent* e)
 	QListView::keyPressEvent(e);
 }
 
+void GofunListPopup::fill(const QStringList& string_list)
+{
+	for(QStringList::ConstIterator it = string_list.begin(); it != string_list.end(); ++it)
+		new QListViewItem(this,(*it));
+}
+

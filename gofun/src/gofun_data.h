@@ -25,99 +25,13 @@
 #include <qstringlist.h>
 
 #include "gofun_locale_string.h"
+#include "gofun_cat_entry_data.h"
 
 class QWidget;
-class GofunDesktopObject;
+class QProcess;
 
 #ifndef GOFUN_DATA
 #define GOFUN_DATA
-
-///Base data-type for Desktop Entries
-struct GofunDesktopEntryData
-{
-	QString File;
-	GofunLocaleString Name;
-	GofunLocaleString GenericName;
-	GofunLocaleString Comment;
-	QString Icon;
-	QString Encoding;
-	QString Version;
-	QString Type;
-	QStringList Unknownkeys;
-	QString Hidden;
-	
-	virtual bool parseLine(const QString&);
-	
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
-};
-
-///Data-type describing parameters in a Desktop Entry
-struct GofunParameterData
-{
-	QString Flag;
-	QStringList Values;
-	QString Default_Value;
-	QString Prompt;
-	QString Type;
-	QString Minimum;
-	QString Maximum;
-	GofunLocaleString Comment;
-};
-
-struct GofunApplicationEntryData : public GofunDesktopEntryData
-{
-
-	QString Exec;
-	QString TryExec;
-	QString Path;
-	QString Terminal;
-	std::vector<QString> X_GoFun_Env;
-	QString X_GoFun_User;
-	QString X_GoFun_NewX;
-	std::map<int,GofunParameterData> X_GoFun_Parameter;
-	
-	bool parseLine(const QString&);
-	
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
-};
-
-struct GofunFSDeviceEntryData : public GofunDesktopEntryData
-{
-	QString Device;
-	QString FSType;
-	QString MountPoint;
-	QString ReadOnly;
-	QString UnmountIcon;
-	
-	bool parseLine(const QString&);
-	
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
-};
-
-struct GofunLinkEntryData : public GofunDesktopEntryData
-{
-	QString URL;
-	
-	bool parseLine(const QString&);
-	
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
-};
-
-///Data-type for Desktop Entries, that represent a category
-/** Contains a std::vector with the GofunDesktopEntryData, that is present
-    in this category. **/
-struct GofunCatEntryData : public GofunDesktopEntryData
-{
-	QString Catdir;
-	QString Background;
-	QString X_GoFun_Background;
-	QString X_GoFun_Color;
-	std::vector<GofunDesktopEntryData*>* ItemData;
-	
-	bool parseLine(const QString&);
-		
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
-};
 
 ///Loads Desktop-Entry data
 struct GofunDataLoader
@@ -135,19 +49,6 @@ private:
 	static GofunCatEntryData* parseCatInfo(const QString& file);
 	static QStringList loadFileData(const QString& _file);
 	static QString getLocale(const QString& locale);
-};
-
-struct GofunSettingsData
-{
-	public:
-		//Loads the settings
-		GofunSettingsData();
-		//Saves the settings
-		~GofunSettingsData();
-	private:
-		QString data_directory;
-		QString terminal_cmd;	
-	
 };
 
 #endif

@@ -150,8 +150,9 @@ QUrl GofunURLComposer::getURL( )
 
 void GofunURLComposer::test()
 {
-	if(link_item)
-		link_item->open(url);
+	GofunLinkEntryData link_entry;
+	link_entry.URL = url;
+	link_entry.open();
 }
 
 void GofunURLComposer::schemeChanged( const QString& str)

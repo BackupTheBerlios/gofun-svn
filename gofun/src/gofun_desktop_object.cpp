@@ -21,6 +21,7 @@
 #include <qfile.h>
  
 #include "gofun_desktop_object.h"
+#include "gofun_desktop_entry_data.h"
 
 void GofunDesktopObject::save()
 {

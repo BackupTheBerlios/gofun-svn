@@ -264,7 +264,8 @@ void GofunCatButton::popupItemDnD(int id)
 	switch(id)
 	{
 		case PID_COPY_ITEM: //Make a deep copy //FIXME: This is ugly-ladder-style anti-C++ code
-			gi = dynamic_cast<GofunItem*>(gi->data()->GofunDesktopObjectFactory(this));
+			//FIXME:this needs thoughtful fixing
+			/*gi = /*dynamic_cast<GofunItem*>(* /current_item->data()->GofunDesktopObjectFactory(this)/*)* /;
 			if(current_item->data()->Type == "Application")
 			{
 				_data = new GofunApplicationEntryData(*dynamic_cast<GofunApplicationItem*>(current_item)->data());
@@ -282,7 +283,7 @@ void GofunCatButton::popupItemDnD(int id)
 			
 			gi->setData(_data);
 			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
-			gi->save();
+			gi->save();*/
 			break;
 		case PID_MOVE_ITEM: //Move the item into its new iconview. Save the new and delete the old Desktop Entry file.
 			current_item->deleteEntryFile();

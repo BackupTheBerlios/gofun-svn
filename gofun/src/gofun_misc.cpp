@@ -51,12 +51,12 @@ QString GofunMisc::shellify_path(const QString& path)
 
 QString GofunMisc::ext_filestring(const QString& str)
 {
-	return shell_call("echo -n \""+ str+"\"").simplifyWhiteSpace();
+	return shell_call("echo -n \""+ str+"\"").stripWhiteSpace();
 }
 
 QString GofunMisc::bin_dir()
 {
-	return GofunMisc::shell_call("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").simplifyWhiteSpace();
+	return GofunMisc::shell_call("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").stripWhiteSpace();
 }
 
 void GofunMisc::center_window(QWidget* w, int width, int height)

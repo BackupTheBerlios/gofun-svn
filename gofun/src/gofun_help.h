@@ -29,6 +29,7 @@
 class QToolButton;
 class QPushButton;
 class QHttp;
+class GofunMimeSourceFactory;
 
 ///Specialised IconView for GoFun 
 class GofunHelp : public QDialog
@@ -36,7 +37,8 @@ class GofunHelp : public QDialog
 	Q_OBJECT
 	
 	public:
-	GofunHelp();
+	GofunHelp(WFlags f = 0);
+	~GofunHelp();
 	
 	public slots:
 	void httpData(int,bool);
@@ -53,6 +55,7 @@ class GofunHelp : public QDialog
 	QHttp* http;
 	QString base_url;
 	QString host;
+	GofunMimeSourceFactory* gmf;
 
 	friend class GofunMimeSourceFactory;
 };

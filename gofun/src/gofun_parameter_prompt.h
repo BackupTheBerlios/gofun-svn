@@ -22,7 +22,7 @@
  
 #include <qdialog.h>
 
-#include "gofun_data.h"
+#include "gofun_application_entry_data.h"
  
 #ifndef GOFUN_PARAMETER_PROMPT
 #define GOFUN_PARAMETER_PROMPT

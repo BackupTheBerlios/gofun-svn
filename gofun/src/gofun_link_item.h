@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "gofun_item.h"
+#include "gofun_link_entry_data.h"
  
 #ifndef GOFUN_LINK_ITEM
 #define GOFUN_LINK_ITEM
@@ -43,7 +44,6 @@ class GofunLinkItem : public GofunItem
 	virtual void editEntry();
 	void performDefaultAction();
 	void open();
-	void open(const QString&);
 	
 	static void createNewItem(GofunCatButton*);
 	

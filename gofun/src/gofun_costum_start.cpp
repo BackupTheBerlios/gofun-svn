@@ -21,32 +21,29 @@
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
+#include <qgroupbox.h>
  
 #include "gofun_costum_start.h"
 #include "gofun_application_item.h"
 #include "gofun_data.h"
 #include "gofun_misc.h"
+#include "gofun_application_item_settings.h"
 
 GofunCostumStart::GofunCostumStart()
 {
 	setCaption(tr("Costumized Start"));
 	
-	QGridLayout* grid = new QGridLayout(this,4,2);
+	QGridLayout* grid = new QGridLayout(this,5,2);
 	
 	icon = new QLabel(this);
 	caption = new QLabel(tr("Start "),this);
 	QLabel* command_label = new QLabel(tr("Command"),this);
 	command = new QLineEdit(this);
 	directory = new QLineEdit(this);
-	terminal = new QCheckBox(tr("Start in terminal"),this);
-	newxserver = new QCheckBox(tr("Start in new X-Server"),this);
-	user = new QCheckBox(tr("Start as (user)"),this);
-	user_name = new QComboBox(this);
-	user_name->insertStringList(QStringList::split('\n',GofunMisc::shell_call("cat /etc/passwd | grep /home/ | sed -e 's/:.*$//'")));
-	user_name->insertItem("root");
 	
-	connect(user,SIGNAL(toggled(bool)),user_name,SLOT(setEnabled(bool)));
-	
+	QGroupBox* gb_adv = new QGroupBox(1,Qt::Horizontal,this);
+	widget_adv = new GofunApplicationItemSettingsAdvanced(gb_adv);
+		
 	QPushButton* start_button = new QPushButton(tr("Start"), this);
 	QPushButton* cancel_button = new QPushButton(tr("Cancel"), this);
 
@@ -56,12 +53,11 @@ GofunCostumStart::GofunCostumStart()
 	grid->addMultiCellWidget(command,1,1,1,2);
 	grid->addWidget(new QLabel(tr("Directory"),this),2,0);
 	grid->addMultiCellWidget(directory,2,2,1,2);
-	grid->addMultiCellWidget(terminal,3,3,0,1);
-	grid->addMultiCellWidget(newxserver,4,4,0,1);
-	grid->addMultiCellWidget(user,5,5,0,1);
-	grid->addWidget(user_name,5,2);
-	grid->addWidget(start_button,6,0);
-	grid->addWidget(cancel_button,6,2);
+	grid->addMultiCellWidget(gb_adv,3,3,0,2);
+	grid->addWidget(start_button,4,0);
+	grid->addWidget(cancel_button,4,2);
+	
+	grid->setRowStretch(3,1);
 	
 	connect(start_button, SIGNAL(clicked()),this, SLOT(start()));
 	connect(cancel_button, SIGNAL(clicked()),this, SLOT(reject()));
@@ -71,17 +67,11 @@ GofunCostumStart::GofunCostumStart()
 
 void GofunCostumStart::start()
 {
-	GofunApplicationEntryData eo = *item->data();
-	eo.Terminal = GofunMisc::boolToString(terminal->isChecked());
-	eo.X_GoFun_NewX  = newxserver->isChecked();
-	if(user->isChecked())
-		eo.X_GoFun_User = user_name->currentText();
-	else
-		eo.X_GoFun_User = "";
-	
+	GofunApplicationEntryData eo = *item->data();	
 	eo.Exec = command->text();
 	eo.Path = directory->text();
-	item->executeCommand(&eo);
+	widget_adv->apply(&eo);
+	eo.execute();
 }
 
 void GofunCostumStart::load(GofunApplicationItem* _item)
@@ -99,18 +89,7 @@ void GofunCostumStart::load(GofunApplicationItem* _item)
 			icon->setPixmap(px);
 		}
 	}
-	terminal->setChecked(GofunMisc::stringToBool(item->data()->Terminal));
-	newxserver->setChecked(GofunMisc::stringToBool(item->data()->X_GoFun_NewX));
-	if(!item->data()->X_GoFun_User.isEmpty())
-	{
-		user->setChecked(true);
-		user_name->setCurrentText(item->data()->X_GoFun_User);
-	}
-	else
-	{
-		user->setChecked(false);
-		user_name->setEnabled(false);
-	}
+	widget_adv->load(_item->data());
 }
 
 

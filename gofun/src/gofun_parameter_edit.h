@@ -22,7 +22,7 @@
 #include <qgroupbox.h>
 #include <qspinbox.h>
 
-#include "gofun_data.h"
+#include "gofun_application_entry_data.h"
 
 class QLineEdit;
 class QComboBox;

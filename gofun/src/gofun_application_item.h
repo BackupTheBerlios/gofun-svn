@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 #include "gofun_item.h"
-#include "gofun_data.h"
+#include "gofun_application_entry_data.h"
 
 #ifndef GOFUN_APPLICATION_ITEM
 #define GOFUN_APPLICATION_ITEM
@@ -45,7 +45,7 @@ class GofunApplicationItem : public GofunItem
 	void save();
 	void costumizedStart();
 	void openDirectory();
-	void executeCommand(GofunApplicationEntryData* = NULL);
+	void executeCommand();
 	QPopupMenu* rightClickPopup(const QPoint&);
 	void editEntry();
 	void performDefaultAction() { execute(); };
@@ -56,9 +56,7 @@ class GofunApplicationItem : public GofunItem
 	public slots:
 	void popupActivated(int);
 	private:
-	QString saveProcArguments(QProcess*);
-	void interpretExecString(QString&);
-	void addSplittedProcArgument(QProcess*,const QString&);
+	void interpretExecString(QString&); //FIXME: Removal request
 	void execute(const QString& = QString::null);
 	
 	GofunApplicationEntryData* m_data;

@@ -23,9 +23,9 @@
 #include <qiconview.h>
 
 #include "gofun_desktop_object.h"
+#include "gofun_cat_entry_data.h"
 
 class GofunItem;
-class GofunCatEntryData;
 class GofunIconView;
 
 #ifndef GOFUN_CAT_BUTTON

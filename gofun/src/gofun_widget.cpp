@@ -197,9 +197,10 @@ void GofunWidget::showAbout()
 
 void GofunWidget::showHelp()
 {
-	GofunHelp* gh = new GofunHelp();
+	GofunHelp* gh = new GofunHelp(Qt::WDestructiveClose);
 	GofunMisc::center_window(gh,800,600);
 	gh->show();
+	
 }
 
 void GofunWidget::reloadData()
@@ -271,7 +272,6 @@ void GofunWidget::loadData()
 				continue;
 			}
 			GofunItem* gi = dynamic_cast<GofunItem*>((*sit)->GofunDesktopObjectFactory(cat->iconview));
-			gi->setData((*sit));
 		}
 		delete (*it).ItemData;
 	}

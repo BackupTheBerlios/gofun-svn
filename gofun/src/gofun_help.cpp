@@ -36,7 +36,7 @@
 std::map<QString,QPixmap*> GofunMimeSourceFactory::images;
 std::map<QString,int> GofunMimeSourceFactory::image_countdown;
 
-GofunHelp::GofunHelp()
+GofunHelp::GofunHelp(WFlags f) : QDialog(0,0,0,f)
 {
 	setCaption(tr("GoFun Help"));
 	setIcon(QPixmap("help.png"));
@@ -58,7 +58,7 @@ GofunHelp::GofunHelp()
 	close_bt = new QPushButton(tr("Close"),this);
 	
 	textbrowser = new QTextBrowser(this);
-	GofunMimeSourceFactory* gmf = new GofunMimeSourceFactory;
+	gmf = new GofunMimeSourceFactory;
 	gmf->p_gofun_help = this;
 	textbrowser->setMimeSourceFactory(gmf);
 	textbrowser->setPalette(QColor(255,255,255));
@@ -67,7 +67,7 @@ GofunHelp::GofunHelp()
 	connect(forward_bt,SIGNAL(clicked()),textbrowser,SLOT(forward()));
 	connect(home_bt,SIGNAL(clicked()),textbrowser,SLOT(home()));
 	connect(print_bt,SIGNAL(clicked()),this,SLOT(print()));
-	connect(close_bt,SIGNAL(clicked()),this,SLOT(hide()));
+	connect(close_bt,SIGNAL(clicked()),this,SLOT(close()));
 	connect(textbrowser,SIGNAL(backwardAvailable(bool)),back_bt,SLOT(setEnabled(bool)));
 	connect(textbrowser,SIGNAL(forwardAvailable(bool)),forward_bt,SLOT(setEnabled(bool)));
 	
@@ -86,6 +86,11 @@ GofunHelp::GofunHelp()
 	base_url = "http://gofun.berlios.de/tipiwiki/";
 	host = "www.berlios.de";
 	textbrowser->setSource( "index.php");
+}
+
+GofunHelp::~GofunHelp()
+{
+	gmf->p_gofun_help = 0;
 }
 
 void GofunHelp::httpData(int id, bool error)
@@ -192,7 +197,8 @@ const QMimeSource* GofunMimeSourceFactory::data(const QString& abs_name) const
 	}
 	else //if(abs_name.contains("index.php"))
 	{
-		p_gofun_help->openLink(abs_name);
+		if(p_gofun_help)
+			p_gofun_help->openLink(abs_name);
 	}
 	
 	const QMimeSource * r = QMimeSourceFactory::data( abs_name );
@@ -201,20 +207,22 @@ const QMimeSource* GofunMimeSourceFactory::data(const QString& abs_name) const
 
 void GofunMimeSourceFactory::setImageThere(int id,bool error)
 {
-if(error)
-	return;
+	if(error)
+		return;
 
-image_there = true;
+	image_there = true;
 
-QPixmap* img = new QPixmap(http->readAll());
+	QPixmap* img = new QPixmap(http->readAll());
 
-images[http->currentRequest().path()] = img;
---image_countdown[http->currentRequest().path()];
+	images[http->currentRequest().path()] = img;
+	--image_countdown[http->currentRequest().path()];
 
-if(image_countdown[http->currentRequest().path()] == 1)
-	p_gofun_help->textbrowser->setSource(p_gofun_help->textbrowser->source());
-
+	if(image_countdown[http->currentRequest().path()] == 1 && p_gofun_help)
+		p_gofun_help->textbrowser->setSource(p_gofun_help->textbrowser->source());
 }
+
+
+
 
 
 

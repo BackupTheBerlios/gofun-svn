@@ -37,7 +37,61 @@
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_parameter_edit.h"
 #include "gofun_list_popup.h"
- 
+
+GofunApplicationItemSettingsAdvanced::GofunApplicationItemSettingsAdvanced(QWidget* parent) : QWidget(parent)
+{
+	QGridLayout* grid_adv = new QGridLayout(this,3,2);
+	terminal_chk = new QCheckBox(tr("Start in terminal"),this);
+	user_chk = new QCheckBox(tr("Start as (user)"),this);
+	user_combo = new QComboBox(this);
+	user_combo->insertItem("root");
+	newx_chk = new QCheckBox(tr("Start in new X-Server"),this);
+	QStringList users = QStringList::split('\n',GofunMisc::shell_call("cat /etc/passwd | grep /home/ | sed -e 's/:.*$//'"));
+	for(QStringList::Iterator it = users.begin(); it != users.end(); ++it)
+	{
+		user_combo->insertItem((*it));
+	}
+	
+	grid_adv->addMultiCellWidget(terminal_chk,0,0,0,1);
+	grid_adv->addWidget(user_chk,1,0);
+	grid_adv->addWidget(user_combo,1,1);
+	grid_adv->addMultiCellWidget(newx_chk,2,2,0,1);
+	
+	connect(user_chk, SIGNAL(toggled(bool)),this, SLOT(userChkToggled(bool)));
+	
+	userChkToggled(user_chk->isChecked());	
+}
+
+void GofunApplicationItemSettingsAdvanced::userChkToggled(bool b)
+{
+	user_combo->setEnabled(b);
+}
+
+void GofunApplicationItemSettingsAdvanced::apply(GofunApplicationEntryData * app_entry)
+{
+	app_entry->Terminal = GofunMisc::boolToString(terminal_chk->isChecked());
+	if(user_chk->isChecked())
+	{
+		app_entry->X_GoFun_User = user_combo->currentText();
+	}
+	else
+	{
+		app_entry->X_GoFun_User = "";
+	}
+	app_entry->X_GoFun_NewX = GofunMisc::boolToString(newx_chk->isChecked());
+}
+
+void GofunApplicationItemSettingsAdvanced::load(GofunApplicationEntryData* data)
+{
+	terminal_chk->setChecked(GofunMisc::stringToBool(data->Terminal));
+		if(!data->X_GoFun_User.isEmpty())
+	{
+		user_chk->setChecked(true);
+		user_combo->setCurrentText(data->X_GoFun_User);
+	}
+	newx_chk->setChecked(GofunMisc::stringToBool(data->X_GoFun_NewX));
+}
+
 GofunApplicationItemSettings::GofunApplicationItemSettings()
 {	
 	QWidget* widget_main = new QWidget(this);	
@@ -57,6 +111,8 @@ GofunApplicationItemSettings::GofunApplicationItemSettings()
 	grid->addWidget(new QLabel(tr("Directory"),widget_main),2,0);
 	grid->addWidget(directory,2,1);
 	grid->addWidget(dir_button,2,2);
+	
+	//grid->setRowStretch(3,1);
 	/*QSpacerItem* spacer = new QSpacerItem(1,1,QSizePolicy::Minimum, QSizePolicy::Expanding);
 	grid->addMultiCell(spacer,3,3,0,3);*/ //I'm not sure, if it looks better or worse.
 	
@@ -120,29 +176,8 @@ GofunApplicationItemSettings::GofunApplicationItemSettings()
 	connect(paradd, SIGNAL(clicked()), this, SLOT(addParRow()));
 	connect(parrem, SIGNAL(clicked()), this, SLOT(remParRow()));
 	
-	QWidget* widget_adv = new QWidget(this);
+	widget_adv = new GofunApplicationItemSettingsAdvanced();
 	tabwidget->addTab(widget_adv,tr("Advanced"));
-	
-	QGridLayout* grid_adv = new QGridLayout(widget_adv,3,2);
-	terminal_chk = new QCheckBox(tr("Start in terminal"),widget_adv);
-	user_chk = new QCheckBox(tr("Start as (user)"),widget_adv);
-	user_combo = new QComboBox(widget_adv);
-	user_combo->insertItem("root");
-	newx_chk = new QCheckBox(tr("Start in new X-Server"),widget_adv);
-	QStringList users = QStringList::split('\n',GofunMisc::shell_call("cat /etc/passwd | grep /home/ | sed -e 's/:.*$//'"));
-	for(QStringList::Iterator it = users.begin(); it != users.end(); ++it)
-	{
-		user_combo->insertItem((*it));
-	}
-	
-	grid_adv->addMultiCellWidget(terminal_chk,0,0,0,1);
-	grid_adv->addWidget(user_chk,1,0);
-	grid_adv->addWidget(user_combo,1,1);
-	grid_adv->addMultiCellWidget(newx_chk,2,2,0,1);
-	
-	connect(user_chk, SIGNAL(toggled(bool)),this, SLOT(userChkToggled(bool)));
-	
-	userChkToggled(user_chk->isChecked());	
 	
 	item = 0;
 }
@@ -221,11 +256,6 @@ void GofunApplicationItemSettings::remParRow()
 	}
 	else
 		par_data.clear();
-}
-
-void GofunApplicationItemSettings::userChkToggled(bool b)
-{
-	user_combo->setEnabled(b);
 }
 
 void GofunApplicationItemSettings::addEnvVar()
@@ -357,7 +387,6 @@ void GofunApplicationItemSettings::apply(GofunApplicationEntryData* app_entry)
 {
 	app_entry->Exec = command->text();
 	app_entry->Path = directory->text();
-	app_entry->Terminal = GofunMisc::boolToString(terminal_chk->isChecked());
 	if(envvars->childCount() > 0)
 	{
 		QListViewItem* env_item = envvars->firstChild();
@@ -380,15 +409,7 @@ void GofunApplicationItemSettings::apply(GofunApplicationEntryData* app_entry)
 		(*it).Prompt = GofunMisc::boolToString(dynamic_cast<QCheckTableItem*>(tb_par->item(i,1))->isChecked());
 		app_entry->X_GoFun_Parameter[i] = (*it);
 	}
-	if(user_chk->isChecked())
-	{
-		app_entry->X_GoFun_User = user_combo->currentText();
-	}
-	else
-	{
-		app_entry->X_GoFun_User = "";
-	}
-	app_entry->X_GoFun_NewX = GofunMisc::boolToString(newx_chk->isChecked());
+	widget_adv->apply(app_entry);
 }
 
 bool GofunApplicationItemSettings::inputValid()
@@ -405,7 +426,6 @@ void GofunApplicationItemSettings::load(GofunApplicationItem* _item)
 	
 	command->setText(data()->Exec);
 	directory->setText(data()->Path);
-	terminal_chk->setChecked(GofunMisc::stringToBool(data()->Terminal));
 	if(!data()->X_GoFun_Env.empty())
 	{
 		for(std::vector<QString>::iterator it = data()->X_GoFun_Env.begin(); it != data()->X_GoFun_Env.end(); ++it)
@@ -418,12 +438,6 @@ void GofunApplicationItemSettings::load(GofunApplicationItem* _item)
 			addEnvVar(vk_pair[0],QString((*it)).remove(0,vk_pair[0].length()+1));
 		}
 	}
-	if(!data()->X_GoFun_User.isEmpty())
-	{
-		user_chk->setChecked(true);
-		user_combo->setCurrentText(data()->X_GoFun_User);
-	}
-	newx_chk->setChecked(GofunMisc::stringToBool(data()->X_GoFun_NewX));
 	if(!data()->X_GoFun_Parameter.empty())
 	{
 		for(std::map<int,GofunParameterData>::iterator it = data()->X_GoFun_Parameter.begin(); it != data()->X_GoFun_Parameter.end(); ++it)
@@ -442,6 +456,7 @@ void GofunApplicationItemSettings::load(GofunApplicationItem* _item)
 			connect(par_edit_bt,SIGNAL(clicked()),this,SLOT(parEditDialog()));
 		}
 	}
+	widget_adv->load(data());
 }
 
 

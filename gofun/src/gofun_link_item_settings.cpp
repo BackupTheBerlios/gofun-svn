@@ -30,7 +30,7 @@
 GofunLinkItemSettings::GofunLinkItemSettings()
 {	
 	QWidget* widget_main = new QWidget(this);	
-	QGridLayout* grid = new QGridLayout(widget_main,5,3);
+	QGridLayout* grid = new QGridLayout(widget_main,3,3);
 	
 	tabwidget->addTab(widget_main,tr("Main"));
 		

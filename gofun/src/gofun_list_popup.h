@@ -30,6 +30,7 @@ class GofunListPopup : public QListView
 	public:
 	GofunListPopup();
 	
+	void fill(const QStringList&);
 	void popup(const QPoint&);
 	
 	private:

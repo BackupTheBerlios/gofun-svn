@@ -73,15 +73,18 @@ GofunCommandEditor::GofunCommandEditor()
 
 void GofunCommandEditor::commandExpand()
 {
-	if( text->text()[text->text().length()-1] == '/' && text->text()[text->text().length()-2] == '.' )
+	if( (text->text()[text->text().length()-1] == '/' && text->text()[text->text().length()-2] == '.' )
+	|| (text->text()[text->text().length()-1] == '$'))
 	{
 		GofunListPopup* expand_list = new GofunListPopup;
 		expand_list->addColumn("files");
 		expand_list->header()->hide();
+		
+		//fill completition list
 		qDebug(text->text(text->paragraphs()-1));
-		QStringList files = QStringList::split('\n',GofunMisc::shell_call(text->text(text->paragraphs()-1)+"\t"));
-		for(QStringList::Iterator it = files.begin(); it != files.end(); ++it)
-		new QListViewItem(expand_list,(*it));
+		qDebug("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1)+"\\*");
+		QStringList files = QStringList::split('\n',GofunMisc::shell_call("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1).stripWhiteSpace()+"\\*"));
+		expand_list->fill(files);
 		
 		QFontMetrics metrics(text->font());
 		int x,y;
@@ -122,10 +125,10 @@ void GofunCommandEditor::test()
 {
 	if(settings_widget)
 	{
-		GofunApplicationEntryData app_entry = *dynamic_cast<GofunApplicationItem*>(settings_widget->item)->data();
+		GofunApplicationEntryData app_entry;
 		settings_widget->apply(&app_entry);
 		app_entry.Exec = text->text();
-		dynamic_cast<GofunApplicationItem*>(settings_widget->item)->executeCommand(&app_entry);
+		app_entry.execute();
 	}
 }
 
