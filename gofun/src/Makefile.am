@@ -1,7 +1,7 @@
 bin_PROGRAMS = gofun gosu
 MOCFILES = gofun.cpp gofun_cat_settings.cpp gofun_cat_button.cpp \
 		gofun_item.cpp gofun_settings.cpp gofun_settings_dlg.cpp gofun_widget.cpp \
-		gofun_item_settings.cpp gofun_cstart.cpp gofun_help.cpp gofun_list_dialog.cpp gofun_command_editor.cpp gofun_item_wizard.cpp
+		gofun_item_settings.cpp gofun_cstart.cpp gofun_help.cpp gofun_list_dialog.cpp gofun_command_editor.cpp gofun_item_wizard.cpp gofun_iconview.cpp
 gofun_SOURCES = gofun.cpp gofun_cat_settings.cpp gofun_cat_button.cpp \
 							gofun_item.cpp gofun_settings.cpp gofun_settings_dlg.cpp gofun_widget.cpp \
 							gofun_item_settings.cpp gofun_cstart.cpp $(MOCFILES:.cpp=_moc.cpp) gofun_data.cpp \

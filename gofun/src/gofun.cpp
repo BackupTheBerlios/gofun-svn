@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
   GofunMisc::center_window(&gofun_widget,365,240);
   //Set a caption and an icon
   gofun_widget.setCaption("GoFun");
-  gofun_widget.setIcon(QPixmap("gofun.png"));
+  gofun_widget.setIcon(GofunMisc::get_icon("gofun.png",16,16));
   
   //Declare gofun_widget to the official mainWidget
   app.setMainWidget(&gofun_widget);

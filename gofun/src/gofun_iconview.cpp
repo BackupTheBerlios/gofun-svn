@@ -29,6 +29,14 @@ GofunIconView::GofunIconView()
 {
 	setSpacing(3);
 	setItemTextBackground(QApplication::palette().brush(QPalette::Active,QColorGroup::Base));
+	
+	connect(this,SIGNAL(contentsMoving(int,int)),this,SLOT(contentsMove(int,int)));
+}
+
+void GofunIconView::contentsMove(int x, int y)
+{
+	if(paletteBackgroundPixmap())
+		updateContents();
 }
 
 //We reimplement this method to add automatic change of the grid size

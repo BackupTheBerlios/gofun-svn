@@ -26,6 +26,8 @@
 ///Specialised IconView for GoFun 
 class GofunIconView : public QIconView
 {
+	Q_OBJECT;
+
 	public:
 	GofunIconView();
 	void setTopMode();
@@ -33,6 +35,7 @@ class GofunIconView : public QIconView
 	
 	public slots:
 	virtual void arrangeItemsInGrid(bool = TRUE);
+	void contentsMove(int,int);
 };
 
 #endif
