@@ -92,6 +92,7 @@ void GofunHelp::httpData(int id, bool error)
 
 	QString str = http->readAll();
 	str.remove("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtm\nl1/DTD/xhtml1-strict.dtd\">");
+	str.replace("<img src=\"http://gofun.berlios.de/tipiwiki/gofun.png\" width=128>","<img src=\"http://gofun.berlios.de/tipiwiki/gofun.png\" align=right width=128>");
 	textbrowser->setText(str);
 }
 

@@ -32,6 +32,12 @@ QString GofunDataLoader::get_value(QString line)
 	return line;
 }
 
+QString GofunDataLoader::get_key(QString line)
+{
+	line.remove(line.find("="),line.length());
+	return line;
+}
+
 QStringList GofunDataLoader::load_file_data(const QString& _file)
 {
 	QStringList lines;
@@ -125,6 +131,29 @@ GofunItemData* GofunDataLoader::parse_gofun_file(const QString& file)
 			for(QStringList::Iterator it = qsl.begin(); it != qsl.end(); ++it)
 			{
 				idata->X_GoFun_Env.push_back((*it));
+			}
+		}
+		else if((*it).find("X-GoFun-Parameter") == 0)
+		{
+			if((*it).find("X-GoFun-Parameter-Flag") == 0)
+			{
+				idata->X_GoFun_Parameter[get_key((*it)).remove(0,QString("X-GoFun-Parameter-Flag-").length()).toInt()].Flag = get_value((*it));
+			}
+			else if((*it).find("X-GoFun-Parameter-Values") == 0)
+			{
+				idata->X_GoFun_Parameter[get_key((*it)).remove(0,QString("X-GoFun-Parameter-Values-").length()).toInt()].Values = QStringList::split(';',get_value((*it)));
+			}
+			else if((*it).find("X-GoFun-Parameter-Default") == 0)
+			{
+				idata->X_GoFun_Parameter[get_key((*it)).remove(0,QString("X-GoFun-Parameter-Default-").length()).toInt()].Default_Value = get_value((*it));
+			}
+			else if((*it).find("X-GoFun-Parameter-Prompt") == 0)
+			{
+				idata->X_GoFun_Parameter[get_key((*it)).remove(0,QString("X-GoFun-Parameter-Prompt-").length()).toInt()].Prompt = get_value((*it));
+			}
+			else if((*it).find("X-GoFun-Parameter-Comment") == 0)
+			{
+				idata->X_GoFun_Parameter[get_key((*it)).remove(0,QString("X-GoFun-Parameter-Comment-").length()).toInt()].Comment = get_value((*it));
 			}
 		}
 	}

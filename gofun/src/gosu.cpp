@@ -113,6 +113,9 @@ static void run_shell (const char *, const char *, char **)
 /* The name this program was run with.  */
 char *program_name;
 
+/* Color of the GUI */
+char *color;
+
 /* If nonzero, pass the `-f' option to the subshell.  */
 static int fast_startup;
 
@@ -135,6 +138,7 @@ static struct option const longopts[] =
   {"preserve-environment", no_argument, &change_environment, 0},
   {"shell", required_argument, 0, 's'},
   {"gofun", no_argument, 0, 'g'},
+  {"color", required_argument, 0, 'o'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
   {0, 0, 0, 0}
@@ -390,6 +394,7 @@ Change the effective user id and group id to that of USER.\n\
   -m, --preserve-environment   do not reset environment variables\n\
   -p                           same as -m\n\
   -s, --shell=SHELL            run SHELL if /etc/shells allows it\n\
+  -o, --color=COLOR            color for the GUI\n\
 ", stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
       fputs (VERSION_OPTION_DESCRIPTION, stdout);
@@ -412,6 +417,7 @@ main (int argc, char **argv)
   char *command = 0;
   char **additional_args = 0;
   char *shell = 0;
+  color = 0;
   struct passwd *pw;
   struct passwd pw_copy;
   
@@ -459,6 +465,11 @@ main (int argc, char **argv)
 	 
 	case 'g':
 	  gofun = 1;
+	  break;
+	  
+	case 'o':
+	  color = optarg;
+	  qApp->setPalette(QColor(QString(color)));
 	  break;
 
 	case_GETOPT_HELP_CHAR;

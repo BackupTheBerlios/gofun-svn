@@ -110,7 +110,7 @@ void GofunCatSettings::apply()
 	if(item)
 	{
 		item->data()->Name = caption->text();
-		item->setText(item->data()->Name);
+		item->setText(item->data()->Name + "   ");
 		item->data()->Comment = comment->text();
 
 		item->data()->Icon = icon->text();

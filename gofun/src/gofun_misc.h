@@ -22,6 +22,7 @@
 #include <qfiledialog.h>
 #include <qlabel.h>
 #include <qwidget.h>
+#include <qtoolbutton.h>
  
 #ifndef GOFUN_MISC
 #define GOFUN_MISC
@@ -61,6 +62,16 @@ class GofunFileIconProvider : public QFileIconProvider
 {
 	public:
 	virtual const QPixmap * pixmap ( const QFileInfo & info );
+};
+
+class GofunLineEdit : public QWidget
+{
+	public:
+	GofunLineEdit();
+	
+	private:
+	QLineEdit* lineedit;
+	QToolButton* button;
 };
 
 #endif

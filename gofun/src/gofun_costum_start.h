@@ -18,28 +18,36 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qiconview.h>
+#include <qdialog.h>
+#include <qcombobox.h>
+#include <qcheckbox.h>
+#include <qlabel.h>
 
-#ifndef GOFUN_ICONVIEW
-#define GOFUN_ICONVIEW
+class GofunItem;
 
-///Specialised IconView for GoFun 
-class GofunIconView : public QIconView
+#ifndef GOFUN_CSTART
+#define GOFUN_CSTART
+
+///Dialog making a highly costumized start possible
+class GofunCostumStart : public QDialog
 {
-	Q_OBJECT;
+	Q_OBJECT
+public:
+	GofunCostumStart();
+public slots:
+	void start();
+	virtual void load(GofunItem*);
 
-	public:
-	GofunIconView();
-	void setTopMode();
-	void setLeftMode();
-	
-	public slots:
-	virtual void arrangeItemsInGrid(bool = TRUE);
-	void contentsMove(int,int);
-	
-	private:
-	virtual void resizeEvent(QResizeEvent*);
-	QPixmap background;
+private:
+
+	QLabel* caption;
+	QLineEdit* command;
+	GofunItem* item;
+	QCheckBox* terminal;
+	QCheckBox* newxserver;
+	QComboBox* nxs_depth;
+	QComboBox* nxs_resolution;
 };
 
 #endif
+

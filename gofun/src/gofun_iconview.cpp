@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include <qapplication.h>
+#include <qimage.h>
  
 #include "gofun_iconview.h"
 #include "gofun_item.h"
@@ -37,6 +38,15 @@ void GofunIconView::contentsMove(int x, int y)
 {
 	if(paletteBackgroundPixmap())
 		updateContents();
+}
+
+void GofunIconView::resizeEvent(QResizeEvent* event)
+{
+	/*if(paletteBackgroundPixmap() && isVisible())
+	{
+		setPaletteBackgroundPixmap((paletteBackgroundPixmap()->convertToImage()).scale(width(),height()));
+	}*/
+	QIconView::resizeEvent(event);
 }
 
 //We reimplement this method to add automatic change of the grid size

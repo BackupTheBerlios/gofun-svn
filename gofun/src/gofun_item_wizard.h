@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <qwizard.h>
+#include <qlineedit.h>
 
 #ifndef GOFUN_ITEM_WIZARD
 #define GOFUN_ITEM_WIZARD
@@ -28,6 +29,9 @@ class GofunItemWizard : public QWizard
 	Q_OBJECT
 	public:
 	GofunItemWizard();
+	
+	private:
+	QLineEdit* command;
 };
 
 #endif

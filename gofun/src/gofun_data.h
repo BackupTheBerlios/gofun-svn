@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <vector>
+#include <map>
  
 #include <qstring.h>
 #include <qstringlist.h>
@@ -36,6 +37,16 @@ struct GofunDesktopEntryData
 	QString Unknownkeys;
 };
 
+///Data-type describing parameters in a Desktop Entry
+struct GofunParameterData
+{
+	QString Flag;
+	QStringList Values;
+	QString Default_Value;
+	QString Prompt;
+	QString Comment;
+};
+
 ///Data-type for Desktop Entries, that can be executed
 struct GofunItemData : public GofunDesktopEntryData
 {
@@ -46,6 +57,7 @@ struct GofunItemData : public GofunDesktopEntryData
 	QString X_GoFun_User;
 	QString Hidden;
 	QString X_GoFun_NewX;
+	std::map<int,GofunParameterData> X_GoFun_Parameter;
 };
 
 ///Data-type for Desktop Entries, that represent a category
@@ -81,6 +93,7 @@ private:
 	static GofunCatData* parse_cat_info(const QString& file);
 	static QStringList load_file_data(const QString& _file);
 	static QString get_value(QString line);
+	static QString get_key(QString line);
 };
 
 struct GofunSettingsData

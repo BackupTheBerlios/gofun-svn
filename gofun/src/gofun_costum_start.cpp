@@ -18,28 +18,67 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qiconview.h>
+#include <qlayout.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
+ 
+#include "gofun_costum_start.h"
+#include "gofun_item.h"
+#include "gofun_data.h"
 
-#ifndef GOFUN_ICONVIEW
-#define GOFUN_ICONVIEW
-
-///Specialised IconView for GoFun 
-class GofunIconView : public QIconView
+GofunCostumStart::GofunCostumStart()
 {
-	Q_OBJECT;
-
-	public:
-	GofunIconView();
-	void setTopMode();
-	void setLeftMode();
+	setCaption(tr("Costumized Start"));
 	
-	public slots:
-	virtual void arrangeItemsInGrid(bool = TRUE);
-	void contentsMove(int,int);
+	QGridLayout* grid = new QGridLayout(this,4,2);
 	
-	private:
-	virtual void resizeEvent(QResizeEvent*);
-	QPixmap background;
-};
+	caption = new QLabel(tr("Start "),this);
+	QLabel* command_label = new QLabel(tr("Command"),this);
+	command = new QLineEdit(this);
+	terminal = new QCheckBox(tr("Start in terminal"),this);
+	newxserver = new QCheckBox(tr("Start in new X-Server"),this);
+	
+	QPushButton* start_button = new QPushButton(tr("Start"), this);
 
-#endif
+	grid->addMultiCellWidget(caption,0,0,0,2);
+	grid->addWidget(command_label,1,0);
+	grid->addWidget(command,1,1);
+	grid->addMultiCellWidget(terminal,2,2,0,1);
+	grid->addMultiCellWidget(newxserver,3,3,0,1);
+	grid->addWidget(start_button,4,0);
+	
+	connect(start_button, SIGNAL(clicked()),this, SLOT(start()));
+	
+	item = 0;
+}
+
+void GofunCostumStart::start()
+{
+	ExecuteOption eo;
+	if(terminal->isChecked())
+	{
+		eo.terminal = "true";
+	}
+	if(newxserver->isChecked())
+	{
+		eo.xinit  = "true";
+	}
+	eo.Exec = command->text();
+	item->executeCommand(&eo);
+}
+
+void GofunCostumStart::load(GofunItem* _item)
+{
+	item = _item;
+	caption->setText(item->data()->Name);
+	command->setText(item->data()->Exec);
+	if(!item->data()->Icon.isEmpty())
+	{
+		setIcon(QPixmap(item->data()->Icon));
+	}
+	if(item->data()->Terminal == "true")
+	{
+		terminal->setChecked(true);
+	}
+}
+

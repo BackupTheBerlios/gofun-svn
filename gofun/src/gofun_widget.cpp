@@ -22,10 +22,11 @@
 #include <qpopupmenu.h>
 #include <qtextbrowser.h>
 #include <qhttp.h>
+#include <qcursor.h>
  
 #include "gofun_iconview.h"
 #include "gofun_widget.h" 
-#include "gofun_cstart.h"
+#include "gofun_costum_start.h"
 #include "gofun_settings.h"
 #include "gofun_misc.h"
 #include "gofun_data.h"
@@ -126,7 +127,7 @@ void GofunWidget::popupCatAdd()
 	connect(popup,SIGNAL(activated(int)),this,SLOT(popupCAActivated(int)));
 	popup->insertItem(tr("Add Category"),PID_Add_Category);
 	int x = pos().x()+cats_bg->pos().x()+cats_bg->find(0)->pos().x()+cats_bg->find(0)->width();
-	int y = pos().y()+cats_bg->pos().y()+cats_bg->find(0)->pos().y()+5*cats_bg->find(0)->height();
+	int y = QCursor::pos().y();
 	QPoint pos(x,y);
 	popup->popup(pos);
 }
@@ -239,11 +240,8 @@ void GofunWidget::addCategory()
 {
 	GofunCatSettings* settings_dlg = new GofunCatSettings();
 	GofunMisc::attach_window(this,settings_dlg,D_Right,D_Left,275,200);
-	//cats_bg->insert(cat,cats_bg->count()-1);
-	//settings_dlg->load(cat);
 	settings_dlg->exec();
 	delete settings_dlg;
-	//cat->show();
 }
 
 //Evaluate popup that is shown, when the user did right-clicks on empty space in a left IconView
@@ -300,7 +298,7 @@ void GofunWidget::popupMenuItem(int id)
 //Show the costumized-start-dialog for the item
 void GofunWidget::costumizedStart(GofunItem* item)
 {
-	GofunCStart* cstart_widget = new GofunCStart();
+	GofunCostumStart* cstart_widget = new GofunCostumStart();
 	GofunMisc::attach_window(this,cstart_widget,D_Left,D_Right,375,200);
 	cstart_widget->load(item);
 	cstart_widget->show();

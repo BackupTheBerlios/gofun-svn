@@ -35,7 +35,7 @@
  
 GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButton(str,widget)
 {
-	setText(str);
+	setText(str + "   ");
 	setToggleButton(true);	
 	//Needed so GofunItems can be moved/copied comfortably between categories
 	setAcceptDrops(true);
@@ -47,11 +47,6 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 
 	//connect(conf_button, SIGNAL(clicked()),this, SLOT(catSettings()));
 	connect(conf_button, SIGNAL(clicked()),this, SLOT(popupConfButton()));
-	
-	if(!data()->Icon.isEmpty())
-	{
-		
-	}
 	
 	//For this category we create an IconView
 	iconview = new GofunIconView();
@@ -117,6 +112,7 @@ void GofunCatButton::save()
 	if ( file.open( IO_WriteOnly | IO_Append ) )
 	{
 		QTextStream stream( &file );
+		stream << "Type=Directory\n";
 		stream << "X-GoFun-Background=" << data()->X_GoFun_Background << "\n";
 		file.close();
 	}
@@ -125,11 +121,15 @@ void GofunCatButton::save()
 //Make sure the right-button is in the right place (!you got the word joke?)
 void GofunCatButton::resizeEvent(QResizeEvent* event)
 {
-	//conf_button->setGeometry(geometry().width()+5,0,5,geometry().height()-2);	
+	QPushButton::resizeEvent(event);
+
+	/*if(event->oldSize().width() + 16 == event->size().width())
+		return;*/
 	int width = 16;
 	int height = geometry().height();
-	setGeometry(geometry().x(),geometry().y(),geometry().width(),geometry().height());
+	/*setGeometry(geometry().x(),geometry().y(),geometry().width()+width,geometry().height());*/
 	conf_button->setGeometry(geometry().width()-width,0,width,height);
+	
 }
 
 void GofunCatButton::catSettings()

@@ -29,8 +29,11 @@ GofunItemWizard::GofunItemWizard()
 	
 	QWidget* widget_start = new QWidget(this);
 	addPage(widget_start,tr("Start"));
+	
 	QGridLayout* grid_start = new QGridLayout(widget_start,3,1);
 	
+	command = new QLineEdit(tr("Command"),widget_start);
 	grid_start->addWidget(new QLabel(tr("This wizard will guide you through the creation of a Gofun Desktop Entry"),widget_start),0,0);
+	grid_start->addWidget(command,1,0);
 }
 

@@ -381,7 +381,7 @@ void GofunItemSettings::load(GofunItem* _item)
 				continue;
 			}
 			QStringList vk_pair = QStringList::split("=",(*it));
-			new QListViewItem(envvars,vk_pair[0],vk_pair[1]);
+			new QListViewItem(envvars,vk_pair[0],QString((*it)).remove(0,vk_pair[0].length()+1));
 		}
 	}
 	if(!item->data()->X_GoFun_User.isEmpty())
@@ -392,6 +392,13 @@ void GofunItemSettings::load(GofunItem* _item)
 	if(item->data()->X_GoFun_NewX == "true")
 	{
 		newx_chk->setChecked(true);
+	}
+	if(!item->data()->X_GoFun_Parameter.empty())
+	{
+		for(std::map<int,GofunParameterData>::iterator it = item->data()->X_GoFun_Parameter.begin(); it != item->data()->X_GoFun_Parameter.end(); ++it)
+		{
+			
+		}
 	}
 }
 

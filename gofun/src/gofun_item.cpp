@@ -20,6 +20,7 @@
 
 #include <iostream> 
 
+#include <qapplication.h>
 #include <qinputdialog.h>
 #include <qtooltip.h>
 
@@ -29,6 +30,7 @@
 #include "gofun_data.h"
 #include "gofun_iconview.h"
 #include "gofun_settings.h"
+#include "gofun_parameter_prompt.h"
 
 GofunItem* GofunIconViewToolTip::last_active = 0;
  
@@ -45,19 +47,15 @@ GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconView
 
 void GofunItem::save()
 {
+	GofunDesktopObject::save();
+
 	QFile file( data()->File );
-	if ( file.open( IO_WriteOnly ) )
+	if ( file.open( IO_WriteOnly | IO_Append ) )
 	{
 		QTextStream stream( &file );
-		stream << "[Desktop Entry]\n";
-		stream << "Version=0.9.4\n";
-		stream << "Encoding=UTF-8\n";
 		stream << "Type=Application\n";
-		stream << "Name=" << data()->Name << "\n";
 		stream << "Exec=" << data()->Exec << "\n";
 		stream << "Path=" << data()->Path << "\n";
-		stream << "Icon=" << data()->Icon << "\n";
-		stream << "Comment=" << data()->Comment << "\n";
 		stream << "Terminal=" << data()->Terminal << "\n";
 		stream << "X-GoFun-NewX=" << data()->X_GoFun_NewX << "\n";
 		if(!data()->X_GoFun_Env.empty())
@@ -133,7 +131,17 @@ void GofunItem::executeCommand(ExecuteOption* option)
 	exec = data()->Exec;
 	
 	interpretExecString(exec);
-
+	
+	if(!data()->X_GoFun_Parameter.empty())
+	{
+		GofunParameterPrompt* prompt = new GofunParameterPrompt();
+		for(std::map<int,GofunParameterData>::iterator it = data()->X_GoFun_Parameter.begin();it != data()->X_GoFun_Parameter.end(); ++it)
+		{
+			prompt->addParameter(&((*it).second));
+		}
+		if(prompt->exec() == QDialog::Accepted)
+			exec += prompt->parameterString();
+	}
 	if(!data()->X_GoFun_Env.empty())
 	{
 		for(std::vector<QString>::iterator it = data()->X_GoFun_Env.begin(); it != data()->X_GoFun_Env.end(); ++it)
@@ -142,7 +150,8 @@ void GofunItem::executeCommand(ExecuteOption* option)
 			{
 				continue;
 			}
-			exec = "export " + (*it) + ";" + exec;
+			QStringList vk_pair = QStringList::split('=',(*it));
+			exec = "export " + vk_pair[0] + "='" + QString((*it)).remove(0,vk_pair[0].length()+1) + "';" + exec;
 		}
 	}
 	if((!option->terminal.isEmpty()) || (data()->Terminal == "true"))
@@ -167,7 +176,6 @@ void GofunItem::executeCommand(ExecuteOption* option)
 	}
 	else
 	{
-		//#system($prestring."cd ".directory." && ".command.$poststring);
 		proc.setWorkingDirectory(QDir(data()->Path));
 		proc.addArgument("/bin/sh");
 		proc.addArgument("-c");
@@ -189,6 +197,8 @@ void GofunItem::executeCommand(ExecuteOption* option)
 		QProcess proc_gosu;
 		proc_gosu.addArgument("gosu");
 		proc_gosu.addArgument(data()->X_GoFun_User);
+		proc_gosu.addArgument("--color");
+		proc_gosu.addArgument(qApp->palette().color(QPalette::Active,QColorGroup::Background).name());
 		proc_gosu.addArgument("-l");
 		proc_gosu.addArgument("-g");
 		proc_gosu.start();

@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   
   //Set a caption and an icon
   gofun_widget.setCaption("GoFun");
-  gofun_widget.setIcon(GofunMisc::get_icon("gofun.png",16,16));
+  gofun_widget.setIcon(GofunMisc::get_icon("gofun-16x16.png",16,16));
   
   //Declare gofun_widget to the official mainWidget
   app.setMainWidget(&gofun_widget);

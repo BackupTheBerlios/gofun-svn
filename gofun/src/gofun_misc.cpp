@@ -44,12 +44,12 @@ QString GofunMisc::shellify_path(const QString& path)
 {
 	//QString res = path;
 	//return res.replace(' ',"\\ ");
-	return "'"+path+"'";
+	return "'"+ext_filestring(path)+"'";
 }
 
 QString GofunMisc::ext_filestring(const QString& str)
 {
-	return shell_call("echo "+ str);
+	return shell_call("echo -n "+ str);
 }
 
 void GofunMisc::center_window(QWidget* w, int width, int height)
