@@ -30,16 +30,8 @@
 #include "gofun_list_popup.h"
 #include "gofun_directory_browser.h"
 #include "gofun_application_item.h"
-
-GofunExecutableBrowser::GofunExecutableBrowser()
-{
-	QGridLayout* grid = new QGridLayout(this);
-	
-}
-
-QString GofunExecutableBrowser::getExecutable()
-{
-}
+#include "gofun_application_item_settings.h"
+#include "gofun_executable_browser.h"
 
 GofunCommandEditor::GofunCommandEditor()
 {
@@ -48,7 +40,7 @@ GofunCommandEditor::GofunCommandEditor()
 	text = new QTextEdit(this);
 	text->setTextFormat(Qt::PlainText);
 	text->setWordWrap(QTextEdit::NoWrap);
-	QPushButton* apply = new QPushButton(tr("Apply"),this);
+	QPushButton* apply = new QPushButton(tr("Ok"),this);
 	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
 	QPushButton* test = new QPushButton(tr("Test"),this);
 	
@@ -75,7 +67,7 @@ GofunCommandEditor::GofunCommandEditor()
 	grid->addWidget(test,2,3);
 	grid->addWidget(browse_for,0,3);
 	
-	app_item = 0;
+	settings_widget = 0;
 }
 
 void GofunCommandEditor::commandExpand()
@@ -127,11 +119,12 @@ void GofunCommandEditor::commandCompletion(QListViewItem* item)
 
 void GofunCommandEditor::test()
 {
-	if(app_item)
+	if(settings_widget)
 	{
-		GofunApplicationEntryData app_entry = *app_item->data();
+		GofunApplicationEntryData app_entry = *dynamic_cast<GofunApplicationItem*>(settings_widget->item)->data();
+		settings_widget->apply(&app_entry);
 		app_entry.Exec = text->text();
-		app_item->executeCommand(&app_entry);
+		dynamic_cast<GofunApplicationItem*>(settings_widget->item)->executeCommand(&app_entry);
 	}
 }
 
@@ -163,9 +156,9 @@ void GofunCommandEditor::browseForFile()
 	text->insert(s);
 }
 
-void GofunCommandEditor::setApplicationItem(GofunApplicationItem *item)
+void GofunCommandEditor::setSettingsWidget(GofunApplicationItemSettings *_settings_widget)
 {
-	app_item = item;
+	settings_widget = _settings_widget;
 }
 
 

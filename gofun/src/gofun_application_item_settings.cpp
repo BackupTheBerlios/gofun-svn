@@ -174,7 +174,7 @@ void GofunApplicationItemSettings::envPredefinedPopupActivated(QListViewItem* it
 void GofunApplicationItemSettings::commandEditor()
 {
 	GofunCommandEditor* cmd_editor = new GofunCommandEditor();
-	cmd_editor->setApplicationItem(dynamic_cast<GofunApplicationItem*>(item));
+	cmd_editor->setSettingsWidget(this);
 	cmd_editor->setCommand(command->text());
 	if(cmd_editor->exec() == QDialog::Accepted)
 		command->setText(cmd_editor->command());	
@@ -275,13 +275,13 @@ void GofunApplicationItemSettings::envItemEdit(QListViewItem* item,const QPoint&
 	interpreted_le->setReadOnly(true);
 	interpreted_le->setEnabled(false);
 	grid->addWidget(interpreted_le,2,1);
-	QPushButton* apply = new QPushButton(tr("Apply"),edit_dlg);
+	QPushButton* ok = new QPushButton(tr("Ok"),edit_dlg);
 	connect(value_le, SIGNAL(textChanged(const QString&)), interpreted_le, SLOT(setText(const QString&)));
-	connect(apply, SIGNAL(clicked()),edit_dlg, SLOT(accept()));
+	connect(ok, SIGNAL(clicked()),edit_dlg, SLOT(accept()));
 	QPushButton* cancel = new QPushButton(tr("Cancel"),edit_dlg);
 	connect(cancel, SIGNAL(clicked()),edit_dlg, SLOT(reject()));
 	
-	grid->addWidget(apply,3,0);
+	grid->addWidget(ok,3,0);
 	grid->addWidget(cancel,3,1);
 	
 	if( edit_dlg->exec() == QDialog::Accepted)
@@ -351,9 +351,14 @@ void GofunApplicationItemSettings::apply()
 		
 	GofunItemSettings::apply();
 	
-	data()->Exec = command->text();
-	data()->Path = directory->text();
-	data()->Terminal = GofunMisc::boolToString(terminal_chk->isChecked());
+	apply(data());
+}
+
+void GofunApplicationItemSettings::apply(GofunApplicationEntryData* app_entry)
+{
+	app_entry->Exec = command->text();
+	app_entry->Path = directory->text();
+	app_entry->Terminal = GofunMisc::boolToString(terminal_chk->isChecked());
 	if(envvars->childCount() > 0)
 	{
 		QListViewItem* env_item = envvars->firstChild();
@@ -363,28 +368,28 @@ void GofunApplicationItemSettings::apply()
 			tmp_array.push_back(env_item->text(0)+"="+env_item->text(1));
 			env_item = env_item->nextSibling();
 		}
-		data()->X_GoFun_Env = tmp_array;
+		app_entry->X_GoFun_Env = tmp_array;
 	}
 	else
 	{
-		data()->X_GoFun_Env.clear();
+		app_entry->X_GoFun_Env.clear();
 	}
-	data()->X_GoFun_Parameter.clear();
+	app_entry->X_GoFun_Parameter.clear();
 	int i = 0;
 	for(QValueList<GofunParameterData>::Iterator it = par_data.begin(); it != par_data.end(); ++it, ++i)
 	{
 		(*it).Prompt = GofunMisc::boolToString(dynamic_cast<QCheckTableItem*>(tb_par->item(i,1))->isChecked());
-		data()->X_GoFun_Parameter[i] = (*it);
+		app_entry->X_GoFun_Parameter[i] = (*it);
 	}
 	if(user_chk->isChecked())
 	{
-		data()->X_GoFun_User = user_combo->currentText();
+		app_entry->X_GoFun_User = user_combo->currentText();
 	}
 	else
 	{
-		data()->X_GoFun_User = "";
+		app_entry->X_GoFun_User = "";
 	}
-	data()->X_GoFun_NewX = GofunMisc::boolToString(newx_chk->isChecked());
+	app_entry->X_GoFun_NewX = GofunMisc::boolToString(newx_chk->isChecked());
 }
 
 bool GofunApplicationItemSettings::inputValid()

@@ -30,6 +30,7 @@
 #include "gofun_cat_button.h"
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_directory_browser.h"
+#include "gofun_icon_dialog.h"
 
 GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 {	
@@ -82,11 +83,12 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 	grid_adv->addWidget(new QLabel(tr("UnmountIcon"),widget_advanced),0,0);
 	grid_adv->addWidget(unmount_icon,0,1);
 	grid_adv->addWidget(unmount_icon_button,0,2);
-	grid_adv->addMultiCellWidget(readonly_chk,1,1,0,2);
-	grid_adv->addWidget(new QLabel(tr("Filesystem"),widget_advanced),2,0);
-	grid_adv->addWidget(type,2,1);
+	grid_adv->addWidget(new QLabel(tr("Filesystem"),widget_advanced),1,0);
+	grid_adv->addWidget(type,1,1);
+	grid_adv->addMultiCellWidget(readonly_chk,2,2,0,2);
 	
 	connect(desw->icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
+	connect(unmount_icon_button, SIGNAL(clicked()),this, SLOT(unmountIconDialog()));
 	
 	item = 0;
 }
@@ -160,5 +162,25 @@ bool GofunFSDeviceItemSettings::inputValid()
 GofunFSDeviceEntryData* GofunFSDeviceItemSettings::data()
 {
 	return dynamic_cast<GofunFSDeviceItem*>(item)->data();
+}
+
+void GofunFSDeviceItemSettings::unmountIconDialog()
+{
+	GofunIconDialog* id = new GofunIconDialog();
+	QString start_dir;
+	if(!unmount_icon->text().isEmpty())
+	{
+		start_dir = unmount_icon->text();
+		id->setStartIcon(unmount_icon->text());
+	}
+	if(!start_dir.isEmpty())
+		start_dir = "/usr/share/icons";
+	id->setStartDir(start_dir);
+	if(id->exec() == QDialog::Accepted)
+	{
+		unmount_icon->setText(id->selected());
+		unmount_icon_button->setPixmap(QPixmap(id->selected()));
+	}
+	delete id;
 }
 

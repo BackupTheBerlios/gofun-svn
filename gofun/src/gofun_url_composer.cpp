@@ -26,9 +26,16 @@
 #include <qvalidator.h>
 #include <qgroupbox.h>
 #include <qfiledialog.h>
+#include <qprocess.h>
+#include <qclipboard.h>
+#include <qapplication.h>
+#include <qurlinfo.h>
+#include <qmessagebox.h>
 
 #include "gofun_link_item.h"
 #include "gofun_url_composer.h"
+#include "gofun_settings.h"
+#include "gofun_directory_browser.h"
 
 GofunURLComposer::GofunURLComposer()
 {
@@ -81,14 +88,16 @@ GofunURLComposer::GofunURLComposer()
 	grid_advanced->addMultiCellWidget(query,4,4,1,2);
 	
 	QGroupBox* gb_fetch = new QGroupBox(tr("Fetch URL"),this);
-	gb_fetch->setColumnLayout(2, Qt::Vertical );
+	gb_fetch->setColumnLayout(3, Qt::Vertical );
 	gb_fetch->layout()->setSpacing( 6 );
 	gb_fetch->layout()->setMargin( 5 );
 	
-	QPushButton* fetch_filesystem = new QPushButton(tr("Fetch from\nfilesystem"),gb_fetch);
+	QPushButton* fetch_file = new QPushButton(tr("Fetch file"),gb_fetch);
+	QPushButton* fetch_directory = new QPushButton(tr("Fetch directory"),gb_fetch);
 	QPushButton* fetch_browser = new QPushButton(tr("Fetch with\nweb-browser"),gb_fetch);
 	
-	connect(fetch_filesystem,SIGNAL(clicked()),this,SLOT(fetchFromFileSystem()));
+	connect(fetch_file,SIGNAL(clicked()),this,SLOT(fetchFile()));
+	connect(fetch_directory,SIGNAL(clicked()),this,SLOT(fetchDirectory()));
 	connect(fetch_browser,SIGNAL(clicked()),this,SLOT(fetchWithWebBrowser()));
 	
 	grid_url->addWidget(gb_fetch,0,0);
@@ -100,7 +109,7 @@ GofunURLComposer::GofunURLComposer()
 	gb_url->layout()->setSpacing( 6 );
 	gb_url->layout()->setMargin( 5 );
 
-	composed_url = new QLineEdit(gb_url);
+	composed_url = new GofunClipboardLineEdit(gb_url);
 	
 	connect(composed_url,SIGNAL(textChanged(const QString&)),this,SLOT(composedChanged(const QString&)));
 	
@@ -228,7 +237,7 @@ bool GofunURLComposer::isComposedCurrent()
 		return false;
 }
 
-void GofunURLComposer::fetchFromFileSystem( )
+void GofunURLComposer::fetchFile( )
 {
 	QString from_fs = QFileDialog::getOpenFileName(QDir::homeDirPath(),"*",this);
 	if(!from_fs.isNull())
@@ -237,8 +246,19 @@ void GofunURLComposer::fetchFromFileSystem( )
 	}
 }
 
+void GofunURLComposer::fetchDirectory()
+{
+	GofunDirectoryBrowser dir_browser;
+	dir_browser.setStartDirectory(QDir::homeDirPath());
+	if(dir_browser.exec() == QDialog::Accepted)
+		composed_url->setText(QUrl(dir_browser.selected()));
+}
+
 void GofunURLComposer::fetchWithWebBrowser( )
 {
+	QProcess proc;
+	proc.addArgument(GSC::get()->browser_cmd);
+	proc.start();
 }
 
 void GofunURLComposer::setLinkItem(GofunLinkItem* _link_item)
@@ -246,4 +266,30 @@ void GofunURLComposer::setLinkItem(GofunLinkItem* _link_item)
 	link_item = _link_item;
 }
 
+GofunClipboardLineEdit::GofunClipboardLineEdit(QWidget* parent) : QLineEdit(parent)
+{
+}
+
+void GofunClipboardLineEdit::focusInEvent(QFocusEvent* e)
+{
+	QClipboard* clip_board = QApplication::clipboard();
+	QString cb_text = clip_board->text(QClipboard::Selection);
+	if(cb_text.isNull())
+		cb_text = clip_board->text(QClipboard::Clipboard);
+	if(!cb_text.isNull())
+	{
+		QUrl cb_url(cb_text);
+		if(cb_url.protocol() == "file" && !QFile::exists(cb_url.path()))
+			cb_url.setProtocol("http");
+		if(cb_url.isValid() && cb_url != text() && cb_url != last_ignored)
+		{
+			if(QMessageBox::information(this,tr("Found URL in clipboard"),cb_url,tr("Use it"),tr("Ignore it")) == 0)
+				setText(cb_url);
+			else	
+				last_ignored = cb_url;
+		}
+	}
+	
+	QLineEdit::focusInEvent(e);
+}
 

@@ -20,13 +20,24 @@
 
 #include <qurl.h>
 #include <qdialog.h>
+#include <qlineedit.h>
  
 #ifndef GOFUN_URL_COMPOSER
 #define GOFUN_URL_COMPOSER
 
-class QLineEdit;
 class QComboBox;
 class GofunLinkItem;
+
+class GofunClipboardLineEdit : public QLineEdit
+{
+	public:
+	GofunClipboardLineEdit(QWidget*);
+	
+	private:
+	void focusInEvent(QFocusEvent*);
+	
+	QUrl last_ignored;
+};
 
 class GofunURLComposer : public QDialog
 {
@@ -40,8 +51,9 @@ class GofunURLComposer : public QDialog
 	
 	private slots:
 	void test();
-	void fetchFromFileSystem();
+	void fetchFile();
 	void fetchWithWebBrowser();
+	void fetchDirectory();
 	
 	void otherSchemeChanged(const QString&);
 	void schemeChanged(const QString&);
@@ -63,7 +75,7 @@ class GofunURLComposer : public QDialog
 	QComboBox* scheme;
 	QLineEdit* other_scheme;
 	
-	QLineEdit* composed_url;
+	GofunClipboardLineEdit* composed_url;
 	
 	GofunLinkItem* link_item;
 };

@@ -66,6 +66,7 @@ public slots:
 private:
 	void save();
 	void apply();
+	void apply(GofunApplicationEntryData*);
 	bool inputValid();
 	
 	GofunApplicationEntryData* data();
@@ -87,6 +88,8 @@ private:
 	QCheckBox* user_chk;
 	QComboBox* user_combo;
 	QCheckBox* newx_chk;
+
+friend class GofunCommandEditor;
 };
 
 #endif

@@ -19,48 +19,49 @@
  ***************************************************************************/
 
 #include <qlineedit.h>
-#include <qtoolbutton.h>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <qlistview.h>
 #include <qpushbutton.h>
+#include <qlayout.h>
+#include <qheader.h>
+ 
+#include "gofun_executable_browser.h"
+#include "gofun_misc.h"
 
-#include "gofun_desktop_entry_settings_widget.h"
-
-GofunDesktopEntrySettingsWidget::GofunDesktopEntrySettingsWidget(QWidget* parent) : QFrame(parent)
-{
-	setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Fixed);
-
-	QGridLayout* grid = new QGridLayout(this,3,3);
-	grid->layout()->setMargin(3);
-	grid->layout()->setSpacing(1);
-	
-	caption = new QLineEdit(this);
-	comment = new QLineEdit(this);
-	icon_button = new QToolButton(this);
-	icon_button->setFixedWidth(32);
-	icon_button->setFixedHeight(32);
-	QToolButton* more = new QToolButton(Qt::RightArrow,this);
-	more->setFixedHeight(7);
-	
-	connect(more,SIGNAL(clicked()),this,SLOT(showMoreSettings()));
-	
-	grid->addWidget(icon_button,0,0);
-	grid->addWidget(new QLabel(tr("Caption"),this),0,1);
-	grid->addWidget(caption,0,2);
-	grid->addWidget(new QLabel(tr("Comment"),this),1,0);
-	grid->addMultiCellWidget(comment,1,1,1,2);
-	grid->addMultiCellWidget(more,2,2,0,2);
-}
-
-void GofunDesktopEntrySettingsWidget::showMoreSettings()
-{
-	GofunDesktopEntrySettingsMore more_dlg(this);
-	more_dlg.exec();
-}
-
-GofunDesktopEntrySettingsMore::GofunDesktopEntrySettingsMore(QWidget* parent) : QDialog(parent)
+GofunExecutableBrowser::GofunExecutableBrowser()
 {
 	QGridLayout* grid = new QGridLayout(this);
+	
+	QGridLayout* grid_browser = new QGridLayout();
+	
+	filter = new QLineEdit(this);
+	cmd_list = new QListView(this);
+	cmd_list->addColumn(tr("Commands"));
+	cmd_list->header()->hide();
+	
+	QStringList path = QStringList::split(':',getenv("PATH"));
+	path.sort();
+	
+	QString fill_cmd = "ls ";
+	for(QStringList::Iterator it = path.begin(); it != path.end();)
+	{
+		fill_cmd += (*it) + " ";
+		QStringList::Iterator o_it = it;
+		while((*o_it) == (*(++it)))
+		{}
+	}
+
+	fill_cmd += " -N";
+	QStringList cmds = QStringList::split('\n',GofunMisc::shell_call(fill_cmd));
+	for(QStringList::Iterator it = cmds.begin(); it != cmds.end(); ++it)
+		new QListViewItem(cmd_list,(*it));
+		
+	connect(filter,SIGNAL(textChanged(const QString&)),this,SLOT(updateList(const QString&)));
+	connect(cmd_list,SIGNAL(doubleClicked(QListViewItem*)),this,SLOT(updateFilter(QListViewItem*)));
+	connect(cmd_list,SIGNAL(doubleClicked(QListViewItem*)),this,SLOT(accept()));
+	connect(cmd_list,SIGNAL(clicked(QListViewItem*)),this,SLOT(updateFilter(QListViewItem*)));
+	
+	grid_browser->addWidget(filter,0,0);
+	grid_browser->addWidget(cmd_list,1,0);
 	
 	QPushButton* ok_button = new QPushButton(tr("Ok"),this);
 	QPushButton* cancel_button = new QPushButton(tr("Cancel"),this);
@@ -68,15 +69,23 @@ GofunDesktopEntrySettingsMore::GofunDesktopEntrySettingsMore(QWidget* parent) : 
 	connect(ok_button,SIGNAL(clicked()),this,SLOT(accept()));
 	connect(cancel_button,SIGNAL(clicked()),this,SLOT(reject()));
 	
-	QGridLayout* grid_more = new QGridLayout;
-	
-	generic_name = new QLineEdit(this);
-	
-	grid_more->addWidget(new QLabel(tr("Generic name"),this),0,0);
-	grid_more->addWidget(generic_name,0,1);
-	
-	grid->addMultiCellLayout(grid_more,0,0,0,1);
+	grid->addMultiCellLayout(grid_browser,0,0,0,1);
 	grid->addWidget(ok_button,1,0);
-	grid->addWidget(cancel_button,1,1);
+	grid->addWidget(cancel_button,1,1);	
+}
+
+QString GofunExecutableBrowser::getExecutable()
+{
+	return filter->text();
+}
+
+void GofunExecutableBrowser::updateFilter(QListViewItem*)
+{
+	
+}
+
+void GofunExecutableBrowser::updateList( const QString & )
+{
+	
 }
 

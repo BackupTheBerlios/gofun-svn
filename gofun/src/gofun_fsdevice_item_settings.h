@@ -36,6 +36,7 @@ private slots:
 	void dirDialog();
 	void deviceDialog();
 	void mountPointDirectoryDialog();
+	void unmountIconDialog();
 private:
 	void save();
 	void apply();

@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <qframe.h>
+#include <qdialog.h>
 
 class QToolButton;
 class QLineEdit; 
@@ -41,5 +42,15 @@ class GofunDesktopEntrySettingsWidget : public QFrame
 	public slots:
 	void showMoreSettings();
 };
+
+class GofunDesktopEntrySettingsMore : public QDialog
+{
+	public:
+	GofunDesktopEntrySettingsMore(QWidget*);
+	
+	private:
+	QLineEdit* generic_name;	
+};
+
 
 #endif
