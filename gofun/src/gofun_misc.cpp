@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <qpixmap.h>
+#include <qapplication.h>
  
 #include "gofun_misc.h" 
 
@@ -38,6 +39,11 @@ QString GofunMisc::shell_call(const QString& call)
 QString GofunMisc::ext_filestring(const QString& str)
 {
 	return shell_call("echo "+ str);
+}
+
+void GofunMisc::center_window(QWidget* w, int width, int height)
+{
+  w->setGeometry(QApplication::desktop()->screen()->width() / 2 - width/2, QApplication::desktop()->screen()->height() / 2 - height/2, width, height);
 }
 
 void GofunFileDialogPreview::previewUrl(const QUrl& u)

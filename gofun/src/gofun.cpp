@@ -62,10 +62,8 @@ int main(int argc, char *argv[])
 
   //Here the main widget is being created
   GofunWidget gofun_widget;
-  int height = 240;
-  int width = 360;
   //Move the widget to the middle of the screen
-  gofun_widget.setGeometry(QApplication::desktop()->screen()->width() / 2 - width/2, QApplication::desktop()->screen()->height() / 2 - height/2, width, height);
+  GofunMisc::center_window(&gofun_widget,365,240);
   //Set a caption and an icon
   gofun_widget.setCaption("GoFun");
   gofun_widget.setIcon(QPixmap("gofun.png"));

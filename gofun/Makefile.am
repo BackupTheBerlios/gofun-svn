@@ -3,3 +3,9 @@
 #AUTOMAKE_OPTIONS = foreign 1.4
 
 SUBDIRS = src data
+
+gofundocdir = $(datadir)/doc/gofun/
+gofundoc_DATA = COPYING AUTHORS
+
+
+

@@ -71,6 +71,8 @@ public slots:
 	void popupMenuSpace(int);
 	void openSettingsDlg();
 	void addCategory();
+	void showHelp();
+	void showAbout();
 private:
 	void costumizedStart(GofunItem*);
 	void addEntry();

@@ -20,6 +20,8 @@
 
 #include <qapplication.h>
 #include <qpopupmenu.h>
+#include <qtextbrowser.h>
+#include <qhttp.h>
  
 #include "gofun_iconview.h"
 #include "gofun_widget.h" 
@@ -31,6 +33,8 @@
 #include "gofun_item.h"
 #include "gofun_item_settings.h"
 #include "gofun_cat_settings.h"
+#include "gofun_help.h"
+#include "gofun_about.h"
 
 //The main constructor.
 GofunWidget::GofunWidget()
@@ -62,6 +66,11 @@ GofunWidget::GofunWidget()
     	config->setPixmap(QPixmap("config.png"));
 	connect(config, SIGNAL(clicked()),this, SLOT(openSettingsDlg()));
 	
+	//A helpful help-button
+	QToolButton* help = new QToolButton(this);
+	help->setPixmap(QPixmap("help.png"));
+	connect(help, SIGNAL(clicked()),this, SLOT(showHelp()));
+	
 	//Layout magig, basically we add the WidgetStack and a vertical box to the
 	//top horizontal box
 	hbox->addWidget(view_ws);
@@ -75,16 +84,19 @@ GofunWidget::GofunWidget()
 	hboxlabel->addWidget(gflabel);
 	
 	//Common it is ...
-	QLabel* gficon = new QLabel(this);
+	QToolButton* gficon = new QToolButton(this);
 	QPixmap* pixmap = new QPixmap("gofun.png");
 	gficon->setPixmap(*pixmap);
 	hboxlabel->addWidget(gficon);
+	
+	connect(gficon,SIGNAL(clicked()),this,SLOT(showAbout()));
 	
 	//The last steps in our layout magic
 	vbox->addWidget(cats_bg);
 	vbox->addLayout(hboxr);
 	hboxr->addWidget(quit);            
 	hboxr->addWidget(config);
+	hboxr->addWidget(help);
 	
 	//This toolbutton shall be used to add categories
     	QToolButton* cat_add = new QToolButton(Qt::DownArrow,cats_bg);
@@ -93,6 +105,20 @@ GofunWidget::GofunWidget()
 	
 	//Now load the whole GoFun-Data and care for its displaying
 	loadData();
+}
+
+void GofunWidget::showAbout()
+{
+	GofunAbout* ga = new GofunAbout();
+	GofunMisc::center_window(ga,540,380);
+	ga->show();
+}
+
+void GofunWidget::showHelp()
+{
+	GofunHelp* gh = new GofunHelp();
+	GofunMisc::center_window(gh,800,600);
+	gh->show();
 }
 
 //Load Desktop Entry data
@@ -116,6 +142,7 @@ void GofunWidget::loadData()
 		gicv->setResizeMode(QIconView::Adjust);
 		cat->setIconView(gicv);
 		connect(gicv, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
+		connect(gicv, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));		
 		connect(gicv, SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),this, SLOT(rightClickedItem(QIconViewItem*,const QPoint&)));
 		
 		//Now we iterate through the actual item-data to create new GofunItems

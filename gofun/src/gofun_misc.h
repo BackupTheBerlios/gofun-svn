@@ -21,6 +21,7 @@
 #include <qstring.h>
 #include <qfiledialog.h>
 #include <qlabel.h>
+#include <qwidget.h>
  
 #ifndef GOFUN_MISC
 #define GOFUN_MISC
@@ -30,6 +31,7 @@ struct GofunMisc
 {
 	static QString shell_call(const QString&);
 	static QString ext_filestring(const QString&);
+	static void center_window(QWidget*, int, int);
 };
 
 class GofunFileDialogPreview : public QLabel, public QFilePreview

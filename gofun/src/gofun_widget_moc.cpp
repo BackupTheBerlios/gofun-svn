@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GofunWidget meta object code from reading C++ file 'gofun_widget.h'
 **
-** Created: Sun Nov 14 19:17:38 2004
+** Created: Wed Nov 24 19:27:21 2004
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.3   edited Aug 5 16:40 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -80,6 +80,8 @@ QMetaObject* GofunWidget::staticMetaObject()
     static const QUMethod slot_5 = {"popupMenuSpace", 1, param_slot_5 };
     static const QUMethod slot_6 = {"openSettingsDlg", 0, 0 };
     static const QUMethod slot_7 = {"addCategory", 0, 0 };
+    static const QUMethod slot_8 = {"showHelp", 0, 0 };
+    static const QUMethod slot_9 = {"showAbout", 0, 0 };
     static const QMetaData slot_tbl[] = {
 	{ "changeCategory(int)", &slot_0, QMetaData::Public },
 	{ "executeItem(QIconViewItem*)", &slot_1, QMetaData::Public },
@@ -88,11 +90,13 @@ QMetaObject* GofunWidget::staticMetaObject()
 	{ "popupMenuItem(int)", &slot_4, QMetaData::Public },
 	{ "popupMenuSpace(int)", &slot_5, QMetaData::Public },
 	{ "openSettingsDlg()", &slot_6, QMetaData::Public },
-	{ "addCategory()", &slot_7, QMetaData::Public }
+	{ "addCategory()", &slot_7, QMetaData::Public },
+	{ "showHelp()", &slot_8, QMetaData::Public },
+	{ "showAbout()", &slot_9, QMetaData::Public }
     };
     metaObj = QMetaObject::new_metaobject(
 	"GofunWidget", parentObject,
-	slot_tbl, 8,
+	slot_tbl, 10,
 	0, 0,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -121,6 +125,8 @@ bool GofunWidget::qt_invoke( int _id, QUObject* _o )
     case 5: popupMenuSpace((int)static_QUType_int.get(_o+1)); break;
     case 6: openSettingsDlg(); break;
     case 7: addCategory(); break;
+    case 8: showHelp(); break;
+    case 9: showAbout(); break;
     default:
 	return QWidget::qt_invoke( _id, _o );
     }
