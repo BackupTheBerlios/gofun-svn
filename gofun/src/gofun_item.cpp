@@ -207,7 +207,8 @@ void GofunItem::addSplittedProcArgument(QProcess* proc,const QString& argument)
 QString GofunItem::saveProcArguments(QProcess* proc)
 {
 	QStringList arguments = proc->arguments();
-	QFile file(QString(QString(getenv("HOME")) + QString("/.gofun/tmp_proc_exec")));
+	QString tmp = QString(getenv("HOME")) + QString("/.gofun/tmp_proc_exec"); //You'll probably wonder "wtf is this tmp needed"? The answer is "cause gcc is mucking around without this ugly code on some systems"
+	QFile file(tmp);
 	if(file.open( IO_WriteOnly ))
 	{
 		QTextStream stream(&file);
