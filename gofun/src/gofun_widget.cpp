@@ -122,12 +122,29 @@ void GofunWidget::showHelp()
 	gh->show();
 }
 
+void GofunWidget::reloadData()
+{
+	unloadData();
+	loadData();
+}
+
+void GofunWidget::unloadData()
+{
+	for(int i = 1; i < cats_bg->count()+1 && cats_bg->count() > 1; ++i)
+	{
+		GofunCatButton* cb = dynamic_cast<GofunCatButton*>(cats_bg->find(i));
+		view_ws->removeWidget(cb->iconview);
+		cats_bg->remove(cb);
+		delete cb;
+	}
+}
+
 //Load Desktop Entry data
 void GofunWidget::loadData()
 {
 	//We get the data sorted nicely
 	std::vector<GofunCatData>* GfCatData = GofunDataLoader::getData();
-	    
+	
 	//Now we iterate to the category data
 	int i = 0;
 	for(std::vector<GofunCatData>::iterator it = GfCatData->begin(); it != GfCatData->end(); ++it, ++i)
@@ -137,11 +154,13 @@ void GofunWidget::loadData()
 		GofunCatButton* cat = new GofunCatButton((*it).Name, cats_bg);
 		cat->setData(&(*it));
 		cats_bg->insert(cat,i+1);
+		cat->show();
 		
 		//For this category we create an IconView
 		GofunIconView* gicv = new GofunIconView();
 		gicv->setResizeMode(QIconView::Adjust);
-		gicv->setPaletteBackgroundPixmap(QPixmap(cat->data->X_GoFun_Background));
+		if(!cat->data->X_GoFun_Background.isEmpty())
+			gicv->setPaletteBackgroundPixmap(QPixmap(cat->data->X_GoFun_Background));
 		cat->setIconView(gicv);
 		connect(gicv, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
 		connect(gicv, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));		

@@ -18,12 +18,14 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <qapplication.h>
 #include <qfile.h>
 #include <qlabel.h>
 #include <qsettings.h>
 #include <qdir.h>
 
 #include "gofun_settings.h" 
+#include "gofun_widget.h"
 
 GofunSettingsContainer* GofunSettingsContainer::_instance = NULL;
 
@@ -112,6 +114,8 @@ void GofunSettings::apply()
 	GSC::get()->terminal_cmd = terminal->text();
 	GSC::get()->filemanager_cmd = filemanager->text();
 	GSC::get()->gofun_dir = directory->text();
+	
+	dynamic_cast<GofunWidget*>(qApp->mainWidget())->reloadData();
 	/*if(item)
 	{
 		item->setCommand(command->text());

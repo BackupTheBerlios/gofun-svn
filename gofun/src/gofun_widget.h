@@ -63,6 +63,7 @@ class GofunWidget : public QWidget
 	Q_OBJECT
 public:
 	GofunWidget();
+	void reloadData();
 public slots:
 	void changeCategory(int);
 	void executeItem(QIconViewItem*,const QString& = QString::null);
