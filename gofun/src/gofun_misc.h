@@ -44,6 +44,7 @@ struct GofunMisc
 	static QPixmap get_icon(const QString&,int = 32,int = 32);
 	static void attach_window(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
 	static void applyColorSettings();
+	static bool makeDir(const QString&);
 	static QPalette system_palette;
 };
 

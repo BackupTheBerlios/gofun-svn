@@ -175,14 +175,9 @@ void GofunWidget::loadData()
 		//We create a fresh category button, fill it with data and insert it
 		//into the category-button-group
 		GofunCatButton* cat = new GofunCatButton((*it).Name, cats_bg);
+		insertCategory(cat);
 		cat->setData(&(*it));
-		cats_bg->insert(cat,i+1);
-		cat->show();
-		
-		connect(cat->iconview, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
-		connect(cat->iconview, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));		
-		connect(cat->iconview, SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),this, SLOT(rightClickedItem(QIconViewItem*,const QPoint&)));
-		
+			
 		//Now we iterate through the actual item-data to create new GofunItems
 		for(std::vector<GofunItemData>::iterator sit = (*it).ItemData->begin(); sit != (*it).ItemData->end(); ++sit)
 		{
@@ -193,15 +188,26 @@ void GofunWidget::loadData()
 			GofunItem* gi = new GofunItem(cat->iconview, (*sit).Name);
 			gi->setData(&(*sit));
 		}
-		//At last we add the new IconView to the WidgetStack
-		view_ws->addWidget(cat->iconview, i);
-		
+
 		//Set current_cat to the first category (FIXME: hack-alert?) 
 		if(i == 0)
 		{
 			current_cat = cat;
 		}
 	} 
+}
+
+void GofunWidget::insertCategory(GofunCatButton* cat)
+{
+
+	cats_bg->insert(cat,cats_bg->count());
+	cat->show();
+	connect(cat->iconview, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
+	connect(cat->iconview, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));	
+	connect(cat->iconview, SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),this, SLOT(rightClickedItem(QIconViewItem*,const QPoint&)));
+	
+	//At last we add the new IconView to the WidgetStack
+	view_ws->addWidget(cat->iconview, cats_bg->count()-1);
 }
 
 //Opens the settings dialog.

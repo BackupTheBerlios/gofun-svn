@@ -105,9 +105,12 @@ void GofunSettingsDlg::accept()
 		
 		hide();
 	}
+	
+	QDialog::accept();
 }
 
 void GofunSettingsDlg::reject()
 {
 	hide();
+	QDialog::reject();
 }

@@ -45,6 +45,11 @@ GofunSettingsContainer::GofunSettingsContainer()
 	
 	if(gofun_dir.isEmpty())
 		gofun_dir = QDir::homeDirPath() + "/.gofun/data";
+	QDir dir;
+	if(!dir.exists(gofun_dir))
+	{
+		GofunMisc::makeDir(gofun_dir);
+	}
 	
 	m_settings->beginGroup("commands");
 	terminal_cmd = m_settings->readEntry("terminal");

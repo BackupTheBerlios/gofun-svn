@@ -55,9 +55,12 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 	//For this category we create an IconView
 	iconview = new GofunIconView();
 	iconview->setResizeMode(QIconView::Adjust);
-	
+		
 	//Make sure it's being initialized from the start
 	m_data = new GofunCatData();
+	
+	if(dynamic_cast<GofunWidget*>(qApp->mainWidget()))
+		dynamic_cast<GofunWidget*>(qApp->mainWidget())->insertCategory(this);
 }
 
 GofunCatButton::~GofunCatButton()

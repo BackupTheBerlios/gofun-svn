@@ -79,6 +79,7 @@ public slots:
 	void showHelp();
 	void showAbout();
 	QVButtonGroup* categoryButtons() { return cats_bg; };
+	void insertCategory(GofunCatButton*);
 private:
 	void costumizedStart(GofunItem*);
 	void addEntry();

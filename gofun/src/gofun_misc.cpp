@@ -206,3 +206,11 @@ void GofunMisc::applyColorSettings()
   	qApp->setPalette(system_palette,true);
 }
 
+bool GofunMisc::makeDir(const QString& path)
+{
+	//HACK: this might be slightly hackish, but should work (tm)
+	QString call = "mkdir -p " + path;
+	shell_call(call);
+}
+
+
