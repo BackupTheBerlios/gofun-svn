@@ -62,6 +62,7 @@ public:
 	virtual GofunCatData* data() { return m_data; }
 	const QPixmap* confButtonPixmap() { return conf_button->pixmap(); }
 	void setupToolTip();
+	void runNewItemWizard();
 
 	GofunIconView* iconview;
 	

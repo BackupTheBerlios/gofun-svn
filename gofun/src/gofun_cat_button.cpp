@@ -89,13 +89,18 @@ void GofunCatButton::popupCBActivated(int id)
 			dynamic_cast<GofunWidget*>(qApp->mainWidget())->addEntry();
 			break;
 		case PID_ADD_ENTRY_WIZARD:
-			GofunItemWizard* wizard = new GofunItemWizard();
-			wizard->exec();
+			runNewItemWizard();
 			break;
 		case PID_SETTINGS:
 			catSettings();
 			break;
 	}
+}
+
+void GofunCatButton::runNewItemWizard()
+{
+	GofunItemWizard* wizard = new GofunItemWizard();
+	wizard->exec();
 }
 
 void GofunCatButton::save()
