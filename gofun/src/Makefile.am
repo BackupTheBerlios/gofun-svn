@@ -21,6 +21,9 @@ noinst_HEADERS = gofun_widget.h gofun_item.h gofun_item_settings.h \
 		gofun_desktop_object.h gofun_list_dialog.h gofun_command_editor.h gofun_item_wizard.h
 	
 gofun_MOC = gofun_widget_moc.cpp
+
+install-exec-local: gosu
+	chmod a=rx,u+s $(DESTDIR)$(bindir)/gosu
 	
 %.h: %.ui
 	$(UIC) $< -o $@
