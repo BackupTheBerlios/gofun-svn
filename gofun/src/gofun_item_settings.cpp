@@ -28,6 +28,8 @@
 #include "gofun_item.h"
 #include "gofun_cat_button.h"
 #include "gofun_data.h"
+#include "gofun_list_dialog.h"
+#include "gofun_command_editor.h"
  
 GofunItemSettings::GofunItemSettings()
 {	
@@ -38,6 +40,7 @@ GofunItemSettings::GofunItemSettings()
 		
 	caption = new QLineEdit(widget_main);
 	command = new QLineEdit(widget_main);
+	command_button = new QToolButton(widget_main);
 	directory = new QLineEdit(widget_main);
 	dir_button = new QToolButton(widget_main);
 	icon = new QLineEdit(widget_main);
@@ -47,6 +50,7 @@ GofunItemSettings::GofunItemSettings()
 	grid->addWidget(caption,0,1);
 	grid->addWidget(new QLabel(tr("Command"),widget_main),1,0);
 	grid->addWidget(command,1,1);
+	grid->addWidget(command_button,1,2);
 	grid->addWidget(new QLabel(tr("Directory"),widget_main),2,0);
 	grid->addWidget(directory,2,1);
 	grid->addWidget(dir_button,2,2);
@@ -56,6 +60,7 @@ GofunItemSettings::GofunItemSettings()
 	grid->addWidget(new QLabel(tr("Comment"),widget_main),4,0);
 	grid->addWidget(comment,4,1);
 	
+	connect(command_button, SIGNAL(clicked()),this, SLOT(commandEditor()));
 	connect(icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	connect(dir_button, SIGNAL(clicked()),this, SLOT(dirDialog()));
 	
@@ -84,12 +89,16 @@ GofunItemSettings::GofunItemSettings()
 	tabwidget->addTab(widget_par,tr("Parameter"));
 	
 	QGridLayout* grid_par = new QGridLayout(widget_par,3,3);
-	tb_par = new QTable(widget_par);
+	tb_par = new QTable(0,4,widget_par);
 	QHeader* tb_h = tb_par->horizontalHeader();
-	tb_h->addLabel("Flag");
-	tb_h->addLabel("Values");
-	tb_h->addLabel("Default");
-	tb_h->addLabel("Prompt");
+	tb_h->setLabel(0,"Flag");
+	tb_h->setLabel(1,"Values");
+	tb_h->setLabel(2,"Default");
+	tb_h->setLabel(3,"Prompt");
+	tb_par->adjustColumn(0);
+	tb_par->adjustColumn(1);
+	tb_par->adjustColumn(2);
+	tb_par->adjustColumn(3);
 	paradd = new QPushButton(tr("Add"), widget_par);
 	parrem = new QPushButton(tr("Remove"), widget_par);	
 	
@@ -127,15 +136,47 @@ GofunItemSettings::GofunItemSettings()
 	item = 0;
 }
 
+void GofunItemSettings::commandEditor()
+{
+	GofunCommandEditor* cmd_editor = new GofunCommandEditor();
+	cmd_editor->setCommand(command->text());
+	if(cmd_editor->exec() == QDialog::Accepted)
+		command->setText(cmd_editor->command());	
+}
+
 void GofunItemSettings::addParRow()
 {
 	tb_par->insertRows(tb_par->numRows());
 	tb_par->setItem(tb_par->numRows()-1,0,new QTableItem(tb_par,QTableItem::WhenCurrent));
 	QPushButton* par_valedit_bt = new QPushButton(tr("Edit"),tb_par);
+	connect(par_valedit_bt,SIGNAL(clicked()),this,SLOT(parValEditDialog()));
+	
 	tb_par->setCellWidget(tb_par->numRows()-1,1,par_valedit_bt);
 	QStringList* sl = new QStringList;
 	tb_par->setItem(tb_par->numRows()-1,2,new QComboTableItem(tb_par,*sl));
 	tb_par->setItem(tb_par->numRows()-1,3,new QCheckTableItem(tb_par,""));
+}
+
+void GofunItemSettings::parValEditDialog()
+{
+	/*QDialog* dialog = new QDialog;
+	QGridLayout* grid_dialog = new QGridLayout(dialog,2,2);
+	QListView* valList = new QListView(dialog);
+	QPushButton* addVal = new QPushButton(tr("Add"),dialog);
+	QPushButton* remVal = new QPushButton(tr("Remove"),dialog);
+	QPushButton* apply = new QPushButton(tr("Apply"),dialog);
+	QPushButton* cancel = new QPushButton(tr("Cancel"),dialog);
+	
+	
+	grid_dialog->addWidget(addVal,0,0);
+	grid_dialog->addWidget(remVal,0,1);
+	grid_dialog->addMultiCellWidget(valList,1,1,0,2);
+	grid_dialog->addWidget(apply,2,0);
+	grid_dialog->addWidget(cancel,2,1);
+		
+	dialog->exec();*/
+	GofunListDialog* dialog = new GofunListDialog();
+	dialog->exec();
 }
 
 void GofunItemSettings::remParRow()

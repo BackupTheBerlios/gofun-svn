@@ -133,5 +133,5 @@ void GofunCatSettings::load(GofunCatButton* _item)
 	background->setText(item->data()->X_GoFun_Background);
 	background_button->setPixmap(QPixmap(item->data()->X_GoFun_Background));
 	icon->setText(item->data()->Icon);
-	//icon_button->setPixmap(item->conf_button->pixmap()?*item->conf_button->pixmap():0); ///FIXME
+	icon_button->setPixmap(item->confButtonPixmap()?*item->confButtonPixmap():0);
 }

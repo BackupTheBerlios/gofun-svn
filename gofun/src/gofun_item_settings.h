@@ -52,12 +52,15 @@ public slots:
 	void userChkToggled(bool);
 	void addParRow();
 	void remParRow();
+	void parValEditDialog();
+	void commandEditor();
 private:
 	virtual void save();
 	virtual void apply();
 	bool inputValid();
 
 	QLineEdit* command;
+	QToolButton* command_button;
 	QLineEdit* caption;
 	QLineEdit* directory;
 	QToolButton* dir_button;
