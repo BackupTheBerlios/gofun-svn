@@ -42,6 +42,9 @@ private:
 	bool inputValid();
 
 	GofunLinkItemData* data();
+	
+	QLineEdit* url;
+	QToolButton* url_button;
 };
 
 #endif

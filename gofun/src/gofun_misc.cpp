@@ -208,4 +208,16 @@ bool GofunMisc::makeDir(const QString& path)
 	shell_call(call);
 }
 
+bool GofunMisc::stringToBool(const QString& str)
+{
+	return (str == "true");
+}
+
+QString GofunMisc::boolToString(bool b)
+{
+	if(b)
+		return "true";
+	else
+		return "false";
+}
 

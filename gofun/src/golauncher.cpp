@@ -62,6 +62,9 @@ int main(int argc, char *argv[])
 		xservnum = xservnum.simplifyWhiteSpace();
 		proc->addArgument(":"+xservnum);
 		proc->start();
+		
+		sleep(2000);
+			
 		return 0;
 	}
 	

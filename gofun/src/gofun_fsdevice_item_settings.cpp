@@ -32,7 +32,7 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 	QWidget* widget_main = new QWidget(this);	
 	QGridLayout* grid = new QGridLayout(widget_main,5,3);
 	
-	tabwidget->addTab(widget_main,"Main");
+	tabwidget->addTab(widget_main,tr("Main"));
 		
 	caption = new QLineEdit(widget_main);
 	icon = new QLineEdit(widget_main);
@@ -40,16 +40,27 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 	unmount_icon = new QLineEdit(widget_main);
 	unmount_icon_button = new QToolButton(widget_main);
 	comment = new QLineEdit(widget_main);
+	device = new QComboBox(true,widget_main);
 	grid->addWidget(new QLabel(tr("Caption"),widget_main),0,0);
 	grid->addWidget(caption,0,1);
-	grid->addWidget(new QLabel(tr("Icon"),widget_main),1,0);
-	grid->addWidget(icon,1,1);
-	grid->addWidget(icon_button,1,2);
-	grid->addWidget(new QLabel(tr("UnmountIcon"),widget_main),2,0);
-	grid->addWidget(unmount_icon,2,1);
-	grid->addWidget(unmount_icon_button,2,2);
+	grid->addWidget(new QLabel(tr("Device"),widget_main),1,0);
+	grid->addWidget(device,1,1);
+	grid->addWidget(new QLabel(tr("Icon"),widget_main),2,0);
+	grid->addWidget(icon,2,1);
+	grid->addWidget(icon_button,2,2);
+	grid->addWidget(new QLabel(tr("UnmountIcon"),widget_main),3,0);
+	grid->addWidget(unmount_icon,3,1);
+	grid->addWidget(unmount_icon_button,3,2);
 	grid->addWidget(new QLabel(tr("Comment"),widget_main),4,0);
 	grid->addWidget(comment,4,1);
+	
+	QWidget* widget_advanced = new QWidget(this);
+	QGridLayout* grid_adv = new QGridLayout(widget_advanced,3,3);
+	
+	tabwidget->addTab(widget_advanced,tr("Advanced"));
+	
+	readonly_chk = new QCheckBox(tr("Use filesystem in ReadOnly mode"),widget_advanced);
+	grid_adv->addMultiCellWidget(readonly_chk,0,0,0,2);
 	
 	connect(icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	
@@ -62,6 +73,8 @@ void GofunFSDeviceItemSettings::load(GofunFSDeviceItem* _item)
 	
 	unmount_icon->setText(data()->UnmountIcon);
 	unmount_icon_button->setPixmap(GofunMisc::get_icon(data()->UnmountIcon,32,32));
+	
+	readonly_chk->setChecked(GofunMisc::stringToBool(data()->ReadOnly));
 }
 
 void GofunFSDeviceItemSettings::dirDialog()
@@ -79,6 +92,9 @@ void GofunFSDeviceItemSettings::apply()
 		item = new GofunFSDeviceItem(category->iconview,QString(""));
 		
 	GofunItemSettings::apply();
+	
+	
+	data()->ReadOnly = GofunMisc::boolToString(readonly_chk->isChecked());
 }
 
 bool GofunFSDeviceItemSettings::inputValid()

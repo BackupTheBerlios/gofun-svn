@@ -54,6 +54,7 @@ GofunSettingsContainer::GofunSettingsContainer()
 	m_settings->beginGroup("commands");
 	terminal_cmd = m_settings->readEntry("terminal");
 	filemanager_cmd = m_settings->readEntry("filemanager");
+	browser_cmd = m_settings->readEntry("browser");
 	m_settings->endGroup();
 		
 	if(terminal_cmd.isEmpty())
@@ -88,6 +89,7 @@ GofunSettingsContainer::~GofunSettingsContainer()
 {
 	m_settings->writeEntry("/commands/terminal",terminal_cmd);
 	m_settings->writeEntry("/commands/filemanager",filemanager_cmd);
+	m_settings->writeEntry("/commands/browser",browser_cmd);
 	m_settings->writeEntry("/general/datadir",gofun_dir);
 	m_settings->writeEntry("/lookandfeel/colorsource",color_source);
 	m_settings->writeEntry("/lookandfeel/costumcolor",costum_color);
@@ -127,12 +129,15 @@ GofunSettings::GofunSettings()
 	terminal = new QLineEdit(widget_general);
 	directory = new QLineEdit(widget_general);
 	filemanager = new QLineEdit(widget_general);
+	browser = new QLineEdit(widget_general);
 	grid_general->addWidget(new QLabel(tr("Terminal command"),widget_general),0,0);
 	grid_general->addWidget(terminal,0,1);
 	grid_general->addWidget(new QLabel(tr("Directory"),widget_general),1,0);
 	grid_general->addWidget(directory,1,1);
 	grid_general->addWidget(new QLabel(tr("Filemanager"),widget_general),2,0);
 	grid_general->addWidget(filemanager,2,1);
+	grid_general->addWidget(new QLabel(tr("Browser"),widget_general),3,0);
+	grid_general->addWidget(browser,3,1);
 	
 	QWidget* widget_laf = new QWidget(this);
 	QGridLayout* grid_laf = new QGridLayout(widget_laf,6,2);
@@ -179,12 +184,13 @@ void GofunSettings::apply()
 {
 	GSC::get()->terminal_cmd = terminal->text();
 	GSC::get()->filemanager_cmd = filemanager->text();
+	GSC::get()->browser_cmd = browser->text();
 	GSC::get()->gofun_dir = directory->text();
 	
 	col_costum->isChecked() ? GSC::get()->color_source = "costum" : 0;
 	col_random->isChecked() ? GSC::get()->color_source = "random" : 0;
 	col_system->isChecked() ? GSC::get()->color_source = "system" : 0;
-	save_main_geom->isChecked() ? GSC::get()->save_main_geom = "true" : GSC::get()->save_main_geom = "false";
+	GSC::get()->save_main_geom = GofunMisc::boolToString(save_main_geom->isChecked());
 	
 	GSC::get()->costum_color = costum_col_bt->paletteBackgroundColor().name();
 	
@@ -215,6 +221,7 @@ void GofunSettings::load()
 	file = item->file;*/
 	terminal->setText(GSC::get()->terminal_cmd);
 	filemanager->setText(GSC::get()->filemanager_cmd);
+	browser->setText(GSC::get()->browser_cmd);
 	directory->setText(GSC::get()->gofun_dir);
 	
 	if(GSC::get()->color_source == "random")
@@ -226,10 +233,7 @@ void GofunSettings::load()
 		
 	costum_col_bt->setPaletteBackgroundColor(GSC::get()->costum_color);
 	
-	if(GSC::get()->save_main_geom == "true")
-		save_main_geom->setChecked(true);
-	else
-		save_main_geom->setChecked(false);
+	save_main_geom->setChecked(GofunMisc::stringToBool(GSC::get()->save_main_geom));
 }
 
 void GofunSettings::costumColorDialog()

@@ -64,6 +64,19 @@ QString GofunDataLoader::get_value(QString line)
 	return line;
 }
 
+QString GofunDataLoader::get_locale(const QString& line)
+{
+	QString tmp = get_key(line);
+	if(tmp.find("[") != -1)
+	{
+		tmp.remove(0,tmp.find("[")+1);
+		tmp.remove(tmp.find("]"),1);
+		return tmp;
+	}
+	else
+		return "";
+}
+
 QString GofunDataLoader::get_key(QString line)
 {
 	line.remove(line.find("="),line.length());
@@ -113,6 +126,16 @@ bool GofunDataLoader::parse_line(const QString& key, const QString& line, std::v
 	return false;
 }
 
+bool GofunDataLoader::parse_line(const QString& key, const QString& line, GofunLocaleString& target)
+{
+	if(line.find(key) == 0)
+	{
+		target.add(get_locale(line),get_value(line));
+		return true;
+	}
+	return false;
+}
+
 GofunCatData* GofunDataLoader::parse_cat_info(const QString& file)
 {
 	QStringList catdata = load_file_data(file);
@@ -138,6 +161,7 @@ GofunCatData* GofunDataLoader::parse_cat_info(const QString& file)
 bool GofunDataLoader::parse_desktop_file_line(GofunDesktopEntryData* ddata, const QString& line)
 {
 	if(parse_line("Name",line,ddata->Name)
+	|| parse_line("GenericName",line,ddata->GenericName)
 	|| parse_line("Comment",line,ddata->Comment)
 	|| parse_line("Icon",line,ddata->Icon)
 	|| parse_line("Version",line,ddata->Version)

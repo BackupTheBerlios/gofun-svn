@@ -24,6 +24,7 @@
 #include "gofun_link_item.h"
 #include "gofun_link_item_settings.h"
 #include "gofun_misc.h"
+#include "gofun_settings.h"
 
 GofunLinkItem::GofunLinkItem(GofunIconView* iconview, const QString& string) : GofunItem(iconview,string)
 {
@@ -92,7 +93,7 @@ void GofunLinkItem::save()
 
 void GofunLinkItem::open()
 {
-	QProcess proc(QString("dillo"));
+	QProcess proc(GSC::get()->browser_cmd);
 	if(!data()->URL.isEmpty())
 		proc.addArgument((GofunMisc::ext_filestring(data()->URL)).simplifyWhiteSpace());
 	else

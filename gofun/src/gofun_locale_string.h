@@ -18,62 +18,43 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qstring.h>
-#include <qfiledialog.h>
-#include <qlabel.h>
-#include <qwidget.h>
-#include <qtoolbutton.h>
+#include <map>
  
-#ifndef GOFUN_MISC
-#define GOFUN_MISC
+#include <qstring.h>
+ 
+#ifndef GOFUN_LOCALE_STRING
+#define GOFUN_LOCALE_STRING
 
-enum Side {
-	D_Left,
-	D_Right,
-	D_Above,
-	D_Under,
-	D_None
-};
-
-///Mixed methods needed in GoFun
-struct GofunMisc
+struct GofunLocale
 {
-	static QString shell_call(const QString&);
-	static QString ext_filestring(const QString&);
-	static void center_window(QWidget*, int, int);
-	static QString fileDialogGetImage(const QString& start_dir,const QString& caption, const QString& filter_desc);
-	static QPixmap get_icon(const QString&,int = 32,int = 32);
-	static void attach_window(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
-	static bool makeDir(const QString&);
-	static QString shellify_path(const QString&);
-	static bool stringToBool(const QString&);
-	static QString boolToString(bool);
+	GofunLocale();
+	GofunLocale(const QString&);
+	void setLocale(const QString&);
+	operator const QString();
+
+	QString lang;
+	QString country;
+	QString modifier;
 };
 
-class GofunFileDialogPreview : public QLabel, public QFilePreview
+class GofunLocaleString : public QString
 {
 	public:
-        GofunFileDialogPreview( QWidget *parent=0 ) : QLabel( parent ) {}
-
-        void previewUrl( const QUrl &u );
-};
-
-class GofunFileIconProvider : public QFileIconProvider
-{
-	public:
-	virtual const QPixmap * pixmap ( const QFileInfo & info );
-};
-
-class GofunLineEdit : public QWidget
-{
-	public:
-	GofunLineEdit();
+	GofunLocaleString();
+	GofunLocaleString(const QString&);
+	void add(const QString&,const QString&);
+	QString desktopEntryPrint(const QString&);
+	
+	GofunLocaleString& operator=(const QString&);
 	
 	private:
-	QLineEdit* lineedit;
-	QToolButton* button;
+	bool isBetterMatch(const GofunLocale&);
+	
+	std::map<QString,QString> locale_strings;
+	std::map<QString,QString>::iterator best_match;
+	
+	static GofunLocale system_locale;
+	static GofunLocale best_match_locale;
 };
 
 #endif
-
-

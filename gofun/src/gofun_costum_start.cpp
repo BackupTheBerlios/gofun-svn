@@ -25,6 +25,7 @@
 #include "gofun_costum_start.h"
 #include "gofun_application_item.h"
 #include "gofun_data.h"
+#include "gofun_misc.h"
 
 GofunCostumStart::GofunCostumStart()
 {
@@ -76,9 +77,7 @@ void GofunCostumStart::load(GofunApplicationItem* _item)
 	{
 		setIcon(QPixmap(item->data()->Icon));
 	}
-	if(item->data()->Terminal == "true")
-	{
-		terminal->setChecked(true);
-	}
+	terminal->setChecked(GofunMisc::stringToBool(item->data()->Terminal));
+	newxserver->setChecked(GofunMisc::stringToBool(item->data()->X_GoFun_NewX));
 }
 

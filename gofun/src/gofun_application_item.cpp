@@ -81,8 +81,8 @@ void GofunApplicationItem::save()
 				stream << "X-GoFun-Parameter-Flag-" << (*it).first << "=" << (*it).second.Flag << "\n";
 				stream << "X-GoFun-Parameter-Values-" << (*it).first << "=" << (*it).second.Values.join(";") << "\n";
 				stream << "X-GoFun-Parameter-Default-" << (*it).first << "=" << (*it).second.Default_Value << "\n";
-				stream << "X-GoFun-Parameter-Comment-" << (*it).first << "=" << (*it).second.Comment << "\n";
 				stream << "X-GoFun-Parameter-Prompt-" << (*it).first << "=" << (*it).second.Prompt << "\n";
+				stream << (*it).second.Comment.desktopEntryPrint("X-GoFun-Parameter-Comment-" + QString::number((*it).first));
 			}
 		}
 		stream << data()->Unknownkeys.join("\n") << "\n";

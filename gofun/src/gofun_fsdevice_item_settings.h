@@ -44,6 +44,8 @@ private:
 	
 	QLineEdit* unmount_icon;
 	QToolButton* unmount_icon_button;
+	QCheckBox* readonly_chk;
+	QComboBox* device;
 };
 
 #endif

@@ -385,7 +385,10 @@ void GofunApplicationItemSettings::load(GofunApplicationItem* _item)
 		user_chk->setChecked(true);
 		user_combo->setCurrentText(data()->X_GoFun_User);
 	}
-	newx_chk->setChecked(GofunMisc::stringToBool(data()->X_GoFun_NewX));
+	if(data()->X_GoFun_NewX == "true")
+	{
+		newx_chk->setChecked(true);
+	}
 	if(!data()->X_GoFun_Parameter.empty())
 	{
 		for(std::map<int,GofunParameterData>::iterator it = data()->X_GoFun_Parameter.begin(); it != data()->X_GoFun_Parameter.end(); ++it)
@@ -400,7 +403,7 @@ void GofunApplicationItemSettings::load(GofunApplicationItem* _item)
 			tb_par->setItem(tb_par->numRows()-1,2,new QComboTableItem(tb_par,*sl));
 			dynamic_cast<QComboTableItem*>(tb_par->item(tb_par->numRows()-1,2))->setCurrentItem((*it).second.Default_Value);
 			tb_par->setItem(tb_par->numRows()-1,3,new QCheckTableItem(tb_par,""));
-			dynamic_cast<QCheckTableItem*>(tb_par->item(tb_par->numRows()-1,3))->setChecked(GofunMisc::stringToBool((*it).second.Prompt));
+			dynamic_cast<QCheckTableItem*>(tb_par->item(tb_par->numRows()-1,3))->setChecked((*it).second.Prompt == "true" ? true : false);
 		}
 	}
 }

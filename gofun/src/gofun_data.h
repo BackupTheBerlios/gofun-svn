@@ -24,6 +24,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
+#include "gofun_locale_string.h"
+
 class QWidget;
 class GofunDesktopObject;
 
@@ -34,8 +36,9 @@ class GofunDesktopObject;
 struct GofunDesktopEntryData
 {
 	QString File;
-	QString Name;
-	QString Comment;
+	GofunLocaleString Name;
+	GofunLocaleString GenericName;
+	GofunLocaleString Comment;
 	QString Icon;
 	QString Encoding;
 	QString Version;
@@ -53,7 +56,7 @@ struct GofunParameterData
 	QStringList Values;
 	QString Default_Value;
 	QString Prompt;
-	QString Comment;
+	GofunLocaleString Comment;
 };
 
 ///Data-type for Desktop Entries, that can be executed
@@ -132,8 +135,10 @@ private:
 	static QStringList load_file_data(const QString& _file);
 	static QString get_value(QString line);
 	static QString get_key(QString line);
+	static QString get_locale(const QString& locale);
 	static bool parse_line(const QString&,const QString&,QString&);
 	static bool parse_line(const QString&,const QString&,std::vector<QString>&);
+	static bool parse_line(const QString&,const QString&,GofunLocaleString&);
 };
 
 struct GofunSettingsData

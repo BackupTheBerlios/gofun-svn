@@ -39,6 +39,7 @@ public:
 	
 	QString terminal_cmd;
 	QString filemanager_cmd;
+	QString browser_cmd;
 	QString gofun_dir;
 	QString color_source;
 	QString costum_color;
@@ -74,6 +75,7 @@ private:
 	QLineEdit* terminal;
 	QLineEdit* directory;
 	QLineEdit* filemanager;
+	QLineEdit* browser;
 	QRadioButton* col_system;
 	QRadioButton* col_random;
 	QRadioButton* col_costum;

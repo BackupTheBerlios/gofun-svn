@@ -33,6 +33,7 @@
 #include "gofun_widget.h"
 #include "gofun_misc.h"
 #include "gofun_settings.h"
+#include "gofun_locale_string.h"
 
 using namespace std;
 
@@ -55,27 +56,13 @@ int main(int argc, char *argv[])
 	
   //Random isn't random by default  
   srand (time (0));
-
+  
   //This is the app's core
   QApplication app(argc, argv);
   GofunWidget::system_palette = qApp->palette();
   
   //make GoFun look colorful and different every startup
-  GofunWidget::applyColorSettings();
-  
-  QString locale = getenv("LC_MESSAGES");
-  
-  qDebug(locale);
-  if(locale.find('_') != -1)
-  {
-  	qDebug(QStringList::split("_",locale)[0]);
-	qDebug(QStringList::split("_",locale)[1]);
-  }
-  if(locale.find('@') != -1)
-  {
-  	qDebug(QStringList::split("@",locale)[0]);
-	qDebug(QStringList::split("@",locale)[1]);
-  }
+  GofunWidget::applyColorSettings();  
   
   //Here the main widget is being created
   GofunWidget gofun_widget;

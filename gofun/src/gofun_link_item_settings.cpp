@@ -30,19 +30,24 @@ GofunLinkItemSettings::GofunLinkItemSettings()
 	QWidget* widget_main = new QWidget(this);	
 	QGridLayout* grid = new QGridLayout(widget_main,5,3);
 	
-	tabwidget->addTab(widget_main,"Main");
+	tabwidget->addTab(widget_main,tr("Main"));
 		
 	caption = new QLineEdit(widget_main);
+	url = new QLineEdit(widget_main);
+	url_button = new QToolButton(widget_main);
 	icon = new QLineEdit(widget_main);
 	icon_button = new QToolButton(widget_main);
 	comment = new QLineEdit(widget_main);
 	grid->addWidget(new QLabel(tr("Caption"),widget_main),0,0);
 	grid->addWidget(caption,0,1);
-	grid->addWidget(new QLabel(tr("Icon"),widget_main),3,0);
-	grid->addWidget(icon,3,1);
-	grid->addWidget(icon_button,3,2);
-	grid->addWidget(new QLabel(tr("Comment"),widget_main),4,0);
-	grid->addWidget(comment,4,1);
+	grid->addWidget(new QLabel(tr("URL"),widget_main),1,0);
+	grid->addWidget(url,1,1);
+	grid->addWidget(url_button,1,2);
+	grid->addWidget(new QLabel(tr("Icon"),widget_main),2,0);
+	grid->addWidget(icon,2,1);
+	grid->addWidget(icon_button,2,2);
+	grid->addWidget(new QLabel(tr("Comment"),widget_main),3,0);
+	grid->addWidget(comment,3,1);
 	
 	connect(icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	
@@ -52,6 +57,8 @@ GofunLinkItemSettings::GofunLinkItemSettings()
 void GofunLinkItemSettings::load(GofunLinkItem* _item)
 {
 	GofunItemSettings::load(_item);
+	
+	url->setText(data()->URL);
 }
 
 void GofunLinkItemSettings::dirDialog()
@@ -69,6 +76,8 @@ void GofunLinkItemSettings::apply()
 		item = new GofunLinkItem(category->iconview,QString(""));
 		
 	GofunItemSettings::apply();
+	
+	data()->URL = url->text();
 }
 
 bool GofunLinkItemSettings::inputValid()
