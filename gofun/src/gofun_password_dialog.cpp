@@ -22,6 +22,7 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
+#include <qtimer.h>
 
 #include "gofun_password_dialog.h"
 
@@ -67,4 +68,17 @@ QString GofunPasswordDialog::getPassword()
 {
 	return password->text();
 }
+
+void GofunPasswordDialog::delay()
+{
+	password->setEnabled(false);
+	QTimer::singleShot(2000,this,SLOT(delayEnd()));
+}
+
+void GofunPasswordDialog::delayEnd()
+{
+	password->setEnabled(true);
+}
+
+
 

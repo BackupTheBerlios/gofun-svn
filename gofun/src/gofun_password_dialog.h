@@ -34,6 +34,10 @@ class GofunPasswordDialog : public QDialog
 	GofunPasswordDialog(WFlags f = 0);
 	void setUser(const QString&);
 	QString getPassword();	
+	void delay();
+	
+	private slots:
+	void delayEnd();
 	
 	private:
 	QLabel* description;

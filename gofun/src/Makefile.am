@@ -14,7 +14,7 @@ gofun_SOURCES = gofun.cpp gofun_cat_settings.cpp gofun_cat_button.cpp \
 										gofun_application_item_settings.cpp gofun_icon_dialog.cpp gofun_directory_browser.cpp \
 								gofun_fsdevice_item.cpp gofun_link_item.cpp gofun_fsdevice_item_settings.cpp \
 							gofun_link_item_settings.cpp gofun_locale_string.cpp gofun_desktop_entry_settings_widget.cpp \
-				gofun_url_composer.cpp gofun_parameter_edit.cpp gofun_list_popup.cpp
+				gofun_url_composer.cpp gofun_parameter_edit.cpp gofun_list_popup.cpp gofun_password_dialog.cpp
 # set the include path found by configure
 INCLUDES = -I$(top_srcdir)/include $(QT_INCLUDES) $(all_includes)
 
@@ -45,7 +45,7 @@ install-exec-local: gosu
 	$(UIC) -impl $^ -o $@
 %_moc.cpp: %.h
 	$(MOC) -o $@ $<
-gosu_SOURCES = gosu.cpp gofun_password_dialog.cpp gofun_password_dialog_moc.cpp
+gosu_SOURCES = gosu.cpp gofun_password_dialog_moc.cpp gofun_password_dialog.cpp
 gosu_LDADD = $(QT_LIB) $(QT_LDFLAGS) -lcrypt
 golauncher_SOURCES = golauncher.cpp gofun_misc.cpp
 golauncher_LDADD = $(QT_LDFLAGS) $(QT_LIB)

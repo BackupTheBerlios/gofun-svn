@@ -208,9 +208,12 @@ correct_password (const struct passwd *pw)
    GofunPasswordDialog* password_dialog = new GofunPasswordDialog(Qt::WType_Dialog);
    password_dialog->setUser(pw->pw_name);
    
-   while(true) //TODO: Clean this whole stuff and finish GofunPasswordDialog
+   int i;
+   for(i = 0; i < 5; ++i) //TODO: Clean this whole stuff and finish GofunPasswordDialog
    {
     QString unenqt;
+    if(i > 0)
+    	password_dialog->delay();
     if(password_dialog->exec() == QDialog::Accepted) 
     	unenqt = password_dialog->getPassword();
     else
@@ -235,6 +238,7 @@ correct_password (const struct passwd *pw)
   if(strcmp(encrypted, correct) == 0)
   	return true;
   }
+  	return false;
 }
 
 /* Update `environ' for the new shell based on PW, with SHELL being
