@@ -207,7 +207,7 @@ void GofunItem::addSplittedProcArgument(QProcess* proc,const QString& argument)
 QString GofunItem::saveProcArguments(QProcess* proc)
 {
 	QStringList arguments = proc->arguments();
-	QFile file( QString(getenv("HOME")) + QString("/.gofun/tmp_proc_exec"));
+	QFile file(QString(QString(getenv("HOME")) + QString("/.gofun/tmp_proc_exec")));
 	if(file.open( IO_WriteOnly ))
 	{
 		QTextStream stream(&file);
