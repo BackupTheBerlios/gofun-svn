@@ -62,10 +62,26 @@ GofunSettingsContainer::GofunSettingsContainer()
 	m_settings->beginGroup("lookandfeel");
 	color_source = m_settings->readEntry("colorsource");
 	costum_color = m_settings->readEntry("costumcolor");
+	main_width = m_settings->readEntry("main_width");
+	main_height = m_settings->readEntry("main_height");
+	main_x = m_settings->readEntry("main_x");
+	main_y = m_settings->readEntry("main_y");
+	save_main_geom = m_settings->readEntry("save_main_geom");
 	m_settings->endGroup();
 	
 	if(color_source.isEmpty())
 		color_source = "random";
+		
+	if(main_width.isEmpty())
+		main_width = "365";
+	if(main_height.isEmpty())
+		main_height = "240";
+	if(main_x.isEmpty())
+		main_x = "-1";
+	if(main_y.isEmpty())
+		main_y = "-1";
+	if(save_main_geom.isEmpty())
+		save_main_geom = "true";		
 }
 
 GofunSettingsContainer::~GofunSettingsContainer()
@@ -75,6 +91,27 @@ GofunSettingsContainer::~GofunSettingsContainer()
 	m_settings->writeEntry("/general/datadir",gofun_dir);
 	m_settings->writeEntry("/lookandfeel/colorsource",color_source);
 	m_settings->writeEntry("/lookandfeel/costumcolor",costum_color);
+	
+	if(save_main_geom == "true")
+	{
+		main_width = QString::number(qApp->mainWidget()->width());
+		main_height = QString::number(qApp->mainWidget()->height());
+		main_x = QString::number(qApp->mainWidget()->x());
+		main_y = QString::number(qApp->mainWidget()->y());
+	}
+	else
+	{
+		main_width = "";
+		main_height = "";
+		main_x = "";
+		main_y = "";
+	}
+	
+	m_settings->writeEntry("/lookandfeel/main_width",main_width);
+	m_settings->writeEntry("/lookandfeel/main_height",main_height);
+	m_settings->writeEntry("/lookandfeel/main_x",main_x);
+	m_settings->writeEntry("/lookandfeel/main_y",main_y);
+	m_settings->writeEntry("/lookandfeel/save_main_geom",save_main_geom);
 	m_settings->endGroup();
 	delete m_settings;
 }
@@ -84,7 +121,7 @@ GofunSettings::GofunSettings()
 	setCaption(tr("GoFun Settings"));
 	
 	QWidget* widget_general = new QWidget(this);
-	QGridLayout* grid_general = new QGridLayout(widget_general,6,2);
+	QGridLayout* grid_general = new QGridLayout(widget_general,3,2);
 	tabwidget->addTab(widget_general,tr("General"));
 	
 	terminal = new QLineEdit(widget_general);
@@ -106,11 +143,14 @@ GofunSettings::GofunSettings()
 	col_random = new QRadioButton(tr("Random"),col_group);
 	col_costum = new QRadioButton(tr("Costum"),col_group);
 	costum_col_bt = new QToolButton(widget_laf);
+	save_main_geom = new QCheckBox(tr("Save main window geometry"),widget_laf);
+	
 	connect(costum_col_bt,SIGNAL(clicked()),this,SLOT(costumColorDialog()));
 		
 	grid_laf->addMultiCellWidget(col_group,0,0,0,1);
 	grid_laf->addWidget(new QLabel(tr("Costum color"),widget_laf),1,0);
 	grid_laf->addWidget(costum_col_bt,1,1);
+	grid_laf->addMultiCellWidget(save_main_geom,2,2,0,1);
 }
 
 void GofunSettings::save()
@@ -144,6 +184,7 @@ void GofunSettings::apply()
 	col_costum->isChecked() ? GSC::get()->color_source = "costum" : 0;
 	col_random->isChecked() ? GSC::get()->color_source = "random" : 0;
 	col_system->isChecked() ? GSC::get()->color_source = "system" : 0;
+	save_main_geom->isChecked() ? GSC::get()->save_main_geom = "true" : GSC::get()->save_main_geom = "false";
 	
 	GSC::get()->costum_color = costum_col_bt->paletteBackgroundColor().name();
 	
@@ -184,6 +225,11 @@ void GofunSettings::load()
 		col_costum->setChecked(true);
 		
 	costum_col_bt->setPaletteBackgroundColor(GSC::get()->costum_color);
+	
+	if(GSC::get()->save_main_geom == "true")
+		save_main_geom->setChecked(true);
+	else
+		save_main_geom->setChecked(false);
 }
 
 void GofunSettings::costumColorDialog()

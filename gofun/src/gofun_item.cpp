@@ -148,7 +148,10 @@ void GofunItem::executeCommand(ExecuteOption* option)
 	if((!option->terminal.isEmpty()) || (data()->Terminal == "true"))
 	{ 
 		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
-		exec =  exec + ";echo -e \"\\E[${2:-44};${3:-7}m\n" + QObject::tr("End of execution has been reached. Press any key to remove this terminal\"; read evar");
+		exec += ";echo -e \"\\E[${2:-44};${3:-7}m\n" + QObject::tr("End of execution has been reached. Press any key to remove this terminal\";");
+		if(!(!option->xinit.isEmpty()) || (data()->X_GoFun_NewX == "true")) //FIXME
+			exec += "read evar";
+		
 	}
 	if((!option->xinit.isEmpty()) || (data()->X_GoFun_NewX == "true"))
 	{
@@ -156,8 +159,10 @@ void GofunItem::executeCommand(ExecuteOption* option)
 	}
 	if(data()->Path.isEmpty())
 	{
+		proc.setWorkingDirectory(QDir::homeDirPath());
 		proc.addArgument("/bin/sh");
 		proc.addArgument("-c");
+		exec = "cd " + GofunMisc::shellify_path(QDir::homeDirPath()) + ";" + exec;
 		proc.addArgument(exec);
 	}
 	else
@@ -166,7 +171,7 @@ void GofunItem::executeCommand(ExecuteOption* option)
 		proc.setWorkingDirectory(QDir(data()->Path));
 		proc.addArgument("/bin/sh");
 		proc.addArgument("-c");
-		exec = "cd " + data()->Path + ";" + exec;
+		exec = "cd " + GofunMisc::shellify_path(data()->Path) + ";" + exec;
 		proc.addArgument(exec);
 	}
 	if((!option->xinit.isEmpty()) || (data()->X_GoFun_NewX == "true"))

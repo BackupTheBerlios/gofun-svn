@@ -45,6 +45,7 @@ struct GofunMisc
 	static void attach_window(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
 	static void applyColorSettings();
 	static bool makeDir(const QString&);
+	static QString shellify_path(const QString&);
 	static QPalette system_palette;
 };
 

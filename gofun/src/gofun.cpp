@@ -64,8 +64,16 @@ int main(int argc, char *argv[])
   
   //Here the main widget is being created
   GofunWidget gofun_widget;
-  //Move the widget to the middle of the screen
-  GofunMisc::center_window(&gofun_widget,365,240);
+  if((GSC::get()->main_x == "-1") && (GSC::get()->main_y == "-1"))
+  {
+  	//Move the widget to the middle of the screen
+  	GofunMisc::center_window(&gofun_widget,GSC::get()->main_width.toInt(),GSC::get()->main_height.toInt());
+  }
+  else
+  {
+  	gofun_widget.setGeometry(GSC::get()->main_x.toInt(),GSC::get()->main_y.toInt(),GSC::get()->main_width.toInt(),GSC::get()->main_height.toInt());
+  }
+  
   //Set a caption and an icon
   gofun_widget.setCaption("GoFun");
   gofun_widget.setIcon(GofunMisc::get_icon("gofun.png",16,16));

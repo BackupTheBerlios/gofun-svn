@@ -20,6 +20,7 @@
 
 #include <qlineedit.h>
 #include <qradiobutton.h>
+#include <qcheckbox.h>
 #include <qtoolbutton.h>
  
 #include "gofun_settings_dlg.h"
@@ -41,6 +42,11 @@ public:
 	QString gofun_dir;
 	QString color_source;
 	QString costum_color;
+	QString main_width;
+	QString main_height;
+	QString main_x;
+	QString main_y;
+	QString save_main_geom;
 private:
 	GofunSettingsContainer();
 	
@@ -72,6 +78,7 @@ private:
 	QRadioButton* col_random;
 	QRadioButton* col_costum;
 	QToolButton* costum_col_bt;
+	QCheckBox* save_main_geom;
 	QString file;
 };
 

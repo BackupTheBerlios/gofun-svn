@@ -40,6 +40,13 @@ QString GofunMisc::shell_call(const QString& call)
         return output;
 }
 
+QString GofunMisc::shellify_path(const QString& path)
+{
+	//QString res = path;
+	//return res.replace(' ',"\\ ");
+	return "'"+path+"'";
+}
+
 QString GofunMisc::ext_filestring(const QString& str)
 {
 	return shell_call("echo "+ str);
