@@ -23,7 +23,7 @@
 #include <qpushbutton.h>
 #include <qgroupbox.h>
  
-#include "gofun_costum_start.h"
+#include "gofun_custom_start.h"
 #include "gofun_application_item.h"
 #include "gofun_data.h"
 #include "gofun_misc.h"

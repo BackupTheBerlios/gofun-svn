@@ -29,7 +29,7 @@ class GofunApplicationItemSettingsAdvanced;
 #ifndef GOFUN_CSTART
 #define GOFUN_CSTART
 
-///Dialog making a highly costumized start possible
+///Dialog making a highly customized start possible
 class GofunCostumStart : public QDialog
 {
 	Q_OBJECT
