@@ -58,6 +58,8 @@ int main(int argc, char *argv[])
   //Random isn't random by default  
   srand (time (0));
   
+  GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps > $HOME/.gofun/icon_files");
+  
   //This is the app's core
   QApplication app(argc, argv);
   GofunWidget::system_palette = qApp->palette();

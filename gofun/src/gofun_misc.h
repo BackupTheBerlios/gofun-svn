@@ -50,8 +50,6 @@ struct GofunMisc
 	static QString shellify_path(const QString&);
 	static bool stringToBool(const QString&);
 	static QString boolToString(bool);
-	
-	static QStringList icon_files;
 };
 
 class GofunLineEdit : public QWidget

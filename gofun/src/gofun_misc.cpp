@@ -29,8 +29,6 @@
 #include "gofun_settings.h"
 #include "gofun_file_dialog_preview.h"
 
-QStringList GofunMisc::icon_files = QStringList::split('\n',GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps"));
-
 QString GofunMisc::shell_call(const QString& call)
 {
         char buf[1024];
@@ -81,7 +79,7 @@ QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height
 		//FIXME: that code still looks quite hackish
 		QStringList::Iterator choice;
 		int m_width = 0;
-		QStringList files = QStringList::split("\n",file);
+		QStringList icon_files = QStringList::split("\n",GofunMisc::shell_call("grep "+name+" $HOME/.gofun/icon_files"));
 		for(QStringList::Iterator it = icon_files.begin(); it != icon_files.end(); ++it)
 		{
 			if(!(*it).contains(name))
