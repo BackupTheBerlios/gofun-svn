@@ -69,7 +69,7 @@ void GofunCatSettings::save()
 {
 	if(!item)
 	{
-		//file.setName(caption->text() + "/" + ".desktop");
+		//file.setName(caption->text() + "/" + ".directory");
 	}
 	item->save();
 }

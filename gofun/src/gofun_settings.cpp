@@ -34,6 +34,14 @@ GofunSettingsContainer::GofunSettingsContainer()
 	m_settings->insertSearchPath( QSettings::Unix, QDir::homeDirPath() + "/.gofun/");
 	
 	m_settings->beginGroup("config");
+	
+	m_settings->beginGroup("general");
+	gofun_dir = m_settings->readEntry("datadir");
+	m_settings->endGroup();
+	
+	if(gofun_dir.isEmpty())
+		gofun_dir = QDir::homeDirPath() + "/.gofun/data";
+	
 	m_settings->beginGroup("commands");
 	terminal_cmd = m_settings->readEntry("terminal");
 	filemanager_cmd = m_settings->readEntry("filemanager");
@@ -47,6 +55,7 @@ GofunSettingsContainer::~GofunSettingsContainer()
 {
 	m_settings->writeEntry("/commands/terminal",terminal_cmd);
 	m_settings->writeEntry("/commands/filemanager",filemanager_cmd);
+	m_settings->writeEntry("/general/datadir",gofun_dir);
 	m_settings->endGroup();
 	delete m_settings;
 }
@@ -56,18 +65,24 @@ GofunSettings::GofunSettings()
 	setCaption(tr("GoFun Settings"));
 	
 	QWidget* widget_general = new QWidget(this);
-	QGridLayout* grid = new QGridLayout(widget_general,6,2);
+	QGridLayout* grid_general = new QGridLayout(widget_general,6,2);
 	tabwidget->addTab(widget_general,tr("General"));
 	
 	terminal = new QLineEdit(widget_general);
 	directory = new QLineEdit(widget_general);
 	filemanager = new QLineEdit(widget_general);
-	grid->addWidget(new QLabel(tr("Terminal command"),widget_general),0,0);
-	grid->addWidget(terminal,0,1);
-	grid->addWidget(new QLabel(tr("Directory"),widget_general),1,0);
-	grid->addWidget(directory,1,1);
-	grid->addWidget(new QLabel(tr("Filemanager"),widget_general),2,0);
-	grid->addWidget(filemanager,2,1);
+	grid_general->addWidget(new QLabel(tr("Terminal command"),widget_general),0,0);
+	grid_general->addWidget(terminal,0,1);
+	grid_general->addWidget(new QLabel(tr("Directory"),widget_general),1,0);
+	grid_general->addWidget(directory,1,1);
+	grid_general->addWidget(new QLabel(tr("Filemanager"),widget_general),2,0);
+	grid_general->addWidget(filemanager,2,1);
+	
+	QWidget* widget_laf = new QWidget(this);
+	QGridLayout* grid_laf = new QGridLayout(widget_laf,6,2);
+	tabwidget->addTab(widget_laf,tr("Look and feel"));
+	
+		
 }
 
 void GofunSettings::save()
@@ -96,6 +111,7 @@ void GofunSettings::apply()
 {
 	GSC::get()->terminal_cmd = terminal->text();
 	GSC::get()->filemanager_cmd = filemanager->text();
+	GSC::get()->gofun_dir = directory->text();
 	/*if(item)
 	{
 		item->setCommand(command->text());
@@ -119,4 +135,5 @@ void GofunSettings::load()
 	file = item->file;*/
 	terminal->setText(GSC::get()->terminal_cmd);
 	filemanager->setText(GSC::get()->filemanager_cmd);
+	directory->setText(GSC::get()->gofun_dir);
 }

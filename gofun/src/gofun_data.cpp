@@ -24,7 +24,7 @@
 #include <qregexp.h>
  
 #include "gofun_data.h"
-
+#include "gofun_settings.h"
 
 QString GofunDataLoader::get_value(QString line)
 {
@@ -56,7 +56,7 @@ GofunCatData* GofunDataLoader::parse_cat_info(const QString& file)
 	QStringList catdata = load_file_data(file);
 			
 	GofunCatData* cdata = new GofunCatData;
-	cdata->Catdir = QString(file).remove(QRegExp("\\.desktop$"));
+	cdata->Catdir = QString(file).remove(QRegExp("\\.directory$"));
 			
 	for(QStringList::Iterator it = catdata.begin(); it != catdata.end(); ++it)
 	{
@@ -138,7 +138,7 @@ std::vector<GofunItemData>* GofunDataLoader::parse_catdir(const QString& catdir)
 	
 	for(int i = 0; i <files.gl_pathc; ++i)
 	{
-		if((QString(files.gl_pathv[i]) == catdir + ".desktop")  || (QString(files.gl_pathv[i]).find(".*~$")) != -1)
+		if((QString(files.gl_pathv[i]) == catdir + ".directory")  || (QString(files.gl_pathv[i]).find(".*~$")) != -1)
 		{
 			continue;
 		}
@@ -153,8 +153,8 @@ std::vector<GofunItemData>* GofunDataLoader::parse_catdir(const QString& catdir)
 
 std::vector<GofunCatData>* GofunDataLoader::getData()
 {
-	glob_t categories;
-	glob((QString(getenv("HOME"))+"/.gofun/data/*/.desktop").ascii(),0,0,&categories);
+	glob_t categories; //default data dir 
+	glob((GSC::get()->gofun_dir + "/*/.directory").ascii(),0,0,&categories);
 
 	std::vector<GofunCatData>* VaCD = new std::vector<GofunCatData>;
 	
@@ -165,7 +165,7 @@ std::vector<GofunCatData>* GofunDataLoader::getData()
 		delete p_cdata;
 	}
 	globfree(&categories);
-
+	
 	for(std::vector<GofunCatData>::iterator it = VaCD->begin(); it != VaCD->end(); ++it)
 	{
 		std::vector<GofunItemData>* _gofun = parse_catdir((*it).Catdir);
