@@ -11,16 +11,23 @@
       <keyword>Code</keyword>
     </keywords>
     <ignoreparts>
+      <part>KDevBookmarks</part>
       <part>KDevClearCase</part>
       <part>KDevcopyto</part>
       <part>KDevCTags</part>
+      <part>KDevCTags2</part>
       <part>CvsService</part>
+      <part>KDevDebugger</part>
+      <part>KDevDoxygen</part>
       <part>KDevFileGroups</part>
+      <part>KDevdistpart</part>
       <part>KDevPerforce</part>
+      <part>KDevQuickOpen</part>
+      <part>KDevsubversion</part>
     </ignoreparts>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <secondaryLanguages/>
   </general>
   <kdevautoproject>
@@ -137,7 +144,10 @@
     <dest>/home/tobgle/filez/pj/gofun/c++-port/gofun</dest>
   </substmap>
   <kdevcppsupport>
-    <references/>
+    <references>
+      <pcs>Qt</pcs>
+      <pcs>Gofun</pcs>
+    </references>
     <codecompletion>
       <includeGlobalFunctions>true</includeGlobalFunctions>
       <includeTypes>true</includeTypes>
@@ -146,8 +156,8 @@
       <automaticCodeCompletion>true</automaticCodeCompletion>
       <automaticArgumentsHint>true</automaticArgumentsHint>
       <automaticHeaderCompletion>true</automaticHeaderCompletion>
-      <codeCompletionDelay>250</codeCompletionDelay>
-      <argumentsHintDelay>400</argumentsHintDelay>
+      <codeCompletionDelay>30</codeCompletionDelay>
+      <argumentsHintDelay>30</argumentsHintDelay>
       <headerCompletionDelay>250</headerCompletionDelay>
     </codecompletion>
   </kdevcppsupport>
