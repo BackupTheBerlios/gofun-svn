@@ -62,7 +62,43 @@ QString GofunMisc::fileDialogGetImage(const QString& start_dir,const QString& ca
 	fd->exec();
 	QString file = fd->selectedFile();
 	delete fd;
-	return file;
+	if(QFileInfo(file).isFile())
+		return file;
+	else
+		return QString();
+}
+
+QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height)
+{
+	if(!name.isEmpty())
+	{
+		QString file;
+		if(QFile::exists(name))
+			file = name;
+		else if(!(file = GofunMisc::shell_call("find /usr/share/icons -path *"+name+"*")).isEmpty())
+		{
+			//FIXME: that code looks still quite hackish
+			QStringList::Iterator choice;
+			int m_width = 0;
+			QStringList files = QStringList::split("\n",file);
+			for(QStringList::Iterator it = files.begin(); it != files.end(); ++it)
+			{
+				QImage img((*it));
+				if(img.width() > m_width)
+				{
+					file = (*it);
+					m_width = img.width();
+				}
+				if(img.width() == pref_width)
+					break;
+			}
+		}
+		QImage image(file);
+		QPixmap pixmap;
+		pixmap.convertFromImage(image.scale(pref_width,pref_height));
+		return pixmap;
+	}
+	return QPixmap();
 }
 
 void GofunFileDialogPreview::previewUrl(const QUrl& u)

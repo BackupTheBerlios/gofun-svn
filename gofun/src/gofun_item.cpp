@@ -86,34 +86,9 @@ void GofunItem::deleteEntry()
 
 void GofunItem::loadIcon()
 {
-	if(!data->Icon.isEmpty())
-	{
-		QString file;
-		if(QFile::exists(data->Icon))
-			file = data->Icon;
-		else if(!(file = GofunMisc::shell_call("find /usr/share/icons -path *"+data->Icon+"*")).isEmpty())
-		{
-			//FIXME: that code looks still quite hackish
-			QStringList::Iterator choice;
-			int m_width = 0;
-			QStringList files = QStringList::split("\n",file);
-			for(QStringList::Iterator it = files.begin(); it != files.end(); ++it)
-			{
-				QImage img((*it));
-				if(img.width() > m_width)
-				{
-					file = (*it);
-					m_width = img.width();
-				}
-				if(img.width() == 32)
-					break;
-			}
-		}
-		QImage image(file);
-		QPixmap pixmap;
-		pixmap.convertFromImage(image.scale(32,32));
-		setPixmap(pixmap);
-	}
+	QPixmap px = GofunMisc::get_icon(data->Icon,32,32);
+	if(!px.isNull())
+		setPixmap(px);
 }
 
 void GofunItem::setData(GofunItemData* d)

@@ -31,6 +31,7 @@ struct GofunDesktopEntryData
 {
 	QString Name;
 	QString Comment;
+	QString Icon;	
 	QString Unknownkeys;
 };
 
@@ -40,7 +41,6 @@ struct GofunItemData : public GofunDesktopEntryData
 	QString File;
 	QString Exec;
 	QString Path;
-	QString Icon;
 	QString Terminal;
 	std::vector<QString> X_GoFun_Env;
 	QString X_GoFun_User;

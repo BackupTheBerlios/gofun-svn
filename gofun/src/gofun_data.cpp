@@ -68,6 +68,8 @@ GofunCatData* GofunDataLoader::parse_cat_info(const QString& file)
 			cdata->Version = get_value((*it));
 		else if((*it).find("Type=") == 0)
 			cdata->Type = get_value((*it));
+		else if((*it).find("Icon=") == 0)
+			cdata->Type = get_value((*it));
 		else if((*it).find("Encoding=") == 0)
 			cdata->Encoding = "";
 		else if((*it).find("X-GoFun-Color") == 0)

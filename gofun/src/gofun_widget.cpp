@@ -191,10 +191,12 @@ void GofunWidget::loadData()
 void GofunWidget::openSettingsDlg()
 {
 	GofunSettings* settings_dlg = new GofunSettings();
-	if((this->geometry().y()+this->geometry().height() + 100) < QApplication::desktop()->screen()->height())
-	settings_dlg->setGeometry(this->x(),this->geometry().y()+this->geometry().height(),this->width(),-1);
+	if((geometry().y()+geometry().height() + 150) < QApplication::desktop()->screen()->height())
+		settings_dlg->setGeometry(x(),geometry().y()+geometry().height(),width(),-1);
+	else if(y()-150-(geometry().y()-y()) > 0)
+		settings_dlg->setGeometry(x(),y()-150-(geometry().y()-y()),width(),150);
 	else
-	settings_dlg->setGeometry(this->x(),this->y()-150-(this->geometry().y()-this->y()),this->width(),150);
+		GofunMisc::center_window(settings_dlg,width(),150);
 	settings_dlg->load();
 	settings_dlg->exec();
 	delete settings_dlg;

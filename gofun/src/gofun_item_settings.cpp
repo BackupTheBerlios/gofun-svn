@@ -80,6 +80,26 @@ GofunItemSettings::GofunItemSettings()
 	connect(envadd, SIGNAL(clicked()), SLOT(addEnvVar()));
 	connect(envrem, SIGNAL(clicked()), SLOT(remEnvVar()));
 	
+	QWidget* widget_par = new QWidget(this);
+	tabwidget->addTab(widget_par,tr("Parameter"));
+	
+	QGridLayout* grid_par = new QGridLayout(widget_par,3,3);
+	tb_par = new QTable(widget_par);
+	QHeader* tb_h = tb_par->horizontalHeader();
+	tb_h->addLabel("Flag");
+	tb_h->addLabel("Values");
+	tb_h->addLabel("Default");
+	tb_h->addLabel("Prompt");
+	paradd = new QPushButton(tr("Add"), widget_par);
+	parrem = new QPushButton(tr("Remove"), widget_par);	
+	
+	grid_par->addMultiCellWidget(tb_par,0,0,0,2);
+	grid_par->addWidget(paradd,2,0);
+	grid_par->addWidget(parrem,2,1);
+	
+	connect(paradd, SIGNAL(clicked()), this, SLOT(addParRow()));
+	connect(parrem, SIGNAL(clicked()), this, SLOT(remParRow()));
+	
 	QWidget* widget_adv = new QWidget(this);
 	tabwidget->addTab(widget_adv,tr("Advanced"));
 	
@@ -105,6 +125,22 @@ GofunItemSettings::GofunItemSettings()
 	userChkToggled(user_chk->isChecked());	
 	
 	item = 0;
+}
+
+void GofunItemSettings::addParRow()
+{
+	tb_par->insertRows(tb_par->numRows());
+	tb_par->setItem(tb_par->numRows()-1,0,new QTableItem(tb_par,QTableItem::WhenCurrent));
+	QPushButton* par_valedit_bt = new QPushButton(tr("Edit"),tb_par);
+	tb_par->setCellWidget(tb_par->numRows()-1,1,par_valedit_bt);
+	QStringList* sl = new QStringList;
+	tb_par->setItem(tb_par->numRows()-1,2,new QComboTableItem(tb_par,*sl));
+	tb_par->setItem(tb_par->numRows()-1,3,new QCheckTableItem(tb_par,""));
+}
+
+void GofunItemSettings::remParRow()
+{
+
 }
 
 void GofunItemSettings::userChkToggled(bool b)
@@ -287,7 +323,7 @@ void GofunItemSettings::load(GofunItem* _item)
 	directory->setText(item->data->Path);
 	file = item->data->File;
 	icon->setText(item->data->Icon);
-	icon_button->setPixmap(QPixmap(item->data->Icon));
+	icon_button->setPixmap(*item->pixmap());
 	comment->setText(item->data->Comment);
 	if(item->data->Terminal == "true")
 	{

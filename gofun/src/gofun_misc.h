@@ -33,6 +33,7 @@ struct GofunMisc
 	static QString ext_filestring(const QString&);
 	static void center_window(QWidget*, int, int);
 	static QString fileDialogGetImage(const QString& start_dir,const QString& caption, const QString& filter_desc);
+	static QPixmap get_icon(const QString&,int = 32,int = 32);
 };
 
 class GofunFileDialogPreview : public QLabel, public QFilePreview

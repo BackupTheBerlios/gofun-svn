@@ -23,6 +23,7 @@
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qtoolbutton.h>
+#include <qtable.h>
  
 #include "gofun_settings_dlg.h"
 
@@ -49,6 +50,8 @@ public slots:
 	void remEnvVar();
 	void envItemEdit(QListViewItem*,const QPoint&,int);
 	void userChkToggled(bool);
+	void addParRow();
+	void remParRow();
 private:
 	virtual void save();
 	virtual void apply();
@@ -67,6 +70,9 @@ private:
 	QPushButton* envadd;
 	QPushButton* envrem;
 	QPushButton* envpre;
+	QTable* tb_par;
+	QPushButton* paradd;
+	QPushButton* parrem;
 	QCheckBox* terminal_chk;
 	QCheckBox* user_chk;
 	QComboBox* user_combo;

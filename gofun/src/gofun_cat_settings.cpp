@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <qapplication.h>
 #include <qlabel.h>
 #include <qmessagebox.h>
 
@@ -81,7 +82,10 @@ void GofunCatSettings::apply()
 		item->data->Name = caption->text();
 		item->data->Comment = comment->text();
 		item->data->X_GoFun_Background = background->text();
-		item->iconview->setPaletteBackgroundPixmap(QPixmap(item->data->X_GoFun_Background));	
+		if(!item->data->X_GoFun_Background.isEmpty())
+			item->iconview->setPaletteBackgroundPixmap(QPixmap(item->data->X_GoFun_Background));	
+		else
+			item->iconview->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Active,QColorGroup::Base));
 	}
 }
 

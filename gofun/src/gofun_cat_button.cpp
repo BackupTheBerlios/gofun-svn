@@ -40,6 +40,11 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 	conf_button->setPalette(QPalette(QColor(int(rand()%256),int(rand()%256),int(rand()%256))));
 	connect(conf_button, SIGNAL(clicked()),this, SLOT(catSettings()));
 	
+	if(!data->Icon.isEmpty())
+	{
+		
+	}
+	
 	//Make sure it's being initialized from the start
 	data = new GofunCatData();
 }
@@ -51,7 +56,7 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 
 void GofunCatButton::save()
 {
-	QFile file( data->Catdir + "/.desktop" );
+	QFile file( data->Catdir + "/.directory" );
 	if ( file.open( IO_WriteOnly ) )
 	{
 		QTextStream stream( &file );
