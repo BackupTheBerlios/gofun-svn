@@ -56,28 +56,28 @@ GofunCatData* GofunDataLoader::parse_cat_info(const QString& file)
 	QStringList catdata = load_file_data(file);
 			
 	GofunCatData* cdata = new GofunCatData;
-	cdata->Catdir = QString(file).remove(QRegExp("\\.desktop$")).ascii();
+	cdata->Catdir = QString(file).remove(QRegExp("\\.desktop$"));
 			
 	for(QStringList::Iterator it = catdata.begin(); it != catdata.end(); ++it)
 	{
 		if((*it).find("Name=") == 0)
-			cdata->Name = get_value((*it)).ascii();
+			cdata->Name = get_value((*it));
 		else if((*it).find("Comment=") == 0)
-			cdata->Comment = get_value((*it)).ascii();
+			cdata->Comment = get_value((*it));
 		else if((*it).find("Version=") == 0)
-			cdata->Version = get_value((*it)).ascii();
+			cdata->Version = get_value((*it));
 		else if((*it).find("Type=") == 0)
-			cdata->Type = get_value((*it)).ascii();
+			cdata->Type = get_value((*it));
 		else if((*it).find("Encoding=") == 0)
 			cdata->Encoding = "";
 		else if((*it).find("X-GoFun-Color") == 0)
-			cdata->X_GoFun_Color = get_value((*it)).ascii();
+			cdata->X_GoFun_Color = get_value((*it));
 		else if((*it).find("X-GoFun-Background") == 0)
-			cdata->X_GoFun_Background = get_value((*it)).ascii();
+			cdata->X_GoFun_Background = get_value((*it));
 		else if((*it).find("[Desktop Entry]") == 0)
 			0;
 		else
-			cdata->Unknownkeys += (*it).ascii();
+			cdata->Unknownkeys += (*it);
 	}
 	return cdata;	
 }
@@ -91,19 +91,19 @@ GofunItemData* GofunDataLoader::parse_gofun_file(const QString& file)
 	for(QStringList::Iterator it = gofundata.begin(); it != gofundata.end(); ++it)
 	{
 		if((*it).find("Name=") == 0)
-			idata->Name = get_value((*it)).ascii();
+			idata->Name = get_value((*it));
 		else if ((*it).find("Exec=") == 0)
-			idata->Exec = get_value((*it)).ascii();
+			idata->Exec = get_value((*it));
 		else if((*it).find("Path=") == 0)
-			idata->Path = get_value((*it)).ascii();
+			idata->Path = get_value((*it));
 		else if((*it).find("Comment=") == 0)
-			idata->Comment = get_value((*it)).ascii();
+			idata->Comment = get_value((*it));
 		else if((*it).find("Icon=") == 0)
-			idata->Icon = get_value((*it)).ascii();
+			idata->Icon = get_value((*it));
 		else if((*it).find("Terminal=") == 0)
-			idata->Terminal = get_value((*it)).ascii();
+			idata->Terminal = get_value((*it));
 		else if((*it).find("Hidden=") == 0)
-			idata->Hidden = get_value((*it)).ascii();
+			idata->Hidden = get_value((*it));
 		else if((*it).find("Version=") == 0)
 			0;
 		else if((*it).find("Type=") == 0)
@@ -111,13 +111,15 @@ GofunItemData* GofunDataLoader::parse_gofun_file(const QString& file)
 		else if((*it).find("Encoding=") == 0)
 			0;
 		else if((*it).find("X-GoFun-User") == 0)
-			idata->X_GoFun_User = get_value((*it)).ascii();
+			idata->X_GoFun_User = get_value((*it));
+		else if((*it).find("X-GoFun-NewX") == 0)
+			idata->X_GoFun_NewX = get_value((*it));
 		else if((*it).find("X-GoFun-Env") == 0)
 		{
 			QStringList qsl = QStringList::split("\t",get_value((*it)));
 			for(QStringList::Iterator it = qsl.begin(); it != qsl.end(); ++it)
 			{
-				idata->X_GoFun_Env.push_back((*it).ascii());
+				idata->X_GoFun_Env.push_back((*it));
 			}
 		}
 	}

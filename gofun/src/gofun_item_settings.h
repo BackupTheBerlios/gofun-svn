@@ -70,6 +70,7 @@ private:
 	QCheckBox* terminal_chk;
 	QCheckBox* user_chk;
 	QComboBox* user_combo;
+	QCheckBox* newx_chk;
 };
 
 #endif

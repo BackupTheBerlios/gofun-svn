@@ -36,12 +36,14 @@ GofunSettingsContainer::GofunSettingsContainer()
 	m_settings->beginGroup("config");
 	m_settings->beginGroup("commands");
 	terminal_cmd = m_settings->readEntry("terminal");
+	filemanager_cmd = m_settings->readEntry("filemanager");
 	m_settings->endGroup();
 }
 
 GofunSettingsContainer::~GofunSettingsContainer()
 {
 	m_settings->writeEntry("/commands/terminal",terminal_cmd);
+	m_settings->writeEntry("/commands/filemanager",filemanager_cmd);
 	m_settings->endGroup();
 	delete m_settings;
 }
@@ -56,10 +58,13 @@ GofunSettings::GofunSettings()
 	
 	terminal = new QLineEdit(widget_general);
 	directory = new QLineEdit(widget_general);
+	filemanager = new QLineEdit(widget_general);
 	grid->addWidget(new QLabel("Terminal command",widget_general),0,0);
 	grid->addWidget(terminal,0,1);
-	grid->addWidget(new QLabel("Directory",widget_general),2,0);
-	grid->addWidget(directory,2,1);
+	grid->addWidget(new QLabel("Directory",widget_general),1,0);
+	grid->addWidget(directory,1,1);
+	grid->addWidget(new QLabel("Filemanager",widget_general),2,0);
+	grid->addWidget(filemanager,2,1);
 }
 
 void GofunSettings::save()
@@ -87,6 +92,7 @@ bool GofunSettings::inputValid()
 void GofunSettings::apply()
 {
 	GSC::get()->terminal_cmd = terminal->text();
+	GSC::get()->filemanager_cmd = filemanager->text();
 	/*if(item)
 	{
 		item->setCommand(command->text());
@@ -109,4 +115,5 @@ void GofunSettings::load()
 	directory->setText(item->data->Path);
 	file = item->file;*/
 	terminal->setText(GSC::get()->terminal_cmd);
+	filemanager->setText(GSC::get()->filemanager_cmd);
 }

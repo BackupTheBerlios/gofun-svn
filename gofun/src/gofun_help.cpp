@@ -193,6 +193,7 @@ if(error)
 }
 
 	qDebug("Image THERE");
+	qDebug(http->currentRequest().path());
 image_there = true;
 
 QPixmap* img = new QPixmap(http->readAll());
@@ -203,7 +204,7 @@ l->setGeometry(0,0,400,400);
 l->setPixmap(img);
 d->show();*/
 
-images[mcur_image] = img;
+images[http->currentRequest().path()] = img;
 
 }
 

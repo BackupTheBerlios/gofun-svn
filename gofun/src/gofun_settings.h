@@ -35,6 +35,7 @@ public:
 	static void save() { delete _instance; _instance = 0; }
 	
 	QString terminal_cmd;
+	QString filemanager_cmd;
 	QString gofun_dir;
 private:
 	GofunSettingsContainer();
@@ -60,6 +61,7 @@ private:
 
 	QLineEdit* terminal;
 	QLineEdit* directory;
+	QLineEdit* filemanager;
 	QString file;
 };
 

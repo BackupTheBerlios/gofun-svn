@@ -54,6 +54,8 @@ GofunWidget::GofunWidget()
 	//We 'load' this WidgetStack with GofunIconViews later on
 	view_ws = new QWidgetStack(this);
 	view_ws->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,false);
+	QLabel* back_label = new QLabel("Test",this);
+	view_ws->addWidget(back_label,1000);
 	
 	//It should be obvious what that is being
 	QPushButton* quit = new QPushButton("Quit", this, "quit");
@@ -318,7 +320,7 @@ void GofunWidget::executeItem(QIconViewItem* item,const QString& option)
 //Open the (working)-directory of a Desktop Entry in a file-manager.
 void GofunWidget::openDirectoryItem(GofunItem* item)
 {
-	QProcess proc(QString("xfe"),this);
+	QProcess proc(GSC::get()->filemanager_cmd,this);
 	proc.addArgument(GofunMisc::ext_filestring(item->data->Path));
 	if(!proc.start())
 	{

@@ -45,6 +45,7 @@ struct GofunItemData : public GofunDesktopEntryData
 	std::vector<QString> X_GoFun_Env;
 	QString X_GoFun_User;
 	QString Hidden;
+	QString X_GoFun_NewX;
 };
 
 ///Data-type for Desktop Entries, that represent a category

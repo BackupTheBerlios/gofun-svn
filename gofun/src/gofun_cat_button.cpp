@@ -58,7 +58,8 @@ void GofunCatButton::catSettings()
 	GofunCatSettings* settings_dlg = new GofunCatSettings();
 	settings_dlg->load(this);
 	QWidget* p = dynamic_cast<QWidget*>(parent()->parent());
-	settings_dlg->setGeometry(p->geometry().x()+p->width(),p->y(),p->width(),p->height());
+	int width = 275;
+	settings_dlg->setGeometry(p->geometry().x()+p->width(),p->y(),width,p->height());
 	settings_dlg->exec();
 	delete settings_dlg;
 }

@@ -50,6 +50,7 @@ void GofunItem::save()
 		stream << "Icon=" << data->Icon << "\n";
 		stream << "Comment=" << data->Comment << "\n";
 		stream << "Terminal=" << data->Terminal << "\n";
+		stream << "X-GoFun-NewX=" << data->X_GoFun_NewX << "\n";
 		if(!data->X_GoFun_Env.empty())
 		{
 			stream << "X-GoFun-Env=";
@@ -134,7 +135,7 @@ void GofunItem::executeCommand(ExecuteOption* option)
 		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
 		exec =  exec + ";echo -e \"\\E[${2:-44};${3:-7}m\nEnd of execution has been reached. Press any key to remove this terminal\"; read evar";
 	}
-	if(!option->xinit.isEmpty())
+	if((!option->xinit.isEmpty()) || (data->X_GoFun_NewX == "true"))
 	{
 		proc.addArgument("xinit");
 	}
@@ -153,7 +154,7 @@ void GofunItem::executeCommand(ExecuteOption* option)
 		exec = "cd " + data->Path + ";" + exec;
 		proc.addArgument(exec);
 	}
-	if(!option->xinit.isEmpty())
+	if((!option->xinit.isEmpty()) || (data->X_GoFun_NewX == "true"))
 	{
 		proc.addArgument("--");
 		QString xservnum = GofunMisc::shell_call("ps -Ac | grep X | wc -l");

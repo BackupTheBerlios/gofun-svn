@@ -88,6 +88,7 @@ GofunItemSettings::GofunItemSettings()
 	user_chk = new QCheckBox("Start as (user)",widget_adv);
 	user_combo = new QComboBox(widget_adv);
 	user_combo->insertItem("root");
+	newx_chk = new QCheckBox("Start in new X-Server",widget_adv);
 	QStringList users = QStringList::split('\n',GofunMisc::shell_call("cat /etc/passwd | grep /home/ | sed -e 's/:.*$//'"));
 	for(QStringList::Iterator it = users.begin(); it != users.end(); ++it)
 	{
@@ -97,6 +98,7 @@ GofunItemSettings::GofunItemSettings()
 	grid_adv->addMultiCellWidget(terminal_chk,0,0,0,1);
 	grid_adv->addWidget(user_chk,1,0);
 	grid_adv->addWidget(user_combo,1,1);
+	grid_adv->addMultiCellWidget(newx_chk,2,2,0,1);
 	
 	connect(user_chk, SIGNAL(toggled(bool)),this, SLOT(userChkToggled(bool)));
 	
@@ -250,6 +252,14 @@ void GofunItemSettings::apply()
 		{
 			item->data->X_GoFun_User = "";
 		}
+		if(newx_chk->isChecked())
+		{
+			item->data->X_GoFun_NewX = "true";
+		}
+		else
+		{
+			item->data->X_GoFun_NewX = "false";
+		}
 	}
 	else
 	{
@@ -290,7 +300,7 @@ void GofunItemSettings::load(GofunItem* _item)
 	comment->setText(item->data->Comment);
 	if(item->data->Terminal == "true")
 	{
-		terminal_chk->setChecked(1);
+		terminal_chk->setChecked(true);
 	}
 	if(!item->data->X_GoFun_Env.empty())
 	{
@@ -308,6 +318,10 @@ void GofunItemSettings::load(GofunItem* _item)
 	{
 		user_chk->setChecked(true);
 		user_combo->setCurrentText(item->data->X_GoFun_User);
+	}
+	if(item->data->X_GoFun_NewX == "true")
+	{
+		newx_chk->setChecked(true);
 	}
 }
 
