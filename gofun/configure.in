@@ -9,4 +9,4 @@ AM_PROG_LIBTOOL
 
 QT_DO_IT_ALL
 
-AC_OUTPUT(Makefile src/Makefile)
+AC_OUTPUT(Makefile src/Makefile data/Makefile)
