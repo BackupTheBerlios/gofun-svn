@@ -57,6 +57,7 @@ GofunHelp::GofunHelp()
 	GofunMimeSourceFactory* gmf = new GofunMimeSourceFactory;
 	gmf->p_gofun_help = this;
 	textbrowser->setMimeSourceFactory(gmf);
+	textbrowser->setPalette(QColor(255,255,255));
 	
 	connect(back_bt,SIGNAL(clicked()),textbrowser,SLOT(backward()));
 	connect(forward_bt,SIGNAL(clicked()),textbrowser,SLOT(forward()));
@@ -124,7 +125,7 @@ void GofunHelp::print()
 	int page = 1;
 	do {
 	    p.setClipRect( body );
-	    richText.draw( &p, body.left(), body.top(), view, colorGroup() );
+	    richText.draw( &p, body.left(), body.top(), view, textbrowser->colorGroup() );
 	    p.setClipping( FALSE );
 	    view.moveBy( 0, body.height() );
 	    p.translate( 0 , -body.height() );

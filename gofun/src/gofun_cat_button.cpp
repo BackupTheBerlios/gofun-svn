@@ -32,6 +32,7 @@
 #include "gofun_misc.h"
 #include "gofun_widget.h"
 #include "gofun_item_wizard.h"
+#include "gofun_application_item.h"
  
 GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButton(str,widget)
 {
@@ -42,15 +43,19 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 
 	//Create the appendix of this button
 	conf_button = new QToolButton(this);
-	int _grey = int((dynamic_cast<GofunWidget*>(widget->parent())->cats_bg->count()*20)%256);
+	
+	int _grey;
+	if(dynamic_cast<GofunWidget*>(widget->parent()))
+		_grey = int((dynamic_cast<GofunWidget*>(widget->parent())->cats_bg->count()*20)%256);
+	else
+			_grey = 255;
 	conf_button->setPalette(QPalette(QColor(_grey,_grey,_grey)));
-
+	
 	//connect(conf_button, SIGNAL(clicked()),this, SLOT(catSettings()));
 	connect(conf_button, SIGNAL(clicked()),this, SLOT(popupConfButton()));
 	
 	//For this category we create an IconView
 	iconview = new GofunIconView();
-	iconview->setResizeMode(QIconView::Adjust);
 		
 	//Make sure it's being initialized from the start
 	m_data = new GofunCatData();
@@ -64,8 +69,9 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 GofunCatButton::~GofunCatButton()
 {
 	//delete data; //FIXME
-	
-	delete iconview;
+	//delete iconview; //FIXME Iconview doesn't get deleted on reload
+			   // potential problem. Uncommented because of segfault
+			   // when tools_cat is destroyed.
 }
 
 void GofunCatButton::popupConfButton()
@@ -87,7 +93,7 @@ void GofunCatButton::popupCBActivated(int id)
 	switch(id)
 	{
 		case PID_ADD_ENTRY:
-			dynamic_cast<GofunWidget*>(qApp->mainWidget())->addEntry();
+			GofunApplicationItem::createNewItem(this);
 			break;
 		case PID_ADD_ENTRY_WIZARD:
 			runNewItemWizard();
@@ -217,12 +223,12 @@ void GofunCatButton::popupItemDnD(int id)
 	
 	switch(id)
 	{
-		case PID_COPY_ITEM: //Make a deep copy
+		case PID_COPY_ITEM: //Make a deep copy //FIXME: - There is an up-conversion between GofunXItem and GofunItem
 			gi->setData(_data);
 			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
 			gi->save();
 			break;
-		case PID_MOVE_ITEM: //Make a deep copy and remove the original
+		case PID_MOVE_ITEM: //Make a deep copy and remove the original //FIXME: - Shouldn't warn user about deleting - doesn't work "between" GofunItem types.
 			gi->setData(_data);
 			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
 			gi->save();

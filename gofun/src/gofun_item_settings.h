@@ -26,6 +26,7 @@
 #include <qtable.h>
  
 #include "gofun_settings_dlg.h"
+#include "gofun_data.h"
 
 class GofunCatButton;
 class GofunItem;
@@ -42,44 +43,23 @@ public:
 	void setCategory(GofunCatButton*);
 	virtual void load(GofunItem*);
 	
-	QString file;
 public slots:
-	void iconDialog();
-	void dirDialog();
-	void addEnvVar();
-	void remEnvVar();
-	void envItemEdit(QListViewItem*,const QPoint&,int);
-	void userChkToggled(bool);
-	void addParRow();
-	void remParRow();
-	void parValEditDialog();
-	void commandEditor();
+	virtual void iconDialog();
 private:
-	virtual void save();
+	virtual GofunItemData* data();
+	
+protected:
 	virtual void apply();
-	bool inputValid();
+	virtual bool inputValid();
+	virtual void save();
 
-	QLineEdit* command;
-	QToolButton* command_button;
 	QLineEdit* caption;
-	QLineEdit* directory;
-	QToolButton* dir_button;
 	QLineEdit* icon;
 	QToolButton* icon_button;
-	GofunItem* item;
-	GofunCatButton* category;
 	QLineEdit* comment;
-	QListView* envvars;
-	QPushButton* envadd;
-	QPushButton* envrem;
-	QPushButton* envpre;
-	QTable* tb_par;
-	QPushButton* paradd;
-	QPushButton* parrem;
-	QCheckBox* terminal_chk;
-	QCheckBox* user_chk;
-	QComboBox* user_combo;
-	QCheckBox* newx_chk;
+	
+	GofunCatButton* category;
+	GofunItem* item;
 };
 
 #endif

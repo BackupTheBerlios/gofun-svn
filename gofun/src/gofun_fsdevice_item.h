@@ -17,41 +17,47 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+
+#include "gofun_item.h"
+#include "gofun_data.h"
  
-#include <qlayout.h>
-#include <qpushbutton.h>
- 
-#include "gofun_command_editor.h"
+#ifndef GOFUN_FSDEVICE_ITEM
+#define GOFUN_FSDEVICE_ITEM
 
-GofunCommandEditor::GofunCommandEditor()
+enum
 {
-	setCaption(tr("Command Editor"));
+	PID_Mount = PID_Delete + 1,
+	PID_Unmount,
+	PID_Open
+};
 
-	text = new QTextEdit(this);
-	text->setTextFormat(Qt::PlainText);
-	text->setWordWrap(QTextEdit::NoWrap);
-	QPushButton* apply = new QPushButton(tr("Apply"),this);
-	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
+class GofunFSDeviceItem : public GofunItem
+{
+	Q_OBJECT;
+
+	public:
+	GofunFSDeviceItem(GofunIconView*, const QString& = 0);
 	
-	connect(apply,SIGNAL(clicked()),this,SLOT(accept()));
-	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
+	void setData(GofunItemData*);
+	void save();
+	QPopupMenu* rightClickPopup(const QPoint&);
+	void editEntry();
+	void performDefaultAction();
+	bool isMounted();
+	void mount();
+	void unMount();
+	void open();
+	void loadIcon();
 	
-	QGridLayout* grid = new QGridLayout(this,3,3);
-	grid->addMultiCellWidget(text,1,1,0,2);
-	grid->addWidget(apply,2,0);
-	grid->addWidget(cancel,2,1);
-}
+	static void createNewItem(GofunCatButton*);
+	
+	GofunFSDeviceItemData* data() { return m_data; }
+	
+	public slots:
+	void popupActivated(int);
+	
+	private:
+	GofunFSDeviceItemData* m_data;
+};
 
-void GofunCommandEditor::setCommand(const QString& _cmd)
-{
-	cmd = _cmd;	
-	text->setText(cmd.replace(';',"\n"));
-}
-
-QString GofunCommandEditor::command()
-{
-	cmd = text->text();
-	cmd = cmd.replace('\n',";");
-	return cmd;
-}
-
+#endif

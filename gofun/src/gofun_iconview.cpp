@@ -30,6 +30,8 @@ GofunIconView::GofunIconView()
 {
 	setSpacing(3);
 	setItemTextBackground(QApplication::palette().brush(QPalette::Active,QColorGroup::Base));
+	setAutoArrange(true);
+	setResizeMode(QIconView::Adjust);
 	
 	connect(this,SIGNAL(contentsMoving(int,int)),this,SLOT(contentsMove(int,int)));
 }
@@ -83,8 +85,6 @@ void GofunIconView::setLeftMode()
 	setItemTextPos(QIconView::Right);
 	setWordWrapIconText(false);
 }
-
-
 
 
 

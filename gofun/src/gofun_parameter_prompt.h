@@ -1,4 +1,4 @@
-/***************************************************************************
+	/***************************************************************************
  *   Copyright (C) 2004 by Tobias Glaesser                                 *
  *   tobi.web@gmx.de                                                       *
  *                                                                         *
@@ -22,11 +22,19 @@
  
 #include <qdialog.h>
 #include <qlayout.h>
+#include <qcombobox.h>
 
 #include "gofun_data.h"
  
 #ifndef GOFUN_PARAMETER_PROMPT
 #define GOFUN_PARAMETER_PROMPT
+
+struct GofunSmallParameterData
+{
+	QString Flag;
+	QString Value;
+	QComboBox* combo;
+};
 
 class GofunParameterPrompt : public QDialog
 {
@@ -39,7 +47,8 @@ class GofunParameterPrompt : public QDialog
 	
 	private:
 	QGridLayout* grid;	
-	std::vector<GofunParameterData*> parameter;
+	//std::vector<GofunParameterData*> parameter;
+	std::vector<GofunSmallParameterData> parameter;
 };
 
 #endif

@@ -17,41 +17,33 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+
+#include "gofun_item_settings.h"
+
+class GofunFSDeviceItem;
  
-#include <qlayout.h>
-#include <qpushbutton.h>
- 
-#include "gofun_command_editor.h"
+#ifndef GOFUN_FSDEVICE_ITEM_SETTINGS
+#define GOFUN_FSDEVICE_ITEM_SETTINGS
 
-GofunCommandEditor::GofunCommandEditor()
+class GofunFSDeviceItemSettings : public GofunItemSettings
 {
-	setCaption(tr("Command Editor"));
-
-	text = new QTextEdit(this);
-	text->setTextFormat(Qt::PlainText);
-	text->setWordWrap(QTextEdit::NoWrap);
-	QPushButton* apply = new QPushButton(tr("Apply"),this);
-	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
+	Q_OBJECT
+public:
+	GofunFSDeviceItemSettings();
+	void load(GofunFSDeviceItem*);
 	
-	connect(apply,SIGNAL(clicked()),this,SLOT(accept()));
-	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
+public slots:
+	void iconDialog();
+	void dirDialog();
+private:
+	void save();
+	void apply();
+	bool inputValid();
+
+	GofunFSDeviceItemData* data();
 	
-	QGridLayout* grid = new QGridLayout(this,3,3);
-	grid->addMultiCellWidget(text,1,1,0,2);
-	grid->addWidget(apply,2,0);
-	grid->addWidget(cancel,2,1);
-}
+	QLineEdit* unmount_icon;
+	QToolButton* unmount_icon_button;
+};
 
-void GofunCommandEditor::setCommand(const QString& _cmd)
-{
-	cmd = _cmd;	
-	text->setText(cmd.replace(';',"\n"));
-}
-
-QString GofunCommandEditor::command()
-{
-	cmd = text->text();
-	cmd = cmd.replace('\n',";");
-	return cmd;
-}
-
+#endif

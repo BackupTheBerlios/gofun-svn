@@ -21,6 +21,7 @@
 #include <qdialog.h>
 #include <qlistview.h>
 #include <qpushbutton.h>
+#include <qlineedit.h>
  
 #ifndef GOFUN_LIST_DIALOG
 #define GOFUN_LIST_DIALOG
@@ -31,17 +32,25 @@ class GofunListDialog : public QDialog
 public:
 	GofunListDialog();
 	QStringList returnList();
+	void fillList(const QStringList&);
 
 public slots:
 	void add();
 	void remove();
+	void up();
+	void down();
+	void updateValue(const QString&);
+	void updateEdit();
 	
 private:
 	QListView* list;
+	QLineEdit* edit;
 	QPushButton* add_button;
 	QPushButton* rem_button;
 	QPushButton* apply_button;
 	QPushButton* cancel_button;
+	QPushButton* up_button;
+	QPushButton* down_button;
 };
 
 #endif

@@ -17,41 +17,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+
+#include "gofun_item.h"
  
-#include <qlayout.h>
-#include <qpushbutton.h>
- 
-#include "gofun_command_editor.h"
+#ifndef GOFUN_LINK_ITEM
+#define GOFUN_LINK_ITEM
 
-GofunCommandEditor::GofunCommandEditor()
+enum
 {
-	setCaption(tr("Command Editor"));
+	PID_OpenLink = PID_Delete + 1
+};
 
-	text = new QTextEdit(this);
-	text->setTextFormat(Qt::PlainText);
-	text->setWordWrap(QTextEdit::NoWrap);
-	QPushButton* apply = new QPushButton(tr("Apply"),this);
-	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
+class GofunLinkItem : public GofunItem
+{
+	Q_OBJECT
+
+	public:
+	GofunLinkItem(GofunIconView*, const QString& = 0);
 	
-	connect(apply,SIGNAL(clicked()),this,SLOT(accept()));
-	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
+	void setData(GofunItemData*);
+	void save();
+	QPopupMenu* rightClickPopup(const QPoint&);
+	virtual void editEntry();
+	void performDefaultAction();
+	void open();
 	
-	QGridLayout* grid = new QGridLayout(this,3,3);
-	grid->addMultiCellWidget(text,1,1,0,2);
-	grid->addWidget(apply,2,0);
-	grid->addWidget(cancel,2,1);
-}
+	static void createNewItem(GofunCatButton*);
+	
+	GofunLinkItemData* data() { return m_data; }
+	
+	public slots:
+	void popupActivated(int);
+	
+	private:
+	GofunLinkItemData* m_data;
+};
 
-void GofunCommandEditor::setCommand(const QString& _cmd)
-{
-	cmd = _cmd;	
-	text->setText(cmd.replace(';',"\n"));
-}
-
-QString GofunCommandEditor::command()
-{
-	cmd = text->text();
-	cmd = cmd.replace('\n',";");
-	return cmd;
-}
+#endif
 

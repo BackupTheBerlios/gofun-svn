@@ -28,6 +28,7 @@
 
 #include <qapplication.h>
 #include <qdir.h>
+#include <qtextcodec.h>
 
 #include "gofun_widget.h"
 #include "gofun_misc.h"
@@ -57,10 +58,24 @@ int main(int argc, char *argv[])
 
   //This is the app's core
   QApplication app(argc, argv);
-  GofunMisc::system_palette = qApp->palette();
+  GofunWidget::system_palette = qApp->palette();
   
   //make GoFun look colorful and different every startup
-  GofunMisc::applyColorSettings();
+  GofunWidget::applyColorSettings();
+  
+  QString locale = getenv("LC_MESSAGES");
+  
+  qDebug(locale);
+  if(locale.find('_') != -1)
+  {
+  	qDebug(QStringList::split("_",locale)[0]);
+	qDebug(QStringList::split("_",locale)[1]);
+  }
+  if(locale.find('@') != -1)
+  {
+  	qDebug(QStringList::split("@",locale)[0]);
+	qDebug(QStringList::split("@",locale)[1]);
+  }
   
   //Here the main widget is being created
   GofunWidget gofun_widget;

@@ -18,67 +18,72 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qlayout.h>
 #include <qlineedit.h>
-#include <qpushbutton.h>
+#include <qlabel.h>
  
-#include "gofun_costum_start.h"
-#include "gofun_application_item.h"
-#include "gofun_data.h"
+#include "gofun_link_item_settings.h"
+#include "gofun_link_item.h"
+#include "gofun_cat_button.h"
 
-GofunCostumStart::GofunCostumStart()
-{
-	setCaption(tr("Costumized Start"));
+GofunLinkItemSettings::GofunLinkItemSettings()
+{	
+	QWidget* widget_main = new QWidget(this);	
+	QGridLayout* grid = new QGridLayout(widget_main,5,3);
 	
-	QGridLayout* grid = new QGridLayout(this,4,2);
+	tabwidget->addTab(widget_main,"Main");
+		
+	caption = new QLineEdit(widget_main);
+	icon = new QLineEdit(widget_main);
+	icon_button = new QToolButton(widget_main);
+	comment = new QLineEdit(widget_main);
+	grid->addWidget(new QLabel(tr("Caption"),widget_main),0,0);
+	grid->addWidget(caption,0,1);
+	grid->addWidget(new QLabel(tr("Icon"),widget_main),3,0);
+	grid->addWidget(icon,3,1);
+	grid->addWidget(icon_button,3,2);
+	grid->addWidget(new QLabel(tr("Comment"),widget_main),4,0);
+	grid->addWidget(comment,4,1);
 	
-	caption = new QLabel(tr("Start "),this);
-	QLabel* command_label = new QLabel(tr("Command"),this);
-	command = new QLineEdit(this);
-	terminal = new QCheckBox(tr("Start in terminal"),this);
-	newxserver = new QCheckBox(tr("Start in new X-Server"),this);
-	
-	QPushButton* start_button = new QPushButton(tr("Start"), this);
-
-	grid->addMultiCellWidget(caption,0,0,0,2);
-	grid->addWidget(command_label,1,0);
-	grid->addWidget(command,1,1);
-	grid->addMultiCellWidget(terminal,2,2,0,1);
-	grid->addMultiCellWidget(newxserver,3,3,0,1);
-	grid->addWidget(start_button,4,0);
-	
-	connect(start_button, SIGNAL(clicked()),this, SLOT(start()));
+	connect(icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	
 	item = 0;
 }
 
-void GofunCostumStart::start()
+void GofunLinkItemSettings::load(GofunLinkItem* _item)
 {
-	ExecuteOption eo;
-	if(terminal->isChecked())
-	{
-		eo.terminal = "true";
-	}
-	if(newxserver->isChecked())
-	{
-		eo.xinit  = "true";
-	}
-	eo.Exec = command->text();
-	item->executeCommand(&eo);
+	GofunItemSettings::load(_item);
 }
 
-void GofunCostumStart::load(GofunApplicationItem* _item)
+void GofunLinkItemSettings::dirDialog()
 {
-	item = _item;
-	caption->setText(item->data()->Name);
-	command->setText(item->data()->Exec);
-	if(!item->data()->Icon.isEmpty())
-	{
-		setIcon(QPixmap(item->data()->Icon));
-	}
-	if(item->data()->Terminal == "true")
-	{
-		terminal->setChecked(true);
-	}
 }
 
+void GofunLinkItemSettings::save()
+{
+	GofunItemSettings::save();
+}
+
+void GofunLinkItemSettings::apply()
+{
+	if(!item)
+		item = new GofunLinkItem(category->iconview,QString(""));
+		
+	GofunItemSettings::apply();
+}
+
+bool GofunLinkItemSettings::inputValid()
+{
+	if(!GofunItemSettings::inputValid())
+		return false;
+	else
+		return true;
+}
+
+void GofunLinkItemSettings::iconDialog()
+{
+}
+
+GofunLinkItemData* GofunLinkItemSettings::data()
+{
+	return dynamic_cast<GofunLinkItem*>(item)->data();
+}

@@ -33,7 +33,6 @@ void GofunDesktopObject::save()
 		stream << "[Desktop Entry]\n";
 		stream << "Version=0.9.4\n";
 		stream << "Encoding=UTF-8\n";
-		stream << "Type=Directory\n";
 		stream << "Name=" << pdata->Name << "\n";
 		stream << "Comment=" << pdata->Comment << "\n";
 		stream << "Icon=" << pdata->Icon << "\n";

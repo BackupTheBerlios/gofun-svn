@@ -17,41 +17,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
- 
-#include <qlayout.h>
-#include <qpushbutton.h>
- 
-#include "gofun_command_editor.h"
 
-GofunCommandEditor::GofunCommandEditor()
-{
-	setCaption(tr("Command Editor"));
-
-	text = new QTextEdit(this);
-	text->setTextFormat(Qt::PlainText);
-	text->setWordWrap(QTextEdit::NoWrap);
-	QPushButton* apply = new QPushButton(tr("Apply"),this);
-	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
-	
-	connect(apply,SIGNAL(clicked()),this,SLOT(accept()));
-	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
-	
-	QGridLayout* grid = new QGridLayout(this,3,3);
-	grid->addMultiCellWidget(text,1,1,0,2);
-	grid->addWidget(apply,2,0);
-	grid->addWidget(cancel,2,1);
-}
-
-void GofunCommandEditor::setCommand(const QString& _cmd)
-{
-	cmd = _cmd;	
-	text->setText(cmd.replace(';',"\n"));
-}
-
-QString GofunCommandEditor::command()
-{
-	cmd = text->text();
-	cmd = cmd.replace('\n',";");
-	return cmd;
-}
+#include "gofun_settings_wizard.h"
 

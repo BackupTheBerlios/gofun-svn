@@ -37,6 +37,11 @@
 #include "gofun_help.h"
 #include "gofun_about.h"
 #include "gofun_item_wizard.h"
+#include "gofun_application_item.h"
+#include "gofun_fsdevice_item.h"
+#include "gofun_link_item.h"
+
+QPalette GofunWidget::system_palette;
 
 //The main constructor.
 GofunWidget::GofunWidget()
@@ -56,8 +61,6 @@ GofunWidget::GofunWidget()
 	//We 'load' this WidgetStack with GofunIconViews later on
 	view_ws = new QWidgetStack(this);
 	view_ws->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,false);
-	back_label = new QLabel("Test",this);
-	view_ws->addWidget(back_label,1000);
 	
 	//It should be obvious what that is being
 	QPushButton* quit = new QPushButton(tr("Quit"), this, "quit");
@@ -68,11 +71,13 @@ GofunWidget::GofunWidget()
 	//The button marking your way to the settings-dialog
 	QToolButton* config = new QToolButton(this);
     	config->setPixmap(QPixmap("config.png"));
+	QToolTip::add(config,tr("Settings"));
 	connect(config, SIGNAL(clicked()),this, SLOT(openSettingsDlg()));
 	
 	//A helpful help-button
 	QToolButton* help = new QToolButton(this);
 	help->setPixmap(QPixmap("help.png"));
+	QToolTip::add(help,tr("Help"));
 	connect(help, SIGNAL(clicked()),this, SLOT(showHelp()));
 	
 	//Layout magic, basically we add the WidgetStack and a vertical box to the
@@ -90,20 +95,27 @@ GofunWidget::GofunWidget()
 	//Common it is ...
 	QToolButton* gficon = new QToolButton(this);
 	gficon->setPixmap(QPixmap("gofun.png"));
+	QToolTip::add(gficon,tr("About"));
 	hboxlabel->addWidget(gficon);
 	
 	connect(gficon,SIGNAL(clicked()),this,SLOT(showAbout()));
 	
 	//The last steps in our layout magic
 	vbox->addWidget(cats_bg);
+	tools_cat = new GofunCatButton("GoTools",this);
+	vbox->addWidget(tools_cat);
+	QWidget* wid = new QWidget(this);
+	wid->setMinimumHeight(5);
+	vbox->addWidget(wid);
 	vbox->addLayout(hboxr);
 	hboxr->addWidget(quit);            
 	hboxr->addWidget(config);
 	hboxr->addWidget(help);
 	
 	//This toolbutton shall be used to add categories
-    	QToolButton* cat_add = new QToolButton(Qt::DownArrow,cats_bg,"Testttt");
+    	QToolButton* cat_add = new QToolButton(Qt::DownArrow,cats_bg);
 	connect(cat_add, SIGNAL(clicked()),this, SLOT(popupCatAdd()));
+	QToolTip::add(cat_add,tr("Click this button to operate on categories"));
 	cats_bg->insert(cat_add);   
 	
 	//Now load the whole GoFun-Data and care for its displaying
@@ -158,11 +170,13 @@ void GofunWidget::unloadData()
 	for(int i = 1; i < cats_bg_count+1 && cats_bg_count > 1; ++i)
 	{
 		GofunCatButton* cb = dynamic_cast<GofunCatButton*>(cats_bg->find(i));
+		if(cb)
+			view_ws->removeWidget(cb->iconview);
 		cats_bg->remove(cb);
 		delete cb;
 	}
 	
-	view_ws->raiseWidget(back_label);
+	view_ws->raiseWidget(tools_cat->iconview);
 }
 
 //Load Desktop Entry data
@@ -177,41 +191,69 @@ void GofunWidget::loadData()
 	{
 		//We create a fresh category button, fill it with data and insert it
 		//into the category-button-group
-		GofunCatButton* cat = new GofunCatButton((*it).Name, cats_bg);
-		if(!dynamic_cast<GofunWidget*>(qApp->mainWidget()))
-			insertCategory(cat);
+		GofunCatButton* cat;
+		if(i != 0)
+		{
+			cat = new GofunCatButton((*it).Name, cats_bg);
+			if(!dynamic_cast<GofunWidget*>(qApp->mainWidget()))
+				insertCategory(cat);
+		}
+		else
+		{
+			if(dynamic_cast<GofunWidget*>(qApp->mainWidget()))
+				continue;
+			
+			cat = tools_cat;
+			connectCatIconview(cat);
+			connect(cat,SIGNAL(clicked()),this,SLOT(changeToTools()));
+			view_ws->addWidget(cat->iconview, 1001);
+		}
 		cat->setData(&(*it));
 			
 		//Now we iterate through the actual item-data to create new GofunItems
-		for(std::vector<GofunItemData>::iterator sit = (*it).ItemData->begin(); sit != (*it).ItemData->end(); ++sit)
+		for(std::vector<GofunItemData*>::iterator sit = (*it).ItemData->begin(); sit != (*it).ItemData->end(); ++sit)
 		{
-			if((*sit).Hidden == "true")
+			if((*sit)->Hidden == "true")
 			{
 				continue;
 			}
-			GofunItem* gi = new GofunItem(cat->iconview, (*sit).Name);
-			gi->setData(&(*sit));
+			GofunItem* gi = dynamic_cast<GofunItem*>((*sit)->GofunDesktopObjectFactory(cat->iconview));
+			gi->setData((*sit));
 		}
 
-		//Set current_cat to the first category (FIXME: hack-alert?) 
-		if(i == 0)
-		{
-			current_cat = cat;
-		}
-	} 
+	}
+	tools_cat->setOn(true);
+}
+
+void GofunWidget::changeToTools()
+{
+	if(cats_bg->selectedId() != -1)
+		dynamic_cast<QPushButton*>(cats_bg->find(cats_bg->selectedId()))->setOn(false);
+	tools_cat->setOn(true);
+	view_ws->raiseWidget(1001);
 }
 
 void GofunWidget::insertCategory(GofunCatButton* cat)
 {
-
-	cats_bg->insert(cat,cats_bg->count());
+	cats_bg->insert(cat,cats_bg->count()-1);
 	cat->show();
-	connect(cat->iconview, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
-	connect(cat->iconview, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));	
-	connect(cat->iconview, SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),this, SLOT(rightClickedItem(QIconViewItem*,const QPoint&)));
+
+	connectCatIconview(cat);
 	
 	//At last we add the new IconView to the WidgetStack
 	view_ws->addWidget(cat->iconview, cats_bg->count()-1);
+}
+
+void GofunWidget::connectCatIconview(GofunCatButton* cat)
+{
+	connect(cat->iconview, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(performDefaultActionOnItem(QIconViewItem*)));
+	connect(cat->iconview, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(performDefaultActionOnItem(QIconViewItem*)));	
+	connect(cat->iconview, SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),this, SLOT(rightClickedItem(QIconViewItem*,const QPoint&)));
+}
+
+void GofunWidget::performDefaultActionOnItem(QIconViewItem* item)
+{
+	(dynamic_cast<GofunItem*>(item))->performDefaultAction();
 }
 
 //Opens the settings dialog.
@@ -223,18 +265,6 @@ void GofunWidget::openSettingsDlg()
 	settings_dlg->exec();
 	delete settings_dlg;
 	
-}
-
-//Open dialog for adding a Desktop Entry into the current category.
-void GofunWidget::addEntry()
-{
-	GofunItemSettings* settings_dlg = new GofunItemSettings();
-	int height = 200;
-	GofunMisc::attach_window(this,settings_dlg,D_Above,D_Under,365,200);
-	settings_dlg->setCaption(tr("Add entry"));
-	settings_dlg->setCategory(current_cat);
-	settings_dlg->exec();
-	delete settings_dlg;
 }
 
 //Open a dialog for adding a new Category
@@ -253,7 +283,16 @@ void GofunWidget::popupMenuSpace(int id)
 	switch(id)
 	{
 		case PID_Add:
-			addEntry();
+			GofunApplicationItem::createNewItem(current_cat);
+			break;
+		case PID_Add_Application:
+			GofunApplicationItem::createNewItem(current_cat);
+			break;
+		case PID_Add_Device:
+			GofunFSDeviceItem::createNewItem(current_cat);
+			break;
+		case PID_Add_Link:
+			GofunLinkItem::createNewItem(current_cat);
 			break;
 		case PID_Add_Wizard:
 			wizard->exec();
@@ -261,119 +300,27 @@ void GofunWidget::popupMenuSpace(int id)
 	}
 }
 
-//Open dialog for editing a Desktop Entry.
-void GofunWidget::editEntry(GofunItem* item)
-{
-	GofunItemSettings* settings_dlg = new GofunItemSettings();
-	GofunMisc::attach_window(this,settings_dlg,D_Above,D_Under,375,200);
-	settings_dlg->setCaption(tr("Edit entry"));
-	settings_dlg->load(item);
-	settings_dlg->exec();
-}
-
-//Evaluate popup that is shown, when the user right-clicks on a Desktop Entry.
-void GofunWidget::popupMenuItem(int id)
-{
-	if((dynamic_cast<GofunIconView*>(view_ws->visibleWidget()))->currentItem() )
-	{
-		GofunItem* item = dynamic_cast<GofunItem*>(dynamic_cast<GofunIconView*>(view_ws->visibleWidget())->currentItem());
-		switch(id)
-		{
-			case PID_Execute:
-				executeItem(item); break;
-			case PID_Execute_in_terminal:
-				executeItem(item, "terminal" ); break;
-			case PID_Open_directory:
-				openDirectoryItem(item); break;
-			case PID_Edit:
-				editEntry(item); break;
-			case PID_Execute_with_xinit: 
-				executeItem(item,"xinit"); break;
-			case PID_Delete: 
-				deleteEntry(item); break;
-			case PID_Costumized_start: 
-				costumizedStart(item); break;
-		}
-	} 
-}
-
-//Show the costumized-start-dialog for the item
-void GofunWidget::costumizedStart(GofunItem* item)
-{
-	GofunCostumStart* cstart_widget = new GofunCostumStart();
-	GofunMisc::attach_window(this,cstart_widget,D_Left,D_Right,375,200);
-	cstart_widget->load(item);
-	cstart_widget->show();
-}
-
 //Generate right-click on Desktop Entry popup.
 void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 {
-	QPopupMenu* popup = new QPopupMenu(this);
 	if(item) //Right-clicked on an item.
 	{
-		connect(popup,SIGNAL(activated(int)),this,SLOT(popupMenuItem(int)));
-		popup->insertItem(tr("Start"),PID_Execute);
-		popup->insertSeparator();
-		popup->insertItem(tr("\" in Terminal"),PID_Execute_in_terminal);
-		popup->insertItem(tr("Open directory"),PID_Open_directory);
-		popup->insertItem(tr("Start in new XServer"),PID_Execute_with_xinit);
-		popup->insertItem(tr("Customized start"),PID_Costumized_start);
-		popup->insertSeparator();
-		popup->insertItem(tr("Edit entry"),PID_Edit);
-		popup->insertItem(tr("Delete entry"),PID_Delete);
-		popup->popup(pos);
+		dynamic_cast<GofunItem*>(item)->rightClickPopup(pos);
 	}
 	else //Right-clicked in empty space.
 	{
+		QPopupMenu* popup = new QPopupMenu(this);
+		QPopupMenu* add_popup = new QPopupMenu(this);
 		connect(popup,SIGNAL(activated(int)),this,SLOT(popupMenuSpace(int)));
-		popup->insertItem(tr("Add Entry"),PID_Add);
+		connect(add_popup,SIGNAL(activated(int)),this,SLOT(popupMenuSpace(int )));
+	
+		add_popup->insertItem("Application",PID_Add_Application);
+		add_popup->insertItem("Device",PID_Add_Device);
+		add_popup->insertItem("Link",PID_Add_Link);
+		popup->insertItem("Add Entry",add_popup);
 		popup->insertItem(tr("Add Entry Wizard"),PID_Add_Wizard);
 		popup->popup(pos);
 	}
-}
-
-//Handles removement of a Desktop Entry.
-void GofunWidget::deleteEntry(GofunItem* item)
-{
-	//Kindly warn the user
-	if(QMessageBox::warning(this,tr("Delete entry"),tr("Do you really want to delete this entry, sir?"), tr("Ok"), tr("Cancel")) == 0)
-	{
-		item->deleteEntry();
-	}
-}
-
-//Forwards execution of a Desktop Entry.
-void GofunWidget::executeItem(QIconViewItem* item,const QString& option)
-{
-	ExecuteOption* eo = new ExecuteOption();
-	if(option != QString::null && !option.isEmpty())
-	{
-		if(option == "terminal")
-		{
-	  		eo->terminal = "true";
-			
-		}
-		if(option == "xinit")
-		{
-			eo->xinit = "true";
-		}
-	}
-	dynamic_cast<GofunItem*>(item)->executeCommand(eo);
-}
-
-//Open the (working)-directory of a Desktop Entry in a file-manager.
-void GofunWidget::openDirectoryItem(GofunItem* item)
-{
-	QProcess proc(GSC::get()->filemanager_cmd,this);
-	if(!item->data()->Path.isEmpty())
-		proc.addArgument((GofunMisc::ext_filestring(item->data()->Path)).simplifyWhiteSpace());
-	else
-		proc.addArgument(QDir::homeDirPath());
-	if(!proc.start())
-	{
-		std::cout<<tr("Execution of directory viewer failed. :(\n");
-	}	
 }
 
 //Switch between categories.
@@ -387,12 +334,21 @@ void GofunWidget::changeCategory(int id)
 	GofunCatButton* button = dynamic_cast<GofunCatButton*>(cats_bg->find(id));
 	current_cat = button;
 	
-	view_ws->raiseWidget(id-1);
+	view_ws->raiseWidget(id);
 	if(QSound::isAvailable()) //If sound can be played, we do so.
 	{
 		QSound::play("doublet.wav");
 	}
+	
+	tools_cat->setOn(false);
 }
 
-
-
+void GofunWidget::applyColorSettings()
+{
+  if(GSC::get()->color_source == "random")
+  	qApp->setPalette(QPalette(QColor(int(rand() % 256),int(rand() % 256),int(rand() % 256))),true);
+  else if(GSC::get()->color_source == "costum")
+  	qApp->setPalette(QPalette(QColor(GSC::get()->costum_color)),true);
+  else if(GSC::get()->color_source == "system")
+  	qApp->setPalette(system_palette,true);
+}

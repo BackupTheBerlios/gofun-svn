@@ -23,7 +23,10 @@
  
 #include <qstring.h>
 #include <qstringlist.h>
- 
+
+class QWidget;
+class GofunDesktopObject;
+
 #ifndef GOFUN_DATA
 #define GOFUN_DATA
 
@@ -33,8 +36,14 @@ struct GofunDesktopEntryData
 	QString File;
 	QString Name;
 	QString Comment;
-	QString Icon;	
-	QString Unknownkeys;
+	QString Icon;
+	QString Encoding;
+	QString Version;
+	QString Type;
+	QStringList Unknownkeys;
+	QString Hidden;
+	
+	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent) = 0;
 };
 
 ///Data-type describing parameters in a Desktop Entry
@@ -50,14 +59,40 @@ struct GofunParameterData
 ///Data-type for Desktop Entries, that can be executed
 struct GofunItemData : public GofunDesktopEntryData
 {
+	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
+};
+
+struct GofunApplicationItemData : public GofunItemData
+{
+
 	QString Exec;
 	QString Path;
 	QString Terminal;
 	std::vector<QString> X_GoFun_Env;
 	QString X_GoFun_User;
-	QString Hidden;
 	QString X_GoFun_NewX;
 	std::map<int,GofunParameterData> X_GoFun_Parameter;
+	
+	
+	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
+};
+
+struct GofunFSDeviceItemData : public GofunItemData
+{
+	QString Device;
+	QString FSType;
+	QString MountPoint;
+	QString ReadOnly;
+	QString UnmountIcon;
+	
+	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
+};
+
+struct GofunLinkItemData : public GofunItemData
+{
+	QString URL;
+	
+	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 };
 
 ///Data-type for Desktop Entries, that represent a category
@@ -65,14 +100,13 @@ struct GofunItemData : public GofunDesktopEntryData
     in this category. **/
 struct GofunCatData : public GofunDesktopEntryData
 {
-	QString Version;
-	QString Type;
 	QString Catdir;
 	QString Background;
-	QString Encoding;
 	QString X_GoFun_Background;
 	QString X_GoFun_Color;
-	std::vector<GofunItemData>* ItemData;
+	std::vector<GofunItemData*>* ItemData;
+	
+	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 };
 
 ///Data-type that can contain special start-options
@@ -88,12 +122,18 @@ struct GofunDataLoader
 {
 	static std::vector<GofunCatData>* getData();
 private:
-	static std::vector<GofunItemData>* parse_catdir(const QString& catdir);
+	static std::vector<GofunItemData*>* parse_catdir(const QString& catdir);
+	static bool parse_desktop_file_line(GofunDesktopEntryData*, const QString&);
+	static bool parse_application_file_line(GofunApplicationItemData*, const QString&);
+	static bool parse_link_file_line(GofunLinkItemData*, const QString&);
+	static bool parse_fsdevice_file_line(GofunFSDeviceItemData*, const QString&);
 	static GofunItemData* parse_gofun_file(const QString& file);
 	static GofunCatData* parse_cat_info(const QString& file);
 	static QStringList load_file_data(const QString& _file);
 	static QString get_value(QString line);
 	static QString get_key(QString line);
+	static bool parse_line(const QString&,const QString&,QString&);
+	static bool parse_line(const QString&,const QString&,std::vector<QString>&);
 };
 
 struct GofunSettingsData

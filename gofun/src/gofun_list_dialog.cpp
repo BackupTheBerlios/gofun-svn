@@ -25,31 +25,116 @@
 GofunListDialog::GofunListDialog()
 {
 	list = new QListView(this);
+	list->addColumn(tr("Values"));
+	list->setResizeMode(QListView::AllColumns);
+	list->setSorting(-1);
+	
+	edit = new QLineEdit(this);
+	edit->setEnabled(false);
+	
+	connect(edit,SIGNAL(textChanged(const QString&)),this,SLOT(updateValue(const QString&)));
+	connect(list,SIGNAL(selectionChanged()),this,SLOT(updateEdit()));
+	
 	add_button = new QPushButton(tr("Add"),this);
 	rem_button = new QPushButton(tr("Remove"),this);
 	apply_button = new QPushButton(tr("Apply"),this);
 	cancel_button = new QPushButton(tr("Cancel"),this);
+	up_button = new QPushButton(tr("Up"),this);
+	down_button = new QPushButton(tr("Down"),this);
 	
 	connect(add_button,SIGNAL(clicked()),this,SLOT(add()));
 	connect(rem_button,SIGNAL(clicked()),this,SLOT(remove()));
 	connect(apply_button,SIGNAL(clicked()),this,SLOT(accept()));
 	connect(cancel_button,SIGNAL(clicked()),this,SLOT(reject()));
+	connect(up_button,SIGNAL(clicked()),this,SLOT(up()));
+	connect(down_button,SIGNAL(clicked()),this,SLOT(down()));
 	
-	QGridLayout* grid = new QGridLayout(this,3,2);
+	QGridLayout* grid = new QGridLayout(this,4,3);
 	grid->addWidget(add_button,0,0);
 	grid->addWidget(rem_button,0,1);
 	grid->addMultiCellWidget(list,1,1,0,2);
-	grid->addWidget(apply_button,2,0);
-	grid->addWidget(cancel_button,2,1);
+	grid->addMultiCellWidget(edit,2,2,0,2);
+	grid->addWidget(apply_button,3,0);
+	grid->addWidget(cancel_button,3,1);
+	
+	QGridLayout* right = new QGridLayout(4,1);
+	grid->addMultiCellLayout(right,0,4,3,3);
+	
+	right->addWidget(up_button,1,0);
+	right->addWidget(down_button,2,0);
+}
+
+QStringList GofunListDialog::returnList()
+{
+	QStringList _list;
+	for(QListViewItem* it = list->firstChild(); it != 0; it = it->nextSibling())
+	{
+		_list += (*it).text(0);
+	}
+}
+
+void GofunListDialog::fillList(const QStringList& _list)
+{
+	for(QStringList::ConstIterator it = _list.begin(); it != _list.end(); ++it)
+	{
+		new QListViewItem(list,(*it));
+	}
 }
 
 void GofunListDialog::add()
 {
-	new QListViewItem(list,tr("Value"));
+	QListViewItem* new_item = new QListViewItem(list,tr("Value"));
 }
 
 void GofunListDialog::remove()
 {
+	if(list->selectedItem())
+		delete list->selectedItem();
+}
+
+void GofunListDialog::down()
+{
+    if (!list->currentItem())
+        return;
+    if (list->currentItem()->nextSibling() == 0)
+        return;
+
+    list->currentItem()->moveItem(list->currentItem()->nextSibling()); 
+}
+
+void GofunListDialog::up()
+{
+    if (!list->currentItem())
+        return;
+    if (list->currentItem() == list->firstChild()) 
+        return;
+    
+    QListViewItem *item = list->firstChild();
+    while (item->nextSibling() != list->currentItem())
+        item = item->nextSibling();
+    item->moveItem( list->currentItem()); 
+}
+
+void GofunListDialog::updateValue(const QString& text)
+{
+	if(!list->selectedItem())
+		return;
+	
+	list->selectedItem()->setText(0,text);
+}
+
+void GofunListDialog::updateEdit()
+{
+	if(!list->selectedItem())
+	{
+		edit->setEnabled(false);
+		edit->setText("");
+	}
+	else
+	{
+		edit->setEnabled(true);
+		edit->setText(list->selectedItem()->text(0));
+	}
 }
 
 

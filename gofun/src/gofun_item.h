@@ -29,31 +29,48 @@ class GofunItemData;
 class ExecuteOption;
 class GofunIconView;
 class GofunIconViewToolTip;
+class QPopupMenu;
+class GofunCatButton;
 
 #ifndef GOFUN_ITEM
 #define GOFUN_ITEM
 
-///Items represent executeable Desktop Entries
-class GofunItem : public QIconViewItem , public GofunDesktopObject
+enum
 {
+  PID_Edit,
+  PID_Delete
+};
+
+///Items represent executeable Desktop Entries
+class GofunItem : public QObject, public QIconViewItem , public GofunDesktopObject
+{
+	Q_OBJECT
+
 public:
 	GofunItem(GofunIconView*, const QString& = 0);
 	//virtual ~GofunItem();
 
-	void setData(GofunItemData*);
-	void save();
+	virtual void setData(GofunItemData*);
+	virtual void save();
 	void deleteEntry();
-	void executeCommand(ExecuteOption* = NULL);
-	void loadIcon();
-		
+	virtual void loadIcon();
+	virtual void editEntry() {};
+	virtual QPopupMenu* rightClickPopup(const QPoint&);
+	
+	static void createNewItem(GofunCatButton*);
+	
 	void setToolTipText(const QString);
 	const QString getToolTipText(void) const { return(toolTipText); }
 	
-	GofunItemData* data() { return m_data; }
+	virtual GofunItemData* data() { return m_data; }
+	virtual void performDefaultAction() {};
+public slots:
+	virtual void popupActivated(int);
 private:
 	QString saveProcArguments(QProcess*);
 	void interpretExecString(QString&);
 	void addSplittedProcArgument(QProcess*,const QString&);
+	
 	GofunItemData* m_data;
 	
 	QString toolTipText;

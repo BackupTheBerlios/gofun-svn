@@ -25,8 +25,6 @@
 #include "gofun_misc.h" 
 #include "gofun_settings.h"
 
-QPalette GofunMisc::system_palette;
-
 QString GofunMisc::shell_call(const QString& call)
 {
         char buf[1024];
@@ -49,7 +47,7 @@ QString GofunMisc::shellify_path(const QString& path)
 
 QString GofunMisc::ext_filestring(const QString& str)
 {
-	return shell_call("echo -n "+ str);
+	return shell_call("echo -n \""+ str+"\"");
 }
 
 void GofunMisc::center_window(QWidget* w, int width, int height)
@@ -87,7 +85,7 @@ QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height
 			file = name;
 		else if(!(file = GofunMisc::shell_call("find /usr/share/icons -path *"+name+"*")).isEmpty())
 		{
-			//FIXME: that code looks still quite hackish
+			//FIXME: that code still looks quite hackish
 			QStringList::Iterator choice;
 			int m_width = 0;
 			QStringList files = QStringList::split("\n",file);
@@ -201,16 +199,6 @@ void GofunMisc::attach_window( QWidget * base, QWidget * to_attach, Side pref, S
 	
 	if(!success)
 		GofunMisc::center_window(to_attach,width,height);
-}
-
-void GofunMisc::applyColorSettings()
-{
-  if(GSC::get()->color_source == "random")
-  	qApp->setPalette(QPalette(QColor(int(rand() % 256),int(rand() % 256),int(rand() % 256))),true);
-  else if(GSC::get()->color_source == "costum")
-  	qApp->setPalette(QPalette(QColor(GSC::get()->costum_color)),true);
-  else if(GSC::get()->color_source == "system")
-  	qApp->setPalette(system_palette,true);
 }
 
 bool GofunMisc::makeDir(const QString& path)

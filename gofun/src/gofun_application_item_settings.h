@@ -17,41 +17,59 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
- 
-#include <qlayout.h>
-#include <qpushbutton.h>
- 
-#include "gofun_command_editor.h"
 
-GofunCommandEditor::GofunCommandEditor()
+#include "gofun_item_settings.h"
+
+class GofunApplicationItem;
+
+#ifndef GOFUN_APPLICATION_ITEM_SETTINGS
+#define GOFUN_APPLICATION_ITEM_SETTINGS
+
+///Settings-dialog for items
+class GofunApplicationItemSettings : public GofunItemSettings
 {
-	setCaption(tr("Command Editor"));
-
-	text = new QTextEdit(this);
-	text->setTextFormat(Qt::PlainText);
-	text->setWordWrap(QTextEdit::NoWrap);
-	QPushButton* apply = new QPushButton(tr("Apply"),this);
-	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
+	Q_OBJECT
+public:
+	GofunApplicationItemSettings();
+	void load(GofunApplicationItem*);
 	
-	connect(apply,SIGNAL(clicked()),this,SLOT(accept()));
-	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
+public slots:
+	void iconDialog();
+	void dirDialog();
+	void addEnvVar();
+	void addEnvVar(const QString&, const QString&);
+	void remEnvVar();
+	void envItemEdit(QListViewItem*,const QPoint&,int);
+	void envPredefinedPopup();
+	void envPredefinedPopupActivated(int);
+	void userChkToggled(bool);
+	void addParRow();
+	void remParRow();
+	void parValEditDialog();
+	void commandEditor();
+private:
+	void save();
+	void apply();
+	bool inputValid();
 	
-	QGridLayout* grid = new QGridLayout(this,3,3);
-	grid->addMultiCellWidget(text,1,1,0,2);
-	grid->addWidget(apply,2,0);
-	grid->addWidget(cancel,2,1);
-}
+	GofunApplicationItemData* data();
 
-void GofunCommandEditor::setCommand(const QString& _cmd)
-{
-	cmd = _cmd;	
-	text->setText(cmd.replace(';',"\n"));
-}
+	QLineEdit* command;
+	QToolButton* command_button;
+	QLineEdit* directory;
+	QToolButton* dir_button;
+	QListView* envvars;
+	QPushButton* envadd;
+	QPushButton* envrem;
+	QPushButton* envpre;
+	QTable* tb_par;
+	QPushButton* paradd;
+	QPushButton* parrem;
+	QCheckBox* terminal_chk;
+	QCheckBox* user_chk;
+	QComboBox* user_combo;
+	QCheckBox* newx_chk;
+};
 
-QString GofunCommandEditor::command()
-{
-	cmd = text->text();
-	cmd = cmd.replace('\n',";");
-	return cmd;
-}
+#endif
 

@@ -188,7 +188,7 @@ void GofunSettings::apply()
 	
 	GSC::get()->costum_color = costum_col_bt->paletteBackgroundColor().name();
 	
-	GofunMisc::applyColorSettings();
+	GofunWidget::applyColorSettings();
 		
 	dynamic_cast<GofunWidget*>(qApp->mainWidget())->reloadData();
 	

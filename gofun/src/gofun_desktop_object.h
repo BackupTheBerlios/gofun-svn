@@ -20,7 +20,7 @@
 
 #include <qwidget.h>
 
-class GofunDesktopEntryData; 
+#include "gofun_data.h"
 
 #ifndef GOFUN_DESKTOP_OBJECT
 #define GOFUN_DESKTOP_OBJECT
@@ -30,7 +30,7 @@ class GofunDesktopObject
 {
 	public:
 	virtual void save();
-	virtual void* data() = 0;
+	virtual GofunDesktopEntryData* data() = 0;
 };
 
 #endif

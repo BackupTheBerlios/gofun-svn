@@ -18,60 +18,90 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qstring.h>
-#include <qfiledialog.h>
-#include <qlabel.h>
-#include <qwidget.h>
-#include <qtoolbutton.h>
+#include <vector>
  
-#ifndef GOFUN_MISC
-#define GOFUN_MISC
+#include <qdialog.h>
+#include <qthread.h>
+#include <qiconview.h>
 
-enum Side {
-	D_Left,
-	D_Right,
-	D_Above,
-	D_Under,
-	D_None
-};
+class QLabel;
+class QIconView;
+class QProgressBar;
+class QGridLayout;
+class GofunIconItem;
 
-///Mixed methods needed in GoFun
-struct GofunMisc
+#ifndef GOFUN_ICON_DIALOG
+#define GOFUN_ICON_DIALOG
+
+class GofunAdjustAbleIconView : public QIconView
 {
-	static QString shell_call(const QString&);
-	static QString ext_filestring(const QString&);
-	static void center_window(QWidget*, int, int);
-	static QString fileDialogGetImage(const QString& start_dir,const QString& caption, const QString& filter_desc);
-	static QPixmap get_icon(const QString&,int = 32,int = 32);
-	static void attach_window(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
-	static bool makeDir(const QString&);
-	static QString shellify_path(const QString&);
-};
-
-class GofunFileDialogPreview : public QLabel, public QFilePreview
-{
+	Q_OBJECT
 	public:
-        GofunFileDialogPreview( QWidget *parent=0 ) : QLabel( parent ) {}
-
-        void previewUrl( const QUrl &u );
+	GofunAdjustAbleIconView(QWidget*);
+	void adjustMe();
 };
 
-class GofunFileIconProvider : public QFileIconProvider
+class GofunIconDialog : public QDialog
 {
-	public:
-	virtual const QPixmap * pixmap ( const QFileInfo & info );
-};
+	Q_OBJECT
 
-class GofunLineEdit : public QWidget
-{
 	public:
-	GofunLineEdit();
+	GofunIconDialog();
+	QString selected();
+	
+	private slots:
+	void setSelectedIcon(QIconViewItem*);
+	void browseForIcon();
+	void updateFilterView(const QString&);
 	
 	private:
-	QLineEdit* lineedit;
-	QToolButton* button;
+	void loadIcons();
+	void customEvent(QCustomEvent*);
+	
+	QLabel* icon_preview;
+	QLabel* icon_file;
+	GofunAdjustAbleIconView* filter_view;
+	QProgressBar* load_progress;
+	QGridLayout* grid;
+	
+	std::vector<GofunIconItem*> icon_pool;
+	
+friend class GofunIconLoadThread;
+};
+
+class GofunIconLoadThread : public QThread
+{
+	public:
+	GofunIconLoadThread(GofunIconDialog* id) { icon_dialog = id; };
+	virtual void run();
+	
+	private:
+	GofunIconDialog* icon_dialog;
+};
+
+class GofunIconItem : public QIconViewItem
+{
+	public:
+	GofunIconItem(QIconView*, const QString& = 0, const QPixmap& = 0, const QString& = 0);
+	
+	QString file;
+};
+
+enum
+{
+	IconItemEventID = 5555
+};
+
+class GofunIconItemDataEvent : public QCustomEvent
+{
+	public:
+	GofunIconItemDataEvent(const QString _text, const QImage _pixmap, const QString _file)
+	: QCustomEvent(IconItemEventID) , text(_text) ,pixmap(_pixmap) , file(_file) {}
+	
+	QString text;
+	QImage pixmap;
+	QString file;
 };
 
 #endif
-
 

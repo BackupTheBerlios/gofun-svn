@@ -47,16 +47,12 @@ struct GofunCatData;
 
 enum
 {
-  PID_Execute,
-  PID_Execute_in_terminal,
-  PID_Execute_with_xinit,
-  PID_Open_directory,
-  PID_Edit,
-  PID_Delete,
-  PID_Costumized_start,
   PID_Add,
   PID_Add_Wizard,
-  PID_Add_Category
+  PID_Add_Category,
+  PID_Add_Application,
+  PID_Add_Device,
+  PID_Add_Link
 };
 
 ///Is being the main window of GoFun
@@ -68,9 +64,7 @@ public:
 	void reloadData();
 public slots:
 	void changeCategory(int);
-	void executeItem(QIconViewItem*,const QString& = QString::null);
 	void rightClickedItem(QIconViewItem*,const QPoint&);
-	void popupMenuItem(int);
 	void popupMenuSpace(int);
 	void popupCatAdd();
 	void popupCAActivated(int);
@@ -80,19 +74,23 @@ public slots:
 	void showAbout();
 	QVButtonGroup* categoryButtons() { return cats_bg; };
 	void insertCategory(GofunCatButton*);
+	void changeToTools();
+	void performDefaultActionOnItem(QIconViewItem*);
+	
+	static void applyColorSettings();
+	static QPalette system_palette;
 private:
 	void costumizedStart(GofunItem*);
-	void addEntry();
 	void editEntry(GofunItem*);
 	void deleteEntry(GofunItem*);
-	void openDirectoryItem(GofunItem*);
 	void loadData();
 	void unloadData();
+	void connectCatIconview(GofunCatButton*);
 
-	QWidgetStack * view_ws;
 	GofunCatButton* current_cat;
+	GofunCatButton* tools_cat;
+	QWidgetStack * view_ws;
 	QVButtonGroup* cats_bg;
-	QLabel* back_label;
 	
 friend class GofunCatSettings;
 friend class GofunCatButton;

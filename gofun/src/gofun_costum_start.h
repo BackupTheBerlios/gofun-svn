@@ -23,7 +23,7 @@
 #include <qcheckbox.h>
 #include <qlabel.h>
 
-class GofunItem;
+class GofunApplicationItem;
 
 #ifndef GOFUN_CSTART
 #define GOFUN_CSTART
@@ -36,13 +36,13 @@ public:
 	GofunCostumStart();
 public slots:
 	void start();
-	virtual void load(GofunItem*);
+	virtual void load(GofunApplicationItem*);
 
 private:
 
 	QLabel* caption;
 	QLineEdit* command;
-	GofunItem* item;
+	GofunApplicationItem* item;
 	QCheckBox* terminal;
 	QCheckBox* newxserver;
 	QComboBox* nxs_depth;

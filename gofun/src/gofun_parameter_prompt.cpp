@@ -18,7 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qcombobox.h>
 #include <qlabel.h>
 #include <qgroupbox.h>
 #include <qpushbutton.h>
@@ -54,6 +53,17 @@ GofunParameterPrompt::GofunParameterPrompt()
 
 void GofunParameterPrompt::addParameter(GofunParameterData* pd)
 {
+	GofunSmallParameterData spd;
+	spd.Flag = pd->Flag;
+	spd.Value = pd->Default_Value;
+	
+	if(pd->Prompt != "true")
+	{
+		spd.combo = 0;
+		parameter.push_back(spd);
+		return;	
+	}
+	
 	QGroupBox* gb = new QGroupBox(1,Qt::Horizontal,pd->Comment + " ( " + tr("Flag") + ": " + pd->Flag + " )",this);
 	QComboBox* cb = new QComboBox(gb);
 	
@@ -61,17 +71,23 @@ void GofunParameterPrompt::addParameter(GofunParameterData* pd)
 	cb->insertStringList(pd->Values);
 	cb->setCurrentText(pd->Default_Value);
 	cb->setEditable(true);
-	
-	parameter.push_back(pd);
+
+	spd.combo = cb;
+	parameter.push_back(spd);
 }
  
 QString GofunParameterPrompt::parameterString()
 {
 	QString parstr;
-	for(std::vector<GofunParameterData*>::iterator it = parameter.begin(); it != parameter.end(); ++it)
+	for(std::vector<GofunSmallParameterData>::iterator it = parameter.begin(); it != parameter.end(); ++it)
 	{
-		parstr += (*it)->Flag;
-		
+		if((*it).combo != 0)
+			(*it).Value = (*it).combo->currentText();
+		if(!(*it).Value.isEmpty())
+		{
+			parstr += " " + (*it).Flag;
+			parstr += " " + (*it).Value;
+		}
 	}
 	return parstr;
 }

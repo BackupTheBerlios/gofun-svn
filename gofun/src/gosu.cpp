@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
-#include <unistd.h>   
+#include <unistd.h>  
 #include <shadow.h>
 
 #include <qinputdialog.h>
@@ -317,32 +317,11 @@ run_shell (const char *shell, const char *command, char **additional_args)
       args[argno++] = *additional_args;
   if (gofun)
     {
-      QProcess* proc = new QProcess;
-      QStringList arguments;
-    	QFile file( pre_home_dir + QString("/.gofun/tmp_proc_exec"));
-	if(file.open( IO_ReadOnly ))
-	{
-		QDataStream stream(&file);
-		QString str;
-		while ( !stream.atEnd() )
-		{
-			Q_INT8 c;
-			stream >> c;
-			if(c != 0)
-			{
-				str += c;
-			}
-			else
-			{
-				arguments += str;
-				str = "";
-			}
-		}
-		file.close();
-	}
-	proc->setArguments(arguments);
+	QProcess* proc = new QProcess;
+	proc->addArgument("golauncher");
+	proc->addArgument("-datafile");
+	proc->addArgument(pre_home_dir + QString("/.gofun/tmp_proc_exec"));
 	proc->start();
-	
     }
   args[argno] = NULL;
   if(!gofun)
