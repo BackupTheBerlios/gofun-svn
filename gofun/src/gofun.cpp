@@ -57,9 +57,11 @@ int main(int argc, char *argv[])
 
   //This is the app's core
   QApplication app(argc, argv);
+  GofunMisc::system_palette = qApp->palette();
+  
   //make GoFun look colorful and different every startup
-  app.setPalette(QPalette(QColor(int(rand() % 256),int(rand() % 256),int(rand() % 256))));
-
+  GofunMisc::applyColorSettings();
+  
   //Here the main widget is being created
   GofunWidget gofun_widget;
   //Move the widget to the middle of the screen

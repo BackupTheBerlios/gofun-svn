@@ -23,9 +23,11 @@
 #include <qlabel.h>
 #include <qsettings.h>
 #include <qdir.h>
+#include <qcolordialog.h>
 
 #include "gofun_settings.h" 
 #include "gofun_widget.h"
+#include "gofun_misc.h"
 
 GofunSettingsContainer* GofunSettingsContainer::_instance = NULL;
 
@@ -48,9 +50,17 @@ GofunSettingsContainer::GofunSettingsContainer()
 	terminal_cmd = m_settings->readEntry("terminal");
 	filemanager_cmd = m_settings->readEntry("filemanager");
 	m_settings->endGroup();
-	
+		
 	if(terminal_cmd.isEmpty())
 		terminal_cmd = "xterm";
+		
+	m_settings->beginGroup("lookandfeel");
+	color_source = m_settings->readEntry("colorsource");
+	costum_color = m_settings->readEntry("costumcolor");
+	m_settings->endGroup();
+	
+	if(color_source.isEmpty())
+		color_source = "random";
 }
 
 GofunSettingsContainer::~GofunSettingsContainer()
@@ -59,6 +69,7 @@ GofunSettingsContainer::~GofunSettingsContainer()
 	m_settings->writeEntry("/commands/filemanager",filemanager_cmd);
 	m_settings->writeEntry("/general/datadir",gofun_dir);
 	m_settings->writeEntry("/lookandfeel/colorsource",color_source);
+	m_settings->writeEntry("/lookandfeel/costumcolor",costum_color);
 	m_settings->endGroup();
 	delete m_settings;
 }
@@ -90,6 +101,7 @@ GofunSettings::GofunSettings()
 	col_random = new QRadioButton(tr("Random"),col_group);
 	col_costum = new QRadioButton(tr("Costum"),col_group);
 	costum_col_bt = new QToolButton(widget_laf);
+	connect(costum_col_bt,SIGNAL(clicked()),this,SLOT(costumColorDialog()));
 		
 	grid_laf->addMultiCellWidget(col_group,0,0,0,1);
 	grid_laf->addWidget(new QLabel(tr("Costum color"),widget_laf),1,0);
@@ -129,8 +141,11 @@ void GofunSettings::apply()
 	col_system->isChecked() ? GSC::get()->color_source = "system" : 0;
 	
 	GSC::get()->costum_color = costum_col_bt->paletteBackgroundColor().name();
+	
+	GofunMisc::applyColorSettings();
 		
 	dynamic_cast<GofunWidget*>(qApp->mainWidget())->reloadData();
+	
 	/*if(item)
 	{
 		item->setCommand(command->text());
@@ -155,4 +170,21 @@ void GofunSettings::load()
 	terminal->setText(GSC::get()->terminal_cmd);
 	filemanager->setText(GSC::get()->filemanager_cmd);
 	directory->setText(GSC::get()->gofun_dir);
+	
+	if(GSC::get()->color_source == "random")
+		col_random->setChecked(true);
+	else if(GSC::get()->color_source == "system")
+		col_system->setChecked(true);
+	else if(GSC::get()->color_source == "costum")
+		col_costum->setChecked(true);
+		
+	costum_col_bt->setPaletteBackgroundColor(GSC::get()->costum_color);
 }
+
+void GofunSettings::costumColorDialog()
+{
+	costum_col_bt->setPaletteBackgroundColor(QColorDialog::getColor());
+}
+
+
+

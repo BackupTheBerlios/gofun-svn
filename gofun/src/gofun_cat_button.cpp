@@ -139,7 +139,9 @@ void GofunCatButton::loadIcon()
 {
 	QPixmap px = GofunMisc::get_icon(data()->Icon,16,16);
 	if(!px.isNull())
-		setPixmap(px);
+		conf_button->setPixmap(px);
+	else
+		conf_button->setPixmap(QPixmap("default_cat.png"));
 }
 
 //Specify which IconView is related to this CatButton

@@ -383,3 +383,6 @@ void GofunWidget::changeCategory(int id)
 		QSound::play("doublet.wav");
 	}
 }
+
+
+

@@ -23,6 +23,9 @@
 #include <qapplication.h>
  
 #include "gofun_misc.h" 
+#include "gofun_settings.h"
+
+QPalette GofunMisc::system_palette;
 
 QString GofunMisc::shell_call(const QString& call)
 {
@@ -131,8 +134,6 @@ const QPixmap * GofunFileIconProvider::pixmap ( const QFileInfo & info )
 	return pixmap;
 }
 
-#include <iostream>
-
 void GofunMisc::attach_window( QWidget * base, QWidget * to_attach, Side pref, Side alt, int width, int height )
 {
 	if(width == -1)
@@ -195,4 +196,13 @@ void GofunMisc::attach_window( QWidget * base, QWidget * to_attach, Side pref, S
 		GofunMisc::center_window(to_attach,width,height);
 }
 
+void GofunMisc::applyColorSettings()
+{
+  if(GSC::get()->color_source == "random")
+  	qApp->setPalette(QPalette(QColor(int(rand() % 256),int(rand() % 256),int(rand() % 256))),true);
+  else if(GSC::get()->color_source == "costum")
+  	qApp->setPalette(QPalette(QColor(GSC::get()->costum_color)),true);
+  else if(GSC::get()->color_source == "system")
+  	qApp->setPalette(system_palette,true);
+}
 

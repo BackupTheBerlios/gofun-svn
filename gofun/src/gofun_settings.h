@@ -58,6 +58,8 @@ public:
 	virtual void load();
 public slots:
 
+private slots:
+	void costumColorDialog();
 private:
 	virtual void save();
 	virtual void apply();
