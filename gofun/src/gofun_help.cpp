@@ -29,10 +29,9 @@
 
 #include "gofun_help.h"
 
+std::map<QString,QPixmap*> GofunMimeSourceFactory::images;
+std::map<QString,int> GofunMimeSourceFactory::image_countdown;
 
-	QString mcur_image;
-
-	std::map<QString,QPixmap*> images;
 GofunHelp::GofunHelp()
 {
 	setCaption(tr("GoFun Help"));
@@ -148,6 +147,7 @@ GofunMimeSourceFactory::GofunMimeSourceFactory() : QMimeSourceFactory()
 	image_there = false;
 }
 
+
 const QMimeSource* GofunMimeSourceFactory::data(const QString& abs_name) const
 {
 	if(abs_name.contains(".png") || abs_name.contains("bslogo"))
@@ -155,31 +155,29 @@ const QMimeSource* GofunMimeSourceFactory::data(const QString& abs_name) const
 	
 		if(images.find(abs_name) != images.end())
 		{
-		QMimeSourceFactory* mf = new QMimeSourceFactory();
-		mf->setPixmap(abs_name,*images[abs_name]);
-		const QMimeSource* r = mf->data(abs_name);
-		return r;
+			QMimeSourceFactory* mf = new QMimeSourceFactory();
+			mf->setPixmap(abs_name,*images[abs_name]);
+			const QMimeSource* r = mf->data(abs_name);
+			return r;
 		}
 	
 		http->setHost("www.berlios.de");
 		http->get(abs_name);
-		mcur_image = abs_name;
-		/*while(!image_there)
-		{
-		sleep(1);
-		}*/
 		
+		
+		if(!image_countdown[http->currentRequest().path()])
+		{
+			image_countdown[http->currentRequest().path()] = 2; //We start from 2, because 0 is the default and we will count down to 1.
+		}
+		else
+		{
+			++image_countdown[http->currentRequest().path()];
+		}		
 	}
-	qDebug("Retrieve source");
-	qDebug(abs_name);
 	const QMimeSource * r = QMimeSourceFactory::data( abs_name );
 	if(abs_name.contains("index.php"))
 	{
 		p_gofun_help->openLink(abs_name);
-	}
-	if(!r)
-	{
-		qDebug("MimeSourcing failed my friend cheeze");
 	}
 	return r;
 }
@@ -187,25 +185,20 @@ const QMimeSource* GofunMimeSourceFactory::data(const QString& abs_name) const
 void GofunMimeSourceFactory::setImageThere(int id,bool error)
 {
 if(error)
-{
-	qDebug("Image receive errorrrrrrrrrrrrrrrrrrrrrrrr");
 	return;
-}
 
-	qDebug("Image THERE");
-	qDebug(http->currentRequest().path());
 image_there = true;
 
 QPixmap* img = new QPixmap(http->readAll());
-/*QDialog* d = new QDialog();
-d->setGeometry(50,50,400,400);
-QLabel* l = new QLabel(d);
-l->setGeometry(0,0,400,400);
-l->setPixmap(img);
-d->show();*/
 
 images[http->currentRequest().path()] = img;
+--image_countdown[http->currentRequest().path()];
+
+if(image_countdown[http->currentRequest().path()] == 1)
+	p_gofun_help->textbrowser->setSource(p_gofun_help->textbrowser->source());
 
 }
+
+
 
 

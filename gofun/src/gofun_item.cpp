@@ -21,6 +21,7 @@
 #include <iostream> 
 
 #include <qinputdialog.h>
+#include <qtooltip.h>
 
 #include "gofun_misc.h"
 #include "gofun_item.h"
@@ -28,10 +29,13 @@
 #include "gofun_data.h"
 #include "gofun_iconview.h"
 #include "gofun_settings.h"
+
+GofunItem* GofunIconViewToolTip::last_active = 0;
  
 GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconViewItem(iconview,string)
 {
-	data = new GofunItemData();
+	m_data = new GofunItemData();
+	toolTip = NULL;
 }
 
 /*GofunItem::~GofunItem()
@@ -41,7 +45,7 @@ GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconView
 
 void GofunItem::save()
 {
-	QFile file( data->File );
+	QFile file( data()->File );
 	if ( file.open( IO_WriteOnly ) )
 	{
 		QTextStream stream( &file );
@@ -49,24 +53,24 @@ void GofunItem::save()
 		stream << "Version=0.9.4\n";
 		stream << "Encoding=UTF-8\n";
 		stream << "Type=Application\n";
-		stream << "Name=" << data->Name << "\n";
-		stream << "Exec=" << data->Exec << "\n";
-		stream << "Path=" << data->Path << "\n";
-		stream << "Icon=" << data->Icon << "\n";
-		stream << "Comment=" << data->Comment << "\n";
-		stream << "Terminal=" << data->Terminal << "\n";
-		stream << "X-GoFun-NewX=" << data->X_GoFun_NewX << "\n";
-		if(!data->X_GoFun_Env.empty())
+		stream << "Name=" << data()->Name << "\n";
+		stream << "Exec=" << data()->Exec << "\n";
+		stream << "Path=" << data()->Path << "\n";
+		stream << "Icon=" << data()->Icon << "\n";
+		stream << "Comment=" << data()->Comment << "\n";
+		stream << "Terminal=" << data()->Terminal << "\n";
+		stream << "X-GoFun-NewX=" << data()->X_GoFun_NewX << "\n";
+		if(!data()->X_GoFun_Env.empty())
 		{
 			stream << "X-GoFun-Env=";
-			for(std::vector<QString>::iterator it = data->X_GoFun_Env.begin(); it != data->X_GoFun_Env.end(); ++it)
+			for(std::vector<QString>::iterator it = data()->X_GoFun_Env.begin(); it != data()->X_GoFun_Env.end(); ++it)
 			{
 				stream << "\t" << (*it);
 			}
 			stream << "\n";
 		}
-		stream << "X-GoFun-User=" << data->X_GoFun_User << "\n";
-		stream << data->Unknownkeys << "\n";
+		stream << "X-GoFun-User=" << data()->X_GoFun_User << "\n";
+		stream << data()->Unknownkeys << "\n";
 		file.close();
 	}
 }
@@ -76,7 +80,7 @@ void GofunItem::deleteEntry()
 	QProcess proc;
 	proc.addArgument("rm");
 	proc.addArgument("-f");
-	proc.addArgument(data->File);
+	proc.addArgument(data()->File);
 	proc.start();
 	while(proc.isRunning())
 	{
@@ -84,18 +88,20 @@ void GofunItem::deleteEntry()
 	delete this;
 }
 
-void GofunItem::loadIcon()
-{
-	QPixmap px = GofunMisc::get_icon(data->Icon,32,32);
-	if(!px.isNull())
-		setPixmap(px);
-}
-
 void GofunItem::setData(GofunItemData* d)
 {
-	delete data;
-	data = d;
+	delete m_data;
+	m_data = d;
 	loadIcon();
+	if(!data()->Comment.isEmpty())
+		setToolTipText(data()->Comment);
+}
+
+void GofunItem::loadIcon()
+{
+	QPixmap px = GofunMisc::get_icon(data()->Icon,32,32);
+	if(!px.isNull())
+		setPixmap(px);
 }
 
 void GofunItem::interpretExecString(QString& exec)
@@ -115,8 +121,6 @@ void GofunItem::interpretExecString(QString& exec)
 	}
 }
 
-#include <qtranslator.h>
-
 void GofunItem::executeCommand(ExecuteOption* option)
 {
 	QString poststring;
@@ -126,13 +130,13 @@ void GofunItem::executeCommand(ExecuteOption* option)
 	if(!option->Exec.isEmpty())
 	exec = option->Exec;
 	else
-	exec = data->Exec;
+	exec = data()->Exec;
 	
 	interpretExecString(exec);
 
-	if(!data->X_GoFun_Env.empty())
+	if(!data()->X_GoFun_Env.empty())
 	{
-		for(std::vector<QString>::iterator it = data->X_GoFun_Env.begin(); it != data->X_GoFun_Env.end(); ++it)
+		for(std::vector<QString>::iterator it = data()->X_GoFun_Env.begin(); it != data()->X_GoFun_Env.end(); ++it)
 		{
 			if((*it).isEmpty())
 			{
@@ -141,16 +145,16 @@ void GofunItem::executeCommand(ExecuteOption* option)
 			exec = "export " + (*it) + ";" + exec;
 		}
 	}
-	if((!option->terminal.isEmpty()) || (data->Terminal == "true"))
+	if((!option->terminal.isEmpty()) || (data()->Terminal == "true"))
 	{ 
 		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
 		exec =  exec + ";echo -e \"\\E[${2:-44};${3:-7}m\n" + QObject::tr("End of execution has been reached. Press any key to remove this terminal\"; read evar");
 	}
-	if((!option->xinit.isEmpty()) || (data->X_GoFun_NewX == "true"))
+	if((!option->xinit.isEmpty()) || (data()->X_GoFun_NewX == "true"))
 	{
 		proc.addArgument("xinit");
 	}
-	if(data->Path.isEmpty())
+	if(data()->Path.isEmpty())
 	{
 		proc.addArgument("/bin/sh");
 		proc.addArgument("-c");
@@ -159,13 +163,13 @@ void GofunItem::executeCommand(ExecuteOption* option)
 	else
 	{
 		//#system($prestring."cd ".directory." && ".command.$poststring);
-		proc.setWorkingDirectory(QDir(data->Path));
+		proc.setWorkingDirectory(QDir(data()->Path));
 		proc.addArgument("/bin/sh");
 		proc.addArgument("-c");
-		exec = "cd " + data->Path + ";" + exec;
+		exec = "cd " + data()->Path + ";" + exec;
 		proc.addArgument(exec);
 	}
-	if((!option->xinit.isEmpty()) || (data->X_GoFun_NewX == "true"))
+	if((!option->xinit.isEmpty()) || (data()->X_GoFun_NewX == "true"))
 	{
 		proc.addArgument("--");
 		QString xservnum = GofunMisc::shell_call("ps -Ac | grep X | wc -l");
@@ -173,13 +177,13 @@ void GofunItem::executeCommand(ExecuteOption* option)
 		proc.addArgument(":"+xservnum);
 
 	}
-	if(!data->X_GoFun_User.isEmpty())
+	if(!data()->X_GoFun_User.isEmpty())
 	{		
 		QString spa_file = saveProcArguments(&proc);
 		
 		QProcess proc_gosu;
 		proc_gosu.addArgument("gosu");
-		proc_gosu.addArgument(data->X_GoFun_User);
+		proc_gosu.addArgument(data()->X_GoFun_User);
 		proc_gosu.addArgument("-l");
 		proc_gosu.addArgument("-g");
 		proc_gosu.start();
@@ -215,3 +219,44 @@ QString GofunItem::saveProcArguments(QProcess* proc)
 	}
 	return file.name();
 }
+
+void GofunItem::setToolTipText(const QString text)
+{
+	toolTipText = text;
+	toolTip = new GofunIconViewToolTip(iconView());
+}
+
+GofunIconViewToolTip::GofunIconViewToolTip(QIconView *lParent, QToolTipGroup* lGroup)
+	:QToolTip(lParent->viewport(), lGroup), parent(lParent)
+{
+}
+
+GofunIconViewToolTip::~GofunIconViewToolTip(void)
+{
+}
+
+void GofunIconViewToolTip::maybeTip(const QPoint &p)
+{
+	GofunItem* item;
+	QPoint absCoords;
+
+	// get absolute item coords
+	absCoords.setX(p.x()+parent->contentsX());
+	absCoords.setY(p.y()+parent->contentsY());
+	item=dynamic_cast<GofunItem*>(parent->findItem(absCoords));
+	if(!item)
+		last_active = 0;
+	if (item && item != last_active)
+	{
+		last_active = item;
+		QRect relCoords;
+
+		// use portview-relative coords
+		relCoords.setX(p.x());
+		relCoords.setY(p.y());
+		relCoords.setWidth(item->rect().width());
+		relCoords.setHeight(item->rect().height());
+		tip(relCoords, item->getToolTipText());
+	}
+}
+

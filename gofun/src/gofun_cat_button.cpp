@@ -18,15 +18,19 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <qapplication.h>
 #include <qpopupmenu.h>
 #include <qcursor.h>
- 
+#include <qtooltip.h>
+
 #include "gofun_item.h"
 #include "gofun_cat_button.h"
 #include "gofun_cat_settings.h"
 #include "gofun.h"
 #include "gofun_data.h"
 #include "gofun_iconview.h"
+#include "gofun_misc.h"
+#include "gofun_widget.h"
  
 GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButton(str,widget)
 {
@@ -38,35 +42,64 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 	//Create the appendix of this button
 	conf_button = new QToolButton(this);
 	conf_button->setPalette(QPalette(QColor(int(rand()%256),int(rand()%256),int(rand()%256))));
-	connect(conf_button, SIGNAL(clicked()),this, SLOT(catSettings()));
+
+	//connect(conf_button, SIGNAL(clicked()),this, SLOT(catSettings()));
+	connect(conf_button, SIGNAL(clicked()),this, SLOT(popupConfButton()));
 	
-	if(!data->Icon.isEmpty())
+	if(!data()->Icon.isEmpty())
 	{
 		
 	}
 	
 	//Make sure it's being initialized from the start
-	data = new GofunCatData();
+	m_data = new GofunCatData();
 }
 
-/*GofunCatButton::~GofunCatButton()
+GofunCatButton::~GofunCatButton()
 {
-	delete data;
-}*/
+	//delete data; //FIXME
+	
+	delete iconview;
+}
+
+void GofunCatButton::popupConfButton()
+{
+	QPopupMenu* popup = new QPopupMenu(this);
+	connect(popup,SIGNAL(activated(int)),this,SLOT(popupCBActivated(int)));
+	popup->insertItem(tr("Add Entry"),PID_ADD_ENTRY);
+	popup->insertItem(tr("Add Entry Wizard"),PID_ADD_ENTRY_WIZARD);
+	popup->insertSeparator();
+	popup->insertItem(tr("Settings"),PID_SETTINGS);
+	popup->popup(QCursor::pos());
+	
+	emit clicked();
+	setOn(true);
+}
+
+void GofunCatButton::popupCBActivated(int id)
+{
+	switch(id)
+	{
+		case PID_ADD_ENTRY:
+			dynamic_cast<GofunWidget*>(qApp->mainWidget())->addEntry();
+			break;
+		case PID_ADD_ENTRY_WIZARD:
+			break;
+		case PID_SETTINGS:
+			catSettings();
+			break;
+	}
+}
 
 void GofunCatButton::save()
 {
-	QFile file( data->Catdir + "/.directory" );
-	if ( file.open( IO_WriteOnly ) )
+	GofunDesktopObject::save();
+
+	QFile file( data()->File );
+	if ( file.open( IO_Append ) )
 	{
 		QTextStream stream( &file );
-		stream << "[Desktop Entry]\n";
-		stream << "Version=0.9.4\n";
-		stream << "Encoding=UTF-8\n";
-		stream << "Type=Directory\n";
-		stream << "Name=" << data->Name << "\n";
-		stream << "Comment=" << data->Comment << "\n";
-		stream << "X-GoFun-Background=" << data->X_GoFun_Background << "\n";
+		stream << "X-GoFun-Background=" << data()->X_GoFun_Background << "\n";
 		file.close();
 	}
 }
@@ -75,8 +108,9 @@ void GofunCatButton::save()
 void GofunCatButton::resizeEvent(QResizeEvent* event)
 {
 	//conf_button->setGeometry(geometry().width()+5,0,5,geometry().height()-2);	
-	int width = 5;
+	int width = 16;
 	int height = geometry().height();
+	setGeometry(geometry().x(),geometry().y(),geometry().width(),geometry().height());
 	conf_button->setGeometry(geometry().width()-width,0,width,height);
 }
 
@@ -94,8 +128,19 @@ void GofunCatButton::catSettings()
 //Too obvious for a comment, oh ...
 void GofunCatButton::setData(GofunCatData* d)
 {
-	delete data;
-	data = d;
+	delete m_data;
+	m_data = d;
+	
+	loadIcon();
+	if(!data()->Comment.isEmpty())
+		QToolTip::add(this,data()->Comment);
+}
+
+void GofunCatButton::loadIcon()
+{
+	QPixmap px = GofunMisc::get_icon(data()->Icon,16,16);
+	if(!px.isNull())
+		setPixmap(px);
 }
 
 //Specify which IconView is related to this CatButton
@@ -137,20 +182,30 @@ void GofunCatButton::popupItemDnD(int id)
 {
 	//Wise man prepare ...
 	GofunItem* gi = new GofunItem(iconview, current_item->text());
-	GofunItemData* _data = new GofunItemData(*current_item->data);
+	GofunItemData* _data = new GofunItemData(*current_item->data());
 	
 	switch(id)
 	{
 		case PID_COPY_ITEM: //Make a deep copy
 			gi->setData(_data);
-			gi->data->File = data->Catdir + gi->data->Name + ".desktop";
+			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
 			gi->save();
 			break;
 		case PID_MOVE_ITEM: //Make a deep copy and remove the original
 			gi->setData(_data);
-			gi->data->File = data->Catdir + gi->data->Name + ".desktop";
+			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
 			gi->save();
 			current_item->deleteEntry();
 			break;
 	}
 }
+
+
+void GofunCatButton::refreshBackground()
+{
+		if(!data()->X_GoFun_Background.isEmpty())
+			iconview->setPaletteBackgroundPixmap(QPixmap(data()->X_GoFun_Background));	
+		else
+			iconview->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Active,QColorGroup::Base));
+}
+

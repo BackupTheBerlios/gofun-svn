@@ -22,6 +22,8 @@
 #include <qpushbutton.h> 
 #include <qiconview.h>
 
+#include "gofun_desktop_object.h"
+
 class GofunItem;
 class GofunCatData;
 class GofunIconView;
@@ -31,28 +33,38 @@ class GofunIconView;
 
 enum {
 	PID_MOVE_ITEM,
-	PID_COPY_ITEM
+	PID_COPY_ITEM,
+	PID_ADD_ENTRY,
+	PID_ADD_ENTRY_WIZARD,
+	PID_SETTINGS
 	};
 
 ///Represents a directory and a category
-class GofunCatButton : public QPushButton
+class GofunCatButton : public QPushButton , public GofunDesktopObject
 {
 	Q_OBJECT
 public slots:
 	void popupItemDnD(int);
 	void catSettings();
 	void resizeEvent(QResizeEvent*);
+	void popupConfButton();
+	void popupCBActivated(int);
 public:
 	GofunCatButton(const QString&, QWidget*);
-	//~GofunCatButton();
+	~GofunCatButton();
 	void setIconView(GofunIconView*);
 	void setData(GofunCatData*);
 	virtual void dragEnterEvent(QDragEnterEvent* event);
 	virtual void dropEvent(QDropEvent* event);
 	void save();
-	
+	void loadIcon();
+	void refreshBackground();
+	virtual GofunCatData* data() { return m_data; }
+
 	GofunIconView* iconview;
-	GofunCatData* data;
+	
+private:
+	GofunCatData* m_data;
 	GofunItem* current_item;
 	QString directory;
 	QToolButton* conf_button;

@@ -41,17 +41,39 @@ GofunCatSettings::GofunCatSettings()
 	comment = new QLineEdit(widget_main);
 	background = new QLineEdit(widget_main);
 	background_button = new QToolButton(widget_main);
+	icon = new QLineEdit(widget_main);
+	icon_button = new QToolButton(widget_main);
 	grid->addWidget(new QLabel(tr("Caption"),widget_main),0,0);
 	grid->addWidget(caption,0,1);
 	grid->addWidget(new QLabel(tr("Comment"),widget_main),1,0);
 	grid->addWidget(comment,1,1);
-	grid->addWidget(new QLabel(tr("Background"),widget_main),2,0);
-	grid->addWidget(background,2,1);
-	grid->addWidget(background_button,2,2);
+	grid->addWidget(new QLabel(tr("Icon"),widget_main),2,0);
+	grid->addWidget(icon,2,1);
+	grid->addWidget(icon_button,2,2);
+	grid->addWidget(new QLabel(tr("Background"),widget_main),3,0);
+	grid->addWidget(background,3,1);
+	grid->addWidget(background_button,3,2);
 	
+	connect(icon_button,SIGNAL(clicked()),this,SLOT(iconDialog()));
 	connect(background_button,SIGNAL(clicked()),this,SLOT(backgroundDialog()));
 
 	item = 0;	
+}
+
+void GofunCatSettings::iconDialog()
+{
+	QString start_dir;
+	if(!icon->text().isEmpty())
+	{
+		start_dir = icon->text();
+	}
+
+	QString file = GofunMisc::fileDialogGetImage(start_dir,tr("Pick an icon"),tr("Icons"));
+	if(!file.isEmpty())
+	{
+		icon->setText(file);
+		icon_button->setPixmap(QPixmap(file));
+	}
 }
 
 void GofunCatSettings::backgroundDialog()
@@ -79,13 +101,13 @@ void GofunCatSettings::apply()
 {
 	if(item)
 	{
-		item->data->Name = caption->text();
-		item->data->Comment = comment->text();
-		item->data->X_GoFun_Background = background->text();
-		if(!item->data->X_GoFun_Background.isEmpty())
-			item->iconview->setPaletteBackgroundPixmap(QPixmap(item->data->X_GoFun_Background));	
-		else
-			item->iconview->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Active,QColorGroup::Base));
+		item->data()->Name = caption->text();
+		item->setText(item->data()->Name);
+		item->data()->Comment = comment->text();
+		item->data()->Icon = icon->text();
+		
+		item->data()->X_GoFun_Background = background->text();
+		item->refreshBackground();
 	}
 }
 
@@ -106,8 +128,10 @@ bool GofunCatSettings::inputValid()
 void GofunCatSettings::load(GofunCatButton* _item)
 {
 	item = _item;
-	caption->setText(item->data->Name);
-	comment->setText(item->data->Comment);
-	background->setText(item->data->X_GoFun_Background);
-	background_button->setPixmap(QPixmap(item->data->X_GoFun_Background));
+	caption->setText(item->data()->Name);
+	comment->setText(item->data()->Comment);
+	background->setText(item->data()->X_GoFun_Background);
+	background_button->setPixmap(QPixmap(item->data()->X_GoFun_Background));
+	icon->setText(item->data()->Icon);
+	//icon_button->setPixmap(item->conf_button->pixmap()?*item->conf_button->pixmap():0); ///FIXME
 }

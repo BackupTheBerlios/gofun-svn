@@ -226,9 +226,9 @@ void GofunItemSettings::dirDialog()
 
 void GofunItemSettings::save()
 {
-	if(item && item->data->File.isEmpty())
+	if(item && item->data()->File.isEmpty())
 	{
-	 	item->data->File = category->data->Catdir + "/" + caption->text() + ".desktop";
+	 	item->data()->File = category->data()->Catdir + "/" + caption->text() + ".desktop";
 	}
 	item->save();
 }
@@ -237,24 +237,26 @@ void GofunItemSettings::apply()
 {
 	if(item)
 	{
-		item->data->Exec = command->text();
-		item->data->Path = directory->text();
-		item->data->Name = caption->text();
-		item->setText(item->data->Name);
-		item->data->Icon = icon->text();
-		item->data->Comment = comment->text();
-		if(item->data->File.isEmpty())
+		item->data()->Exec = command->text();
+		item->data()->Path = directory->text();
+		item->data()->Name = caption->text();
+		item->setText(item->data()->Name);
+		item->data()->Icon = icon->text();
+		item->data()->Comment = comment->text();
+		if(!item->data()->Comment.isEmpty())
+			item->setToolTipText(item->data()->Comment);
+		if(item->data()->File.isEmpty())
 		{
-			item->data->File = category->data->Catdir + "/" + caption->text() + ".desktop";
+			item->data()->File = category->data()->Catdir + "/" + caption->text() + ".desktop";
 		}
 		item->loadIcon();
 		if(terminal_chk->isChecked())
 		{
-			item->data->Terminal = "true";
+			item->data()->Terminal = "true";
 		}
 		else
 		{
-			item->data->Terminal = "false";
+			item->data()->Terminal = "false";
 		}
 		if(envvars->childCount() > 0)
 		{
@@ -265,27 +267,27 @@ void GofunItemSettings::apply()
 				tmp_array.push_back(env_item->text(0)+"="+env_item->text(1));
 				env_item = env_item->nextSibling();
 			}
-			item->data->X_GoFun_Env = tmp_array;
+			item->data()->X_GoFun_Env = tmp_array;
 		}
 		else
 		{
-			item->data->X_GoFun_Env.clear();
+			item->data()->X_GoFun_Env.clear();
 		}
 		if(user_chk->isChecked())
 		{
-			item->data->X_GoFun_User = user_combo->currentText();
+			item->data()->X_GoFun_User = user_combo->currentText();
 		}
 		else
 		{
-			item->data->X_GoFun_User = "";
+			item->data()->X_GoFun_User = "";
 		}
 		if(newx_chk->isChecked())
 		{
-			item->data->X_GoFun_NewX = "true";
+			item->data()->X_GoFun_NewX = "true";
 		}
 		else
 		{
-			item->data->X_GoFun_NewX = "false";
+			item->data()->X_GoFun_NewX = "false";
 		}
 	}
 	else
@@ -319,19 +321,19 @@ void GofunItemSettings::load(GofunItem* _item)
 {
 	item = _item;
 	caption->setText(item->text());
-	command->setText(item->data->Exec);
-	directory->setText(item->data->Path);
-	file = item->data->File;
-	icon->setText(item->data->Icon);
-	icon_button->setPixmap(*item->pixmap());
-	comment->setText(item->data->Comment);
-	if(item->data->Terminal == "true")
+	command->setText(item->data()->Exec);
+	directory->setText(item->data()->Path);
+	file = item->data()->File;
+	icon->setText(item->data()->Icon);
+	icon_button->setPixmap(item->pixmap()?*item->pixmap():0);
+	comment->setText(item->data()->Comment);
+	if(item->data()->Terminal == "true")
 	{
 		terminal_chk->setChecked(true);
 	}
-	if(!item->data->X_GoFun_Env.empty())
+	if(!item->data()->X_GoFun_Env.empty())
 	{
-		for(std::vector<QString>::iterator it = item->data->X_GoFun_Env.begin(); it != item->data->X_GoFun_Env.end(); ++it)
+		for(std::vector<QString>::iterator it = item->data()->X_GoFun_Env.begin(); it != item->data()->X_GoFun_Env.end(); ++it)
 		{
 			if((*it).isEmpty())
 			{
@@ -341,12 +343,12 @@ void GofunItemSettings::load(GofunItem* _item)
 			new QListViewItem(envvars,vk_pair[0],vk_pair[1]);
 		}
 	}
-	if(!item->data->X_GoFun_User.isEmpty())
+	if(!item->data()->X_GoFun_User.isEmpty())
 	{
 		user_chk->setChecked(true);
-		user_combo->setCurrentText(item->data->X_GoFun_User);
+		user_combo->setCurrentText(item->data()->X_GoFun_User);
 	}
-	if(item->data->X_GoFun_NewX == "true")
+	if(item->data()->X_GoFun_NewX == "true")
 	{
 		newx_chk->setChecked(true);
 	}

@@ -51,6 +51,8 @@ class GofunHelp : public QDialog
 	QPushButton* close_bt;
 	QHttp* http;
 	QString base_url;
+
+	friend class GofunMimeSourceFactory;
 };
 	
 class GofunMimeSourceFactory : public QObject, public QMimeSourceFactory
@@ -68,6 +70,8 @@ class GofunMimeSourceFactory : public QObject, public QMimeSourceFactory
 	private:
 	QHttp* http;
 	bool image_there;
+	static std::map<QString,QPixmap*> images;
+	static std::map<QString,int> image_countdown;
 };
 
 #endif

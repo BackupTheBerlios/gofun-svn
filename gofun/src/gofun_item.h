@@ -21,32 +21,57 @@
 #include <qfile.h>
 #include <qprocess.h>
 #include <qiconview.h>
+#include <qtooltip.h>
+
+#include "gofun_desktop_object.h"
 
 class GofunItemData;
 class ExecuteOption;
 class GofunIconView;
+class GofunIconViewToolTip;
 
 #ifndef GOFUN_ITEM
 #define GOFUN_ITEM
 
 ///Items represent executeable Desktop Entries
-class GofunItem : public QIconViewItem
+class GofunItem : public QIconViewItem , public GofunDesktopObject
 {
 public:
 	GofunItem(GofunIconView*, const QString& = 0);
 	//virtual ~GofunItem();
 
-	void loadIcon();
 	void setData(GofunItemData*);
 	void save();
 	void deleteEntry();
 	void executeCommand(ExecuteOption* = NULL);
+	void loadIcon();
+		
+	void setToolTipText(const QString);
+	const QString getToolTipText(void) const { return(toolTipText); }
 	
-	GofunItemData* data;
+	GofunItemData* data() { return m_data; }
 private:
 	QString saveProcArguments(QProcess*);
 	void interpretExecString(QString&);
 	void addSplittedProcArgument(QProcess*,const QString&);
+	GofunItemData* m_data;
+	
+	QString toolTipText;
+	GofunIconViewToolTip* toolTip;
+};
+
+
+class GofunIconViewToolTip : public QToolTip
+{
+	private:
+	QIconView* parent;
+	static GofunItem* last_active;
+	
+	public:
+	GofunIconViewToolTip(QIconView*, QToolTipGroup* = 0);
+	virtual ~GofunIconViewToolTip(void);
+
+	void maybeTip(const QPoint&);
 };
 
 #endif

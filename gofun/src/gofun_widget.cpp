@@ -133,7 +133,6 @@ void GofunWidget::unloadData()
 	for(int i = 1; i < cats_bg->count()+1 && cats_bg->count() > 1; ++i)
 	{
 		GofunCatButton* cb = dynamic_cast<GofunCatButton*>(cats_bg->find(i));
-		view_ws->removeWidget(cb->iconview);
 		cats_bg->remove(cb);
 		delete cb;
 	}
@@ -159,8 +158,8 @@ void GofunWidget::loadData()
 		//For this category we create an IconView
 		GofunIconView* gicv = new GofunIconView();
 		gicv->setResizeMode(QIconView::Adjust);
-		if(!cat->data->X_GoFun_Background.isEmpty())
-			gicv->setPaletteBackgroundPixmap(QPixmap(cat->data->X_GoFun_Background));
+		if(!cat->data()->X_GoFun_Background.isEmpty())
+			gicv->setPaletteBackgroundPixmap(QPixmap(cat->data()->X_GoFun_Background));
 		cat->setIconView(gicv);
 		connect(gicv, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
 		connect(gicv, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));		
@@ -345,7 +344,7 @@ void GofunWidget::executeItem(QIconViewItem* item,const QString& option)
 void GofunWidget::openDirectoryItem(GofunItem* item)
 {
 	QProcess proc(GSC::get()->filemanager_cmd,this);
-	proc.addArgument(GofunMisc::ext_filestring(item->data->Path));
+	proc.addArgument(GofunMisc::ext_filestring(item->data()->Path));
 	if(!proc.start())
 	{
 		std::cout<<tr("Execution of directory viewer failed. :(\n");

@@ -70,13 +70,13 @@ void GofunCStart::start()
 void GofunCStart::load(GofunItem* _item)
 {
 	item = _item;
-	caption->setText(item->data->Name);
-	command->setText(item->data->Exec);
-	if(!item->data->Icon.isEmpty())
+	caption->setText(item->data()->Name);
+	command->setText(item->data()->Exec);
+	if(!item->data()->Icon.isEmpty())
 	{
-		setIcon(QPixmap(item->data->Icon));
+		setIcon(QPixmap(item->data()->Icon));
 	}
-	if(item->data->Terminal == "true")
+	if(item->data()->Terminal == "true")
 	{
 		terminal->setChecked(true);
 	}

@@ -19,6 +19,8 @@
  ***************************************************************************/
 
 #include <qlineedit.h>
+#include <qradiobutton.h>
+#include <qtoolbutton.h>
  
 #include "gofun_settings_dlg.h"
 
@@ -37,6 +39,8 @@ public:
 	QString terminal_cmd;
 	QString filemanager_cmd;
 	QString gofun_dir;
+	QString color_source;
+	QString costum_color;
 private:
 	GofunSettingsContainer();
 	
@@ -62,6 +66,10 @@ private:
 	QLineEdit* terminal;
 	QLineEdit* directory;
 	QLineEdit* filemanager;
+	QRadioButton* col_system;
+	QRadioButton* col_random;
+	QRadioButton* col_costum;
+	QToolButton* costum_col_bt;
 	QString file;
 };
 

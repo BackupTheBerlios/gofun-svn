@@ -58,6 +58,7 @@ GofunSettingsContainer::~GofunSettingsContainer()
 	m_settings->writeEntry("/commands/terminal",terminal_cmd);
 	m_settings->writeEntry("/commands/filemanager",filemanager_cmd);
 	m_settings->writeEntry("/general/datadir",gofun_dir);
+	m_settings->writeEntry("/lookandfeel/colorsource",color_source);
 	m_settings->endGroup();
 	delete m_settings;
 }
@@ -84,7 +85,15 @@ GofunSettings::GofunSettings()
 	QGridLayout* grid_laf = new QGridLayout(widget_laf,6,2);
 	tabwidget->addTab(widget_laf,tr("Look and feel"));
 	
+	QButtonGroup* col_group = new QButtonGroup(3,Qt::Horizontal,tr("Color"),widget_laf);
+	col_system = new QRadioButton(tr("System"),col_group);
+	col_random = new QRadioButton(tr("Random"),col_group);
+	col_costum = new QRadioButton(tr("Costum"),col_group);
+	costum_col_bt = new QToolButton(widget_laf);
 		
+	grid_laf->addMultiCellWidget(col_group,0,0,0,1);
+	grid_laf->addWidget(new QLabel(tr("Costum color"),widget_laf),1,0);
+	grid_laf->addWidget(costum_col_bt,1,1);
 }
 
 void GofunSettings::save()
@@ -115,6 +124,12 @@ void GofunSettings::apply()
 	GSC::get()->filemanager_cmd = filemanager->text();
 	GSC::get()->gofun_dir = directory->text();
 	
+	col_costum->isChecked() ? GSC::get()->color_source = "costum" : 0;
+	col_random->isChecked() ? GSC::get()->color_source = "random" : 0;
+	col_system->isChecked() ? GSC::get()->color_source = "system" : 0;
+	
+	GSC::get()->costum_color = costum_col_bt->paletteBackgroundColor().name();
+		
 	dynamic_cast<GofunWidget*>(qApp->mainWidget())->reloadData();
 	/*if(item)
 	{
@@ -134,8 +149,8 @@ void GofunSettings::load()
 {
 	/*item = shift;
 	caption->setText(item->text());
-	command->setText(item->data->Exec);
-	directory->setText(item->data->Path);
+	command->setText(item->data()->Exec);
+	directory->setText(item->data()->Path);
 	file = item->file;*/
 	terminal->setText(GSC::get()->terminal_cmd);
 	filemanager->setText(GSC::get()->filemanager_cmd);

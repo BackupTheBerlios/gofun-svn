@@ -38,6 +38,7 @@ public:
 	virtual void load(GofunCatButton*);
 
 public slots:
+	void iconDialog();
 	void backgroundDialog();
 private:
 	virtual void save();
@@ -46,6 +47,8 @@ private:
 
 	QLineEdit* comment;
 	QLineEdit* caption;
+	QLineEdit* icon;
+	QToolButton* icon_button;
 	QLineEdit* background;
 	QToolButton* background_button;
 	QDir directory;

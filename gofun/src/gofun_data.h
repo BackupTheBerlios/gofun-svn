@@ -29,6 +29,7 @@
 ///Base data-type for Desktop Entries
 struct GofunDesktopEntryData
 {
+	QString File;
 	QString Name;
 	QString Comment;
 	QString Icon;	
@@ -38,7 +39,6 @@ struct GofunDesktopEntryData
 ///Data-type for Desktop Entries, that can be executed
 struct GofunItemData : public GofunDesktopEntryData
 {
-	QString File;
 	QString Exec;
 	QString Path;
 	QString Terminal;

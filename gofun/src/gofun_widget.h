@@ -88,6 +88,7 @@ private:
 	QVButtonGroup* cats_bg;
 	
 friend class GofunCatSettings;
+friend class GofunCatButton;
 };
 
 #endif
