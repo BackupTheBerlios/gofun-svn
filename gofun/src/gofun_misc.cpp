@@ -50,6 +50,11 @@ QString GofunMisc::ext_filestring(const QString& str)
 	return shell_call("echo -n \""+ str+"\"").simplifyWhiteSpace();
 }
 
+QString GofunMisc::bin_dir()
+{
+	return GofunMisc::shell_call("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").simplifyWhiteSpace();
+}
+
 void GofunMisc::center_window(QWidget* w, int width, int height)
 {
   w->setGeometry(QApplication::desktop()->screen()->width() / 2 - width/2, QApplication::desktop()->screen()->height() / 2 - height/2, width, height);

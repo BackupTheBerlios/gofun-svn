@@ -28,6 +28,7 @@
 #include "gofun_settings_dlg.h" 
 
 class GofunCatButton;
+class GofunDesktopEntrySettingsWidget;
 
 ///Settings-dialog for categories
 class GofunCatSettings : public GofunSettingsDlg
@@ -45,10 +46,7 @@ private:
 	virtual void apply();
 	virtual bool inputValid();
 
-	QLineEdit* comment;
-	QLineEdit* caption;
-	QLineEdit* icon;
-	QToolButton* icon_button;
+	GofunDesktopEntrySettingsWidget* desw;
 	QLineEdit* background;
 	QToolButton* background_button;
 	QDir directory;

@@ -30,6 +30,7 @@
 
 class GofunCatButton;
 class GofunItem;
+class GofunDesktopEntrySettingsWidget;
 
 #ifndef GOFUN_ITEM_SETTINGS 
 #define GOFUN_ITEM_SETTINGS
@@ -53,11 +54,8 @@ protected:
 	virtual bool inputValid();
 	virtual void save();
 
-	QLineEdit* caption;
-	QLineEdit* icon;
-	QToolButton* icon_button;
-	QLineEdit* comment;
-	
+	GofunDesktopEntrySettingsWidget* desw;
+		
 	GofunCatButton* category;
 	GofunItem* item;
 };

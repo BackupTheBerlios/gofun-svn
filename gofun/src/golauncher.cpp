@@ -34,6 +34,7 @@ GolauncherWidget::GolauncherWidget()
 int main(int argc, char *argv[])
 {
 	QApplication app(argc,argv);
+	QString bin_dir = GofunMisc::bin_dir();
 	QString datafile;
 	bool xmode = false;
 	bool xstart = false;
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
 	if(xstart)
 	{
 		proc->addArgument("xinit");
-		proc->addArgument("/usr/local/bin/golauncher");
+		proc->addArgument(GofunMisc::bin_dir() + "golauncher");
 		proc->addArgument("-xmode");
 		proc->addArgument("-datafile");
 		proc->addArgument(datafile);

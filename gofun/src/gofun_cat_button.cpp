@@ -260,3 +260,16 @@ void GofunCatButton::refreshBackground()
 			iconview->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Active,QColorGroup::Base));
 }
 
+void GofunCatButton::mouseReleaseEvent( QMouseEvent * event )
+{
+	if (event->button() & RightButton)
+		popupConfButton();
+	else if(event->button() & MidButton)
+	{
+		emit clicked();
+		setOn(true);
+	}
+		
+	QPushButton::mouseReleaseEvent(event);
+}
+

@@ -29,6 +29,7 @@ class QIconView;
 class QProgressBar;
 class QGridLayout;
 class GofunIconItem;
+class GofunIconLoadThread;
 
 #ifndef GOFUN_ICON_DIALOG
 #define GOFUN_ICON_DIALOG
@@ -47,6 +48,7 @@ class GofunIconDialog : public QDialog
 
 	public:
 	GofunIconDialog();
+	~GofunIconDialog();
 	QString selected();
 	
 	private slots:
@@ -64,7 +66,8 @@ class GofunIconDialog : public QDialog
 	QProgressBar* load_progress;
 	QGridLayout* grid;
 	
-	std::vector<GofunIconItem*> icon_pool;
+	static std::vector<GofunIconItem*> icon_pool;
+	GofunIconLoadThread* icon_loader;
 	
 friend class GofunIconLoadThread;
 };
@@ -73,10 +76,12 @@ class GofunIconLoadThread : public QThread
 {
 	public:
 	GofunIconLoadThread(GofunIconDialog* id) { icon_dialog = id; };
+	void setDead();
 	virtual void run();
 	
 	private:
 	GofunIconDialog* icon_dialog;
+	bool dead;
 };
 
 class GofunIconItem : public QIconViewItem
@@ -89,7 +94,8 @@ class GofunIconItem : public QIconViewItem
 
 enum
 {
-	IconItemEventID = 5555
+	IconItemEventID = 5555,
+	IconsLoadedEventID = 6666
 };
 
 class GofunIconItemDataEvent : public QCustomEvent
@@ -101,6 +107,12 @@ class GofunIconItemDataEvent : public QCustomEvent
 	QString text;
 	QImage pixmap;
 	QString file;
+};
+
+class GofunIconsLoadedEvent : public QCustomEvent
+{
+	public:
+	GofunIconsLoadedEvent() : QCustomEvent(IconsLoadedEventID) {}
 };
 
 #endif

@@ -27,6 +27,7 @@
 class GofunItem;
 class GofunCatData;
 class GofunIconView;
+class GofunDesktopEntrySettingsWidget;
 
 #ifndef GOFUN_CAT_BUTTON
 #define GOFUN_CAT_BUTTON
@@ -56,6 +57,7 @@ public:
 	void setData(GofunCatData*);
 	virtual void dragEnterEvent(QDragEnterEvent* event);
 	virtual void dropEvent(QDropEvent* event);
+	virtual void mouseReleaseEvent(QMouseEvent* event);
 	void save();
 	void loadIcon();
 	void refreshBackground();
@@ -71,6 +73,7 @@ private:
 	GofunItem* current_item;
 	QString directory;
 	QToolButton* conf_button;
+	GofunDesktopEntrySettingsWidget* desw;
 };
 
 #endif

@@ -24,6 +24,7 @@
 #include "gofun_link_item_settings.h"
 #include "gofun_link_item.h"
 #include "gofun_cat_button.h"
+#include "gofun_desktop_entry_settings_widget.h"
 
 GofunLinkItemSettings::GofunLinkItemSettings()
 {	
@@ -32,24 +33,15 @@ GofunLinkItemSettings::GofunLinkItemSettings()
 	
 	tabwidget->addTab(widget_main,tr("Main"));
 		
-	caption = new QLineEdit(widget_main);
+	desw = new GofunDesktopEntrySettingsWidget(widget_main);
 	url = new QLineEdit(widget_main);
 	url_button = new QToolButton(widget_main);
-	icon = new QLineEdit(widget_main);
-	icon_button = new QToolButton(widget_main);
-	comment = new QLineEdit(widget_main);
-	grid->addWidget(new QLabel(tr("Caption"),widget_main),0,0);
-	grid->addWidget(caption,0,1);
+	grid->addMultiCellWidget(desw,0,0,0,2);
 	grid->addWidget(new QLabel(tr("URL"),widget_main),1,0);
 	grid->addWidget(url,1,1);
 	grid->addWidget(url_button,1,2);
-	grid->addWidget(new QLabel(tr("Icon"),widget_main),2,0);
-	grid->addWidget(icon,2,1);
-	grid->addWidget(icon_button,2,2);
-	grid->addWidget(new QLabel(tr("Comment"),widget_main),3,0);
-	grid->addWidget(comment,3,1);
 	
-	connect(icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
+	connect(desw->icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	
 	item = 0;
 }

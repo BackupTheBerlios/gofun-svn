@@ -40,7 +40,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   //Do some magic to setup the right data directory
-  QString gofun_bin_dir = GofunMisc::shell_call("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").simplifyWhiteSpace();
+  QString gofun_bin_dir = GofunMisc::bin_dir();
   QString gofun_data_dir;
   if(!gofun_bin_dir.isEmpty())
   {
@@ -60,6 +60,9 @@ int main(int argc, char *argv[])
   //This is the app's core
   QApplication app(argc, argv);
   GofunWidget::system_palette = qApp->palette();
+  
+  if(!GSC::get()->style.isEmpty())
+  	app.setStyle(GSC::get()->style);
   
   //make GoFun look colorful and different every startup
   GofunWidget::applyColorSettings();  

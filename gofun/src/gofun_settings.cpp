@@ -24,6 +24,8 @@
 #include <qsettings.h>
 #include <qdir.h>
 #include <qcolordialog.h>
+#include <qcombobox.h>
+#include <qstylefactory.h>
 
 #include "gofun_settings.h" 
 #include "gofun_widget.h"
@@ -61,6 +63,7 @@ GofunSettingsContainer::GofunSettingsContainer()
 		terminal_cmd = "xterm";
 		
 	m_settings->beginGroup("lookandfeel");
+	style = m_settings->readEntry("style");
 	color_source = m_settings->readEntry("colorsource");
 	costum_color = m_settings->readEntry("costumcolor");
 	main_width = m_settings->readEntry("main_width");
@@ -71,7 +74,7 @@ GofunSettingsContainer::GofunSettingsContainer()
 	m_settings->endGroup();
 	
 	if(color_source.isEmpty())
-		color_source = "random";
+		color_source = "system";
 		
 	if(main_width.isEmpty())
 		main_width = "365";
@@ -91,6 +94,7 @@ GofunSettingsContainer::~GofunSettingsContainer()
 	m_settings->writeEntry("/commands/filemanager",filemanager_cmd);
 	m_settings->writeEntry("/commands/browser",browser_cmd);
 	m_settings->writeEntry("/general/datadir",gofun_dir);
+	m_settings->writeEntry("/lookandfeel/style",style);
 	m_settings->writeEntry("/lookandfeel/colorsource",color_source);
 	m_settings->writeEntry("/lookandfeel/costumcolor",costum_color);
 	
@@ -143,6 +147,12 @@ GofunSettings::GofunSettings()
 	QGridLayout* grid_laf = new QGridLayout(widget_laf,3,1);
 	tabwidget->addTab(widget_laf,tr("Look and feel"));
 	
+	QButtonGroup* style_group =new QButtonGroup(tr("Style"),widget_laf);
+	style_group->setColumnLayout(1,Qt::Horizontal);
+	styles = new QComboBox(style_group);
+	styles->insertItem(tr("(System Default)"));
+	styles->insertStringList(QStyleFactory::keys());
+	
 	QButtonGroup* col_group = new QButtonGroup(tr("Color"),widget_laf);
 	col_group->setColumnLayout(0, Qt::Vertical );
 	col_group->setAlignment( int( QButtonGroup::AlignTop ) );
@@ -164,8 +174,9 @@ GofunSettings::GofunSettings()
 	
 	connect(costum_col_bt,SIGNAL(clicked()),this,SLOT(costumColorDialog()));
 		
-	grid_laf->addWidget(col_group,0,0);
-	grid_laf->addWidget(save_main_geom,1,0);
+	grid_laf->addWidget(style_group,0,0);
+	grid_laf->addWidget(col_group,1,0);
+	grid_laf->addWidget(save_main_geom,2,0);
 }
 
 void GofunSettings::save()
@@ -183,6 +194,17 @@ void GofunSettings::apply()
 	GSC::get()->filemanager_cmd = filemanager->text();
 	GSC::get()->browser_cmd = browser->text();
 	GSC::get()->gofun_dir = directory->text();
+	
+	if(GSC::get()->style != styles->currentText())
+	{
+		if(styles->currentItem() != 0)
+		{
+			qApp->setStyle(styles->currentText());
+			GSC::get()->style = styles->currentText();
+		}
+		else
+			GSC::get()->style = "";
+	}
 	
 	col_costum->isChecked() ? GSC::get()->color_source = "costum" : 0;
 	col_random->isChecked() ? GSC::get()->color_source = "random" : 0;
@@ -202,6 +224,8 @@ void GofunSettings::load()
 	filemanager->setText(GSC::get()->filemanager_cmd);
 	browser->setText(GSC::get()->browser_cmd);
 	directory->setText(GSC::get()->gofun_dir);
+	
+	styles->setCurrentText(GSC::get()->style);
 	
 	if(GSC::get()->color_source == "random")
 		col_random->setChecked(true);

@@ -76,6 +76,7 @@ public slots:
 	void insertCategory(GofunCatButton*);
 	void changeToTools();
 	void performDefaultActionOnItem(QIconViewItem*);
+	void toggleFullscreen();
 	
 	static void applyColorSettings();
 	static QPalette system_palette;

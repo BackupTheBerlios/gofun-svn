@@ -31,6 +31,8 @@
 #include "gofun_icon_dialog.h"
 #include "gofun_misc.h"
 
+std::vector<GofunIconItem*> GofunIconDialog::icon_pool;
+
 GofunIconDialog::GofunIconDialog()
 {
 	setCaption(tr("Selete an Icon"));
@@ -90,6 +92,12 @@ GofunIconDialog::GofunIconDialog()
 	icon_loader->start();
 }
 
+GofunIconDialog::~GofunIconDialog()
+{
+	//icon_loader->setDead();
+	//icon_loader->terminate();
+}
+
 void GofunIconDialog::browseForIcon()
 {
 	QString start_dir;
@@ -132,7 +140,7 @@ void GofunIconLoadThread::run() //@TODO: Fix segfault on deletion of the dialog 
 	icon_paths += QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons -maxdepth 1 -path \\*.png"));
 	icon_dialog->load_progress->setTotalSteps(icon_paths.count());
 	QFileInfo fi;
-	for(QStringList::Iterator it = icon_paths.begin(); it != icon_paths.end(); ++it)
+	for(QStringList::Iterator it = icon_paths.begin(); it != icon_paths.end() && icon_dialog; ++it)
 	{
 		fi.setFile((*it));
 		QImage pix((*it));
@@ -143,13 +151,13 @@ void GofunIconLoadThread::run() //@TODO: Fix segfault on deletion of the dialog 
 		QApplication::postEvent(icon_dialog,new GofunIconItemDataEvent(fi.baseName(),pix,(*it)));
 		usleep(20);
 	}
-		
-	if(icon_dialog)
-	{
-		icon_dialog->grid->remove(icon_dialog->load_progress);
-		delete icon_dialog->load_progress;
-		icon_dialog->load_progress = 0;
-	}
+	
+	QApplication::postEvent(icon_dialog,new GofunIconsLoadedEvent());
+}
+
+void GofunIconLoadThread::setDead()
+{
+	QThread::exit();
 }
 
 void GofunIconDialog::customEvent(QCustomEvent* event)
@@ -164,8 +172,12 @@ void GofunIconDialog::customEvent(QCustomEvent* event)
 	    if(load_progress)
 	    	load_progress->setProgress(filter_view->count());
         }
-	
-	
+	else if ( event->type() == static_cast<QEvent::Type>(IconsLoadedEventID) )
+	{
+		grid->remove(load_progress);
+		delete load_progress;
+		load_progress = 0;
+	}
 }
 
 void GofunIconDialog::updateFilterView( const QString & filter)

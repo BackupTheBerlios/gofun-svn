@@ -35,47 +35,40 @@
 #include "gofun_command_editor.h"
 #include "gofun_icon_dialog.h"
 #include "gofun_directory_browser.h"
+#include "gofun_desktop_entry_settings_widget.h"
  
 GofunApplicationItemSettings::GofunApplicationItemSettings()
 {	
 	QWidget* widget_main = new QWidget(this);	
-	QGridLayout* grid = new QGridLayout(widget_main,6,3);
+	QGridLayout* grid = new QGridLayout(widget_main,3,3);
 	
 	tabwidget->addTab(widget_main,tr("Main"));
 		
-	caption = new QLineEdit(widget_main);
-	QLineEdit* genre = new QLineEdit(widget_main);
+	desw = new GofunDesktopEntrySettingsWidget(widget_main);
+	//QLineEdit* genre = new QLineEdit(widget_main);
 	command = new QLineEdit(widget_main);
 	command_button = new QToolButton(widget_main);
 	directory = new QLineEdit(widget_main);
 	dir_button = new QToolButton(widget_main);
-	icon = new QLineEdit(widget_main);
-	icon_button = new QToolButton(widget_main);
-	comment = new QLineEdit(widget_main);
-	grid->addWidget(new QLabel(tr("Caption"),widget_main),0,0);
-	grid->addWidget(caption,0,1);
-	grid->addWidget(new QLabel(tr("Genre"),widget_main),1,0);
+	grid->addMultiCellWidget(desw,0,0,0,2);
+	/*grid->addWidget(new QLabel(tr("Genre"),widget_main),1,0);
 	grid->addWidget(genre,1,1);
-	grid->addWidget(new QLabel(tr("Comment"),widget_main),2,0);
-	grid->addWidget(comment,2,1);
-	grid->addWidget(new QLabel(tr("Icon"),widget_main),3,0);
-	grid->addWidget(icon,3,1);
-	grid->addWidget(icon_button,3,2);
-	QLabel* sep = new QLabel(widget_main);
+	grid->addWidget(icon_button,3,2);*/
+	/*QLabel* sep = new QLabel(widget_main);
 	sep->setFrameStyle( QFrame::HLine | QFrame::Raised );
 	sep->setLineWidth(2);
 	sep->setMaximumHeight(4);
-	grid->addMultiCellWidget(sep,4,4,0,2);
-	grid->addWidget(new QLabel(tr("Command"),widget_main),5,0);
-	grid->addWidget(command,5,1);
-	grid->addWidget(command_button,5,2);
-	grid->addWidget(new QLabel(tr("Directory"),widget_main),6,0);
-	grid->addWidget(directory,6,1);
-	grid->addWidget(dir_button,6,2);
+	grid->addMultiCellWidget(sep,4,4,0,2);*/
+	grid->addWidget(new QLabel(tr("Command"),widget_main),1,0);
+	grid->addWidget(command,1,1);
+	grid->addWidget(command_button,1,2);
+	grid->addWidget(new QLabel(tr("Directory"),widget_main),2,0);
+	grid->addWidget(directory,2,1);
+	grid->addWidget(dir_button,2,2);
 	
 	connect(command_button, SIGNAL(clicked()),this, SLOT(commandEditor()));
-	connect(icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	connect(dir_button, SIGNAL(clicked()),this, SLOT(dirDialog()));
+	connect(desw->icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	
 	QWidget* widget_env = new QWidget(this);
 	tabwidget->addTab(widget_env,tr("Environment"));
@@ -283,8 +276,8 @@ void GofunApplicationItemSettings::iconDialog()
 	GofunIconDialog* id = new GofunIconDialog();	
 	if(id->exec() == QDialog::Accepted)
 	{
-		icon->setText(id->selected());
-		icon_button->setPixmap(QPixmap(id->selected()));
+		desw->icon = id->selected();
+		desw->icon_button->setPixmap(QPixmap(id->selected()));
 	}
 	delete id;
 

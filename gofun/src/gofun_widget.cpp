@@ -23,6 +23,7 @@
 #include <qtextbrowser.h>
 #include <qhttp.h>
 #include <qcursor.h>
+#include <qaccel.h>
  
 #include "gofun_iconview.h"
 #include "gofun_widget.h" 
@@ -83,6 +84,10 @@ class GofunVButtonGroup : public QVButtonGroup
 //The main constructor.
 GofunWidget::GofunWidget()
 {    
+	//Set up some accelerators
+	QAccel* a = new QAccel(this);
+	a->connectItem(a->insertItem(Key_F),this,SLOT(toggleFullscreen())); 
+	
 	//Do some layout magic
 	QHBoxLayout* hbox = new QHBoxLayout(this);
 	QVBoxLayout* vbox = new QVBoxLayout();
@@ -184,7 +189,7 @@ void GofunWidget::popupCatAdd()
 void GofunWidget::showAbout()
 {
 	GofunAbout* ga = new GofunAbout();
-	GofunMisc::center_window(ga,540,380);
+	GofunMisc::center_window(ga,540,480);
 	ga->show();
 }
 
@@ -394,4 +399,12 @@ void GofunWidget::applyColorSettings()
   	qApp->setPalette(QPalette(QColor(GSC::get()->costum_color)),true);
   else if(GSC::get()->color_source == "system")
   	qApp->setPalette(system_palette,true);
+}
+
+void GofunWidget::toggleFullscreen( )
+{
+	if(isFullScreen())
+		showNormal();
+	else
+		showFullScreen();
 }

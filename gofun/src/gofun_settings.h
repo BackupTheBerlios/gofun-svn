@@ -28,6 +28,7 @@
 #ifndef GOFUN_SETTINGS
 #define GOFUN_SETTINGS
 
+class QComboBox;
 class QSettings;
 
 class GofunSettingsContainer
@@ -41,6 +42,7 @@ public:
 	QString filemanager_cmd;
 	QString browser_cmd;
 	QString gofun_dir;
+	QString style;
 	QString color_source;
 	QString costum_color;
 	QString main_width;
@@ -76,6 +78,7 @@ private:
 	QLineEdit* directory;
 	QLineEdit* filemanager;
 	QLineEdit* browser;
+	QComboBox* styles;
 	QRadioButton* col_system;
 	QRadioButton* col_random;
 	QRadioButton* col_costum;

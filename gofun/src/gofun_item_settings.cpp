@@ -33,26 +33,26 @@
 #include "gofun_data.h"
 #include "gofun_list_dialog.h"
 #include "gofun_command_editor.h"
+#include "gofun_desktop_entry_settings_widget.h"
 
 GofunItemSettings::GofunItemSettings()
 {
-
 //	item = 0;
 }
 
 void GofunItemSettings::iconDialog()
 {
 	QString start_dir;
-	if(!icon->text().isEmpty())
+	if(!desw->icon.isEmpty())
 	{
-		start_dir = icon->text();
+		start_dir = desw->icon;
 	}
 	
 	QString file = GofunMisc::fileDialogGetImage(start_dir,tr("Pick an icon"),tr("Icons"));
 	if(!file.isEmpty())
 	{
-		icon->setText(file);
-		icon_button->setPixmap(QPixmap(file));
+		desw->icon = file;
+		desw->icon_button->setPixmap(QPixmap(file));
 	}
 }
 
@@ -60,7 +60,7 @@ void GofunItemSettings::save()
 {
 	if(data()->File.isEmpty())
 	{
-	 	data()->File = category->data()->Catdir + "/" + caption->text() + ".desktop";
+	 	data()->File = category->data()->Catdir + "/" + desw->caption->text() + ".desktop";
 	}
 	item->save();
 }
@@ -70,25 +70,25 @@ void GofunItemSettings::apply()
 	if(!item)
 		item = new GofunItem(category->iconview,QString(""));
 
-	data()->Name = caption->text();
+	data()->Name = desw->caption->text();
 	item->setText(data()->Name);
-	data()->Icon = icon->text();
-	data()->Comment = comment->text();
+	data()->Icon = desw->icon;
+	data()->Comment = desw->comment->text();
 	if(!data()->Comment.isEmpty())
 		item->setToolTipText(data()->Comment);
 	if(data()->File.isEmpty())
 	{
-		data()->File = category->data()->Catdir + "/" + caption->text() + ".desktop";
+		data()->File = category->data()->Catdir + "/" + desw->caption->text() + ".desktop";
 	}
 	item->loadIcon();
 }
 
 bool GofunItemSettings::inputValid()
 {
-	if(caption->text().isEmpty())
+	if(desw->caption->text().isEmpty())
 	{
 		QMessageBox::information(this,tr("Caption isn't set yet"),tr("Dear User, I can set up this stuff properly for you,\n after you type in a caption for this entry. Thanks. :)"));
-		caption->setFocus();
+		desw->caption->setFocus();
 		return false;
 	}
 	else
@@ -105,10 +105,10 @@ void GofunItemSettings::setCategory(GofunCatButton* cat)
 void GofunItemSettings::load(GofunItem* _item)
 {
 	item = _item;
-	caption->setText(item->text());
-	icon->setText(data()->Icon);
-	icon_button->setPixmap(item->pixmap()?*item->pixmap():0);
-	comment->setText(data()->Comment);
+	desw->caption->setText(item->text());
+	desw->icon = data()->Icon;
+	desw->icon_button->setPixmap(item->pixmap()?*item->pixmap():0);
+	desw->comment->setText(data()->Comment);
 }
 
 GofunItemData* GofunItemSettings::data()

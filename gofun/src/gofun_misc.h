@@ -40,6 +40,7 @@ struct GofunMisc
 {
 	static QString shell_call(const QString&);
 	static QString ext_filestring(const QString&);
+	static QString bin_dir();
 	static void center_window(QWidget*, int, int);
 	static QString fileDialogGetImage(const QString& start_dir,const QString& caption, const QString& filter_desc);
 	static QPixmap get_icon(const QString&,int = 32,int = 32);

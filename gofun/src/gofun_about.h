@@ -27,6 +27,9 @@ class GofunAbout : public QDialog
 {
 	public:
 	GofunAbout();
+	
+	private:
+	QString getFileText(const QString&);
 };
 
 #endif

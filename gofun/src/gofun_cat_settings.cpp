@@ -29,6 +29,7 @@
 #include "gofun_misc.h"
 #include "gofun_widget.h"
 #include "gofun_settings.h"
+#include "gofun_desktop_entry_settings_widget.h"
 
 GofunCatSettings::GofunCatSettings()
 {
@@ -39,24 +40,15 @@ GofunCatSettings::GofunCatSettings()
 
 	tabwidget->addTab(widget_main,tr("Main"));
 	
-	caption = new QLineEdit(widget_main);
-	comment = new QLineEdit(widget_main);
+	desw = new GofunDesktopEntrySettingsWidget(widget_main);
 	background = new QLineEdit(widget_main);
 	background_button = new QToolButton(widget_main);
-	icon = new QLineEdit(widget_main);
-	icon_button = new QToolButton(widget_main);
-	grid->addWidget(new QLabel(tr("Caption"),widget_main),0,0);
-	grid->addWidget(caption,0,1);
-	grid->addWidget(new QLabel(tr("Comment"),widget_main),1,0);
-	grid->addWidget(comment,1,1);
-	grid->addWidget(new QLabel(tr("Icon"),widget_main),2,0);
-	grid->addWidget(icon,2,1);
-	grid->addWidget(icon_button,2,2);
-	grid->addWidget(new QLabel(tr("Background"),widget_main),3,0);
-	grid->addWidget(background,3,1);
-	grid->addWidget(background_button,3,2);
+	grid->addMultiCellWidget(desw,0,0,0,2);
+	grid->addWidget(new QLabel(tr("Background"),widget_main),1,0);
+	grid->addWidget(background,1,1);
+	grid->addWidget(background_button,1,2);
 	
-	connect(icon_button,SIGNAL(clicked()),this,SLOT(iconDialog()));
+	connect(desw->icon_button,SIGNAL(clicked()),this,SLOT(iconDialog()));
 	connect(background_button,SIGNAL(clicked()),this,SLOT(backgroundDialog()));
 
 	item = 0;	
@@ -65,16 +57,16 @@ GofunCatSettings::GofunCatSettings()
 void GofunCatSettings::iconDialog()
 {
 	QString start_dir;
-	if(!icon->text().isEmpty())
+	if(!desw->icon.isEmpty())
 	{
-		start_dir = icon->text();
+		start_dir = desw->icon;
 	}
 
 	QString file = GofunMisc::fileDialogGetImage(start_dir,tr("Pick an icon"),tr("Icons"));
 	if(!file.isEmpty())
 	{
-		icon->setText(file);
-		icon_button->setPixmap(QPixmap(file));
+		desw->icon = file;
+		desw->icon_button->setPixmap(QPixmap(file));
 	}
 }
 
@@ -94,7 +86,7 @@ void GofunCatSettings::save()
 {
 	if(item && item->data()->Catdir.isEmpty())
 	{
-		item->data()->Catdir = GSC::get()->gofun_dir + "/" + caption->text();
+		item->data()->Catdir = GSC::get()->gofun_dir + "/" + desw->caption->text();
 		QDir dir;
 		if(!dir.exists(item->data()->Catdir))
 			dir.mkdir(item->data()->Catdir);
@@ -109,11 +101,11 @@ void GofunCatSettings::apply()
 {
 	if(item)
 	{
-		item->data()->Name = caption->text();
+		item->data()->Name = desw->caption->text();
 		item->setText(item->data()->Name + "   ");
-		item->data()->Comment = comment->text();
+		item->data()->Comment = desw->comment->text();
 
-		item->data()->Icon = icon->text();
+		item->data()->Icon = desw->icon;
 		
 		item->data()->X_GoFun_Background = background->text();
 		item->refreshBackground();
@@ -128,10 +120,10 @@ void GofunCatSettings::apply()
 
 bool GofunCatSettings::inputValid()
 {
-	if(caption->text().isEmpty())
+	if(desw->caption->text().isEmpty())
 	{
 		QMessageBox::information(this,tr("Caption isn't set yet"),tr("Dear User, I can set up this stuff properly for you,\n after you type in a caption for this entry. Thanks. :)"));
-		caption->setFocus();
+		desw->caption->setFocus();
 		return false;
 	}
 	else
@@ -143,10 +135,10 @@ bool GofunCatSettings::inputValid()
 void GofunCatSettings::load(GofunCatButton* _item)
 {
 	item = _item;
-	caption->setText(item->data()->Name);
-	comment->setText(item->data()->Comment);
+	desw->caption->setText(item->data()->Name);
+	desw->comment->setText(item->data()->Comment);
 	background->setText(item->data()->X_GoFun_Background);
 	background_button->setPixmap(QPixmap(item->data()->X_GoFun_Background));
-	icon->setText(item->data()->Icon);
-	icon_button->setPixmap(item->confButtonPixmap()?*item->confButtonPixmap():0);
+	desw->icon = item->data()->Icon;
+	desw->icon_button->setPixmap(item->confButtonPixmap()?*item->confButtonPixmap():0);
 }
