@@ -32,8 +32,8 @@ GofunListDialog::GofunListDialog()
 	
 	connect(add_button,SIGNAL(clicked()),this,SLOT(add()));
 	connect(rem_button,SIGNAL(clicked()),this,SLOT(remove()));
-	connect(apply_button,SIGNAL(clicked()),this,SLOT(apply()));
-	connect(cancel_button,SIGNAL(clicked()),this,SLOT(cancel()));
+	connect(apply_button,SIGNAL(clicked()),this,SLOT(accept()));
+	connect(cancel_button,SIGNAL(clicked()),this,SLOT(reject()));
 	
 	QGridLayout* grid = new QGridLayout(this,3,2);
 	grid->addWidget(add_button,0,0);
@@ -51,15 +51,6 @@ void GofunListDialog::add()
 void GofunListDialog::remove()
 {
 }
-
-void GofunListDialog::apply()
-{
-}
-
-void GofunListDialog::cancel()
-{
-}
-
 
 
 

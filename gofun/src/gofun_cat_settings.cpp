@@ -27,6 +27,8 @@
 #include "gofun_data.h"
 #include "gofun_iconview.h"
 #include "gofun_misc.h"
+#include "gofun_widget.h"
+#include "gofun_settings.h"
 
 GofunCatSettings::GofunCatSettings()
 {
@@ -90,9 +92,15 @@ void GofunCatSettings::backgroundDialog()
 
 void GofunCatSettings::save()
 {
-	if(!item)
+	if(item && item->data()->Catdir.isEmpty())
 	{
-		//file.setName(caption->text() + "/" + ".directory");
+		item->data()->Catdir = GSC::get()->gofun_dir + "/" + caption->text();
+		QDir dir;
+		if(!dir.exists(item->data()->Catdir))
+			dir.mkdir(item->data()->Catdir);
+		
+		if(item->data()->File.isEmpty())
+			item->data()->File = item->data()->Catdir + "/.directory";
 	}
 	item->save();
 }
@@ -104,10 +112,17 @@ void GofunCatSettings::apply()
 		item->data()->Name = caption->text();
 		item->setText(item->data()->Name);
 		item->data()->Comment = comment->text();
+
 		item->data()->Icon = icon->text();
 		
 		item->data()->X_GoFun_Background = background->text();
 		item->refreshBackground();
+	}
+	else
+	{
+		item = new GofunCatButton(QString(""),dynamic_cast<GofunWidget*>(qApp->mainWidget())->categoryButtons());
+		item->show();
+		apply();
 	}
 }
 

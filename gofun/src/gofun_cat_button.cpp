@@ -31,6 +31,7 @@
 #include "gofun_iconview.h"
 #include "gofun_misc.h"
 #include "gofun_widget.h"
+#include "gofun_item_wizard.h"
  
 GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButton(str,widget)
 {
@@ -50,6 +51,10 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 	{
 		
 	}
+	
+	//For this category we create an IconView
+	iconview = new GofunIconView();
+	iconview->setResizeMode(QIconView::Adjust);
 	
 	//Make sure it's being initialized from the start
 	m_data = new GofunCatData();
@@ -84,6 +89,8 @@ void GofunCatButton::popupCBActivated(int id)
 			dynamic_cast<GofunWidget*>(qApp->mainWidget())->addEntry();
 			break;
 		case PID_ADD_ENTRY_WIZARD:
+			GofunItemWizard* wizard = new GofunItemWizard();
+			wizard->exec();
 			break;
 		case PID_SETTINGS:
 			catSettings();
@@ -96,7 +103,7 @@ void GofunCatButton::save()
 	GofunDesktopObject::save();
 
 	QFile file( data()->File );
-	if ( file.open( IO_Append ) )
+	if ( file.open( IO_WriteOnly | IO_Append ) )
 	{
 		QTextStream stream( &file );
 		stream << "X-GoFun-Background=" << data()->X_GoFun_Background << "\n";
@@ -131,6 +138,13 @@ void GofunCatButton::setData(GofunCatData* d)
 	m_data = d;
 	
 	loadIcon();
+	setupToolTip();
+		
+	refreshBackground();
+}
+
+void GofunCatButton::setupToolTip()
+{
 	if(!data()->Comment.isEmpty())
 		QToolTip::add(this,data()->Comment);
 }
@@ -159,6 +173,11 @@ void GofunCatButton::dragEnterEvent(QDragEnterEvent* event)
 //Drag'n'Drop magic 2nd part
 void GofunCatButton::dropEvent(QDropEvent* event)
 {	
+	//Did we receive something from a widget in this application?
+	//If not, just return.
+	if(!event->source())
+		return;
+	
 	GofunIconView* itemview = dynamic_cast<GofunIconView*>(event->source()->parent());
 		
 	if(itemview) //Did we receive something from an itemview?

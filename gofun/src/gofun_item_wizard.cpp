@@ -18,31 +18,19 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qdialog.h>
-#include <qlistview.h>
-#include <qpushbutton.h>
+#include <qlayout.h>
+#include <qlabel.h>
  
-#ifndef GOFUN_LIST_DIALOG
-#define GOFUN_LIST_DIALOG
+#include "gofun_item_wizard.h"
 
-class GofunListDialog : public QDialog
+GofunItemWizard::GofunItemWizard()
 {
-	Q_OBJECT
-public:
-	GofunListDialog();
-	QStringList returnList();
-
-public slots:
-	void add();
-	void remove();
+	setCaption(tr("")+tr("Add Entry Wizard"));
 	
-private:
-	QListView* list;
-	QPushButton* add_button;
-	QPushButton* rem_button;
-	QPushButton* apply_button;
-	QPushButton* cancel_button;
-};
-
-#endif
+	QWidget* widget_start = new QWidget(this);
+	addPage(widget_start,tr("Start"));
+	QGridLayout* grid_start = new QGridLayout(widget_start,3,1);
+	
+	grid_start->addWidget(new QLabel(tr("This wizard will guide you through the creation of a Gofun Desktop Entry"),widget_start),0,0);
+}
 

@@ -55,6 +55,7 @@ enum
   PID_Delete,
   PID_Costumized_start,
   PID_Add,
+  PID_Add_Wizard,
   PID_Add_Category
 };
 
@@ -77,6 +78,7 @@ public slots:
 	void addCategory();
 	void showHelp();
 	void showAbout();
+	QVButtonGroup* categoryButtons() { return cats_bg; };
 private:
 	void costumizedStart(GofunItem*);
 	void addEntry();

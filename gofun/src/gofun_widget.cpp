@@ -35,6 +35,7 @@
 #include "gofun_cat_settings.h"
 #include "gofun_help.h"
 #include "gofun_about.h"
+#include "gofun_item_wizard.h"
 
 //The main constructor.
 GofunWidget::GofunWidget()
@@ -177,15 +178,9 @@ void GofunWidget::loadData()
 		cats_bg->insert(cat,i+1);
 		cat->show();
 		
-		//For this category we create an IconView
-		GofunIconView* gicv = new GofunIconView();
-		gicv->setResizeMode(QIconView::Adjust);
-		if(!cat->data()->X_GoFun_Background.isEmpty())
-			gicv->setPaletteBackgroundPixmap(QPixmap(cat->data()->X_GoFun_Background));
-		cat->setIconView(gicv);
-		connect(gicv, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
-		connect(gicv, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));		
-		connect(gicv, SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),this, SLOT(rightClickedItem(QIconViewItem*,const QPoint&)));
+		connect(cat->iconview, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
+		connect(cat->iconview, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));		
+		connect(cat->iconview, SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),this, SLOT(rightClickedItem(QIconViewItem*,const QPoint&)));
 		
 		//Now we iterate through the actual item-data to create new GofunItems
 		for(std::vector<GofunItemData>::iterator sit = (*it).ItemData->begin(); sit != (*it).ItemData->end(); ++sit)
@@ -194,11 +189,11 @@ void GofunWidget::loadData()
 			{
 				continue;
 			}
-			GofunItem* gi = new GofunItem(gicv, (*sit).Name);
+			GofunItem* gi = new GofunItem(cat->iconview, (*sit).Name);
 			gi->setData(&(*sit));
 		}
 		//At last we add the new IconView to the WidgetStack
-		view_ws->addWidget(gicv, i);
+		view_ws->addWidget(cat->iconview, i);
 		
 		//Set current_cat to the first category (FIXME: hack-alert?) 
 		if(i == 0)
@@ -236,12 +231,11 @@ void GofunWidget::addCategory()
 {
 	GofunCatSettings* settings_dlg = new GofunCatSettings();
 	GofunMisc::attach_window(this,settings_dlg,D_Right,D_Left,275,200);
-	GofunCatButton* cat = new GofunCatButton("New category",cats_bg);
-	cats_bg->insert(cat,cats_bg->count()-1);
-	settings_dlg->load(cat);
+	//cats_bg->insert(cat,cats_bg->count()-1);
+	//settings_dlg->load(cat);
 	settings_dlg->exec();
 	delete settings_dlg;
-	cat->show();
+	//cat->show();
 }
 
 //Evaluate popup that is shown, when the user did right-clicks on empty space in a left IconView
@@ -250,8 +244,12 @@ void GofunWidget::popupMenuSpace(int id)
 	switch(id)
 	{
 		case PID_Add:
-			 addEntry();
-			 break;
+			addEntry();
+			break;
+		case PID_Add_Wizard:
+			GofunItemWizard* wizard = new GofunItemWizard();
+			wizard->exec();
+			break;
 	}
 }
 
@@ -321,7 +319,8 @@ void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 	else //Right-clicked in empty space.
 	{
 		connect(popup,SIGNAL(activated(int)),this,SLOT(popupMenuSpace(int)));
-		popup->insertItem("Add Entry",PID_Add);
+		popup->insertItem(tr("Add Entry"),PID_Add);
+		popup->insertItem(tr("Add Entry Wizard"),PID_Add_Wizard);
 		popup->popup(pos);
 	}
 }

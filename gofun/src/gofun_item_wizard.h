@@ -18,30 +18,16 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qdialog.h>
-#include <qlistview.h>
-#include <qpushbutton.h>
- 
-#ifndef GOFUN_LIST_DIALOG
-#define GOFUN_LIST_DIALOG
+#include <qwizard.h>
 
-class GofunListDialog : public QDialog
+#ifndef GOFUN_ITEM_WIZARD
+#define GOFUN_ITEM_WIZARD
+
+class GofunItemWizard : public QWizard
 {
 	Q_OBJECT
-public:
-	GofunListDialog();
-	QStringList returnList();
-
-public slots:
-	void add();
-	void remove();
-	
-private:
-	QListView* list;
-	QPushButton* add_button;
-	QPushButton* rem_button;
-	QPushButton* apply_button;
-	QPushButton* cancel_button;
+	public:
+	GofunItemWizard();
 };
 
 #endif
