@@ -34,9 +34,9 @@ void GofunDesktopObject::save()
 		stream << "Version=0.9.4\n";
 		stream << "Encoding=UTF-8\n";
 		stream << "Icon=" << pdata->Icon << "\n";
-		stream << pdata->Name.desktopEntryPrint("Name");
-		stream << pdata->GenericName.desktopEntryPrint("GenericName");
-		stream << pdata->Comment.desktopEntryPrint("Comment");
+		pdata->Name.desktopEntryPrint("Name",stream);
+		pdata->GenericName.desktopEntryPrint("GenericName",stream);
+		pdata->Comment.desktopEntryPrint("Comment",stream);
 		file.close();
 	}
 }

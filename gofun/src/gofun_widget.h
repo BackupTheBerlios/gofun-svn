@@ -60,7 +60,7 @@ class GofunWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	GofunWidget();
+	GofunWidget(WFlags f = 0);
 	void reloadData();
 public slots:
 	void changeCategory(int);

@@ -18,46 +18,23 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <map>
+#include <qframe.h>
 
-#include <qstring.h>
-#include <qtextstream.h>
- 
-#ifndef GOFUN_LOCALE_STRING
-#define GOFUN_LOCALE_STRING
+class QToolButton;
+class QLineEdit; 
 
-struct GofunLocale
-{
-	GofunLocale();
-	GofunLocale(const QString&);
-	void setLocale(const QString&);
-	operator const QString();
+#ifndef GOFUN_DESKTOP_ENTRY_SETTINGS_WIDGET
+#define GOFUN_DESKTOP_ENTRY_SETTINGS_WIDGET
 
-	QString lang;
-	QString country;
-	QString modifier;
-};
-
-class GofunLocaleString : public QString
+class GofunDesktopEntrySettingsWidget : public QFrame
 {
 	public:
-	GofunLocaleString();
-	GofunLocaleString(const QString&);
-	void add(const QString&,const QString&);
-	void desktopEntryPrint(const QString&, QTextStream&);
+	GofunDesktopEntrySettingsWidget(QWidget*);
 	
-	GofunLocaleString& operator=(const QString&);
-	
-	private:
-	bool isBetterMatch(const GofunLocale&);
-	
-	std::map<QString,QString> locale_strings;
-	//std::map<QString,QString>::iterator best_match;
-	QString best_match;
-	bool found_match;
-	GofunLocale best_match_locale;
-	
-	static GofunLocale system_locale;
+	QToolButton* icon_button;
+	QString icon;
+	QLineEdit* caption;
+	QLineEdit* comment;
 };
 
 #endif

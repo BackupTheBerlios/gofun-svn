@@ -84,7 +84,7 @@ class GofunVButtonGroup : public QVButtonGroup
 };
 
 //The main constructor.
-GofunWidget::GofunWidget()
+GofunWidget::GofunWidget(WFlags f) : QWidget(0,0,f)
 {    
 	//Set up some accelerators
 	QAccel* a = new QAccel(this);
@@ -131,13 +131,14 @@ GofunWidget::GofunWidget()
 		    
 	//Isn't it nice?
 	QLabel* gflabel = new QLabel("GoFun",this);
-	gflabel->setFont(QFont("Times",28, QFont::Bold));
+	gflabel->setFont(QFont("Times",18, QFont::Bold));
 	gflabel->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum,0);
 	vbox->addLayout(hboxlabel);
 	hboxlabel->addWidget(gflabel);
 	
 	//Common it is ...
 	QToolButton* gficon = new QToolButton(this);
+	gficon->setFixedWidth(32);
 	gficon->setPixmap(QPixmap("gofun.png"));
 	QToolTip::add(gficon,tr("About"));
 	hboxlabel->addWidget(gficon);
@@ -313,7 +314,7 @@ void GofunWidget::performDefaultActionOnItem(QIconViewItem* item)
 void GofunWidget::openSettingsDlg()
 {
 	GofunSettings* settings_dlg = new GofunSettings();
-	GofunMisc::attach_window(this,settings_dlg,D_Under,D_Above,365,150);
+	GofunMisc::attach_window(this,settings_dlg,D_Under,D_Above,365,220);
 	settings_dlg->load();
 	settings_dlg->exec();
 	delete settings_dlg;

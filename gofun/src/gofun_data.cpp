@@ -90,6 +90,7 @@ QStringList GofunDataLoader::load_file_data(const QString& _file)
 	if ( file.open( IO_ReadOnly ) )
 	{
 		QTextStream stream( &file );
+		stream.setEncoding(QTextStream::Latin1);
         	QString line;
         	int i = 1;
 		while ( !stream.atEnd() )

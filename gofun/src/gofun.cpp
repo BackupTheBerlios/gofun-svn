@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
   GofunWidget::applyColorSettings();  
   
   //Here the main widget is being created
-  GofunWidget gofun_widget;
+  GofunWidget gofun_widget(0); //Qt::WStyle_Customize | Qt::WStyle_NormalBorder | Qt::WStyle_Dialog);
   if((GSC::get()->main_x == "-1") && (GSC::get()->main_y == "-1"))
   {
   	//Move the widget to the middle of the screen

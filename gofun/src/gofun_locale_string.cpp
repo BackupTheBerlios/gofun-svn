@@ -96,17 +96,25 @@ bool GofunLocaleString::isBetterMatch(const GofunLocale& locale)
 	return false;
 }
 
-QString GofunLocaleString::desktopEntryPrint(const QString& key)
+void GofunLocaleString::desktopEntryPrint(const QString& key, QTextStream& stream)
 {
-	QString tmp;
 	for(std::map<QString,QString>::iterator it = locale_strings.begin(); it != locale_strings.end(); ++it)
-	{		
+	{
 		if(!(*it).first.isEmpty())
-		tmp += key + "[" + (*it).first + "]=" + QString((*it).second.utf8()) + "\n";
+		{
+		stream << key + "[" + (*it).first + "]=";
+		stream.writeRawBytes((*it).second.utf8(),(*it).second.utf8().length());
+		stream << '\n';
+		//tmp += key + "[" + (*it).first + "]=" + QString((*it).second.utf8()) + "\n";
+		}
 		else
-		tmp += key + "=" + QString((*it).second.utf8()) + "\n";
+		{
+		stream << key + "=";
+		stream.writeRawBytes((*it).second.utf8(),(*it).second.utf8().length());
+		stream << '\n';
+		//tmp += key + "=" + QString((*it).second.utf8()) + "\n";
+		}
 	}
-	return tmp;
 }
 
 GofunLocaleString& GofunLocaleString::operator=( const QString& string)
