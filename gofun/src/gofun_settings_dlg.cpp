@@ -23,13 +23,14 @@
 #include "gofun_settings_dlg.h" 
 
 GofunSettingsDlg::GofunSettingsDlg()
-{	
+{
+
+	setIcon(QPixmap("config.png"));	
+
 	QGridLayout* top_grid = new QGridLayout(this,2,2);
-	
-		
+			
 	tabwidget = new QTabWidget(this);
 	tabwidget->setGeometry(0,50,100,100);
-
 	
 	top_grid->addMultiCellWidget(tabwidget,0,0,0,1);
 	

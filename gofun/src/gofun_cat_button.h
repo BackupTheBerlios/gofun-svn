@@ -22,15 +22,19 @@
 #include <qpushbutton.h> 
 #include <qiconview.h>
 
-#include "gofun_cat_settings.h"
-#include "gofun.h"
-#include "gofun_data.h"
-
 class GofunItem;
+class GofunCatData;
+class GofunIconView;
 
 #ifndef GOFUN_CAT_BUTTON
 #define GOFUN_CAT_BUTTON
 
+enum {
+	PID_MOVE_ITEM,
+	PID_COPY_ITEM
+	};
+
+///Represents a directory and a category
 class GofunCatButton : public QPushButton
 {
 	Q_OBJECT
@@ -40,12 +44,12 @@ public slots:
 	void resizeEvent(QResizeEvent*);
 public:
 	GofunCatButton(const QString&, QWidget*);
-	void setIconView(QIconView*);
+	void setIconView(GofunIconView*);
 	void setData(GofunCatData*);
 	virtual void dragEnterEvent(QDragEnterEvent* event);
 	virtual void dropEvent(QDropEvent* event);
 	
-	QIconView* iconview;
+	GofunIconView* iconview;
 	GofunCatData* data;
 	GofunItem* current_item;
 	QString directory;

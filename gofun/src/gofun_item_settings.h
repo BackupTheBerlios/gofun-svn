@@ -22,14 +22,17 @@
 #include <qlistview.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
+#include <qtoolbutton.h>
  
 #include "gofun_settings_dlg.h"
-#include "gofun_item.h"
-#include "gofun_cat_button.h"
+
+class GofunCatButton;
+class GofunItem;
 
 #ifndef GOFUN_ITEM_SETTINGS 
 #define GOFUN_ITEM_SETTINGS
 
+///Settings-dialog for items
 class GofunItemSettings : public GofunSettingsDlg
 {
 	Q_OBJECT

@@ -24,8 +24,11 @@
 
 #include "gofun_misc.h"
 #include "gofun_item.h"
+#include "gofun.h"
+#include "gofun_data.h"
+#include "gofun_iconview.h"
  
-GofunItem::GofunItem(QIconView* iconview, const QString& string) : QIconViewItem(iconview,string)
+GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconViewItem(iconview,string)
 {
 	data = new GofunItemData();
 }

@@ -22,11 +22,15 @@
 
 #ifndef GOFUN_ICONVIEW
 #define GOFUN_ICONVIEW
- 
+
+///Specialised IconView for GoFun 
 class GofunIconView : public QIconView
 {
 	public:
-	GofunIconView() {};
+	GofunIconView();
+	
+	public slots:
+	virtual void arrangeItemsInGrid(bool = TRUE);
 };
 
 #endif

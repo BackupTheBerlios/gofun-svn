@@ -19,13 +19,17 @@
  ***************************************************************************/
 
 #include <qlineedit.h> 
+#include <qtoolbutton.h>
+#include <qdir.h>
 
 #ifndef GOFUN_CAT_SETTINGS
 #define GOFUN_CAT_SETTINGS
 
-#include "gofun_cat_button.h"
 #include "gofun_settings_dlg.h" 
 
+class GofunCatButton;
+
+///Settings-dialog for categories
 class GofunCatSettings : public GofunSettingsDlg
 {
 	Q_OBJECT
@@ -42,7 +46,7 @@ private:
 	QLineEdit* caption;
 	QLineEdit* background;
 	QToolButton* background_button;
-	QFile file;
+	QDir directory;
 	GofunCatButton* item;
 };
 

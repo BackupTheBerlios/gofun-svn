@@ -21,9 +21,13 @@
 #include <qlabel.h>
 #include <qfiledialog.h>
 #include <qmessagebox.h>
+#include <qlineedit.h>
 
 #include "gofun_item_settings.h"
 #include "gofun_misc.h"
+#include "gofun_item.h"
+#include "gofun_cat_button.h"
+#include "gofun_data.h"
  
 GofunItemSettings::GofunItemSettings()
 {	

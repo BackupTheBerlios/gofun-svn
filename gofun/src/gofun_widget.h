@@ -36,8 +36,6 @@
 #include <qprocess.h>
 #include <qmessagebox.h>
 
-#include "gofun_item_settings.h"
-
 class GofunItem;
 class GofunCatButton;
 class GofunSettings;
@@ -59,6 +57,7 @@ enum
   PID_Add
 };
 
+///Is being the main window of GoFun
 class GofunWidget : public QWidget
 {
 	Q_OBJECT

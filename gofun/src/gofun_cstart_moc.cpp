@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GofunCStart meta object code from reading C++ file 'gofun_cstart.h'
 **
-** Created: Sat Nov 13 14:33:54 2004
+** Created: Sun Nov 14 19:17:43 2004
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.3   edited Aug 5 16:40 $)
 **
 ** WARNING! All changes made in this file will be lost!

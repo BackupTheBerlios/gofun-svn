@@ -141,9 +141,9 @@ MOCFILES = gofun.cpp gofun_cat_settings.cpp gofun_cat_button.cpp \
 		gofun_item_settings.cpp gofun_cstart.cpp
 
 gofun_SOURCES = gofun.cpp gofun_cat_settings.cpp gofun_cat_button.cpp \
-		gofun_item.cpp gofun_settings.cpp gofun_settings_dlg.cpp gofun_widget.cpp \
-		gofun_item_settings.cpp gofun_cstart.cpp $(MOCFILES:.cpp=_moc.cpp) gofun_data.cpp \
-	gofun_misc.cpp
+			gofun_item.cpp gofun_settings.cpp gofun_settings_dlg.cpp gofun_widget.cpp \
+			gofun_item_settings.cpp gofun_cstart.cpp $(MOCFILES:.cpp=_moc.cpp) gofun_data.cpp \
+		gofun_misc.cpp gofun_iconview.cpp
 
 # set the include path found by configure
 INCLUDES = -I$(top_srcdir)/include $(QT_INCLUDES) $(all_includes)
@@ -179,7 +179,7 @@ am_gofun_OBJECTS = gofun.$(OBJEXT) gofun_cat_settings.$(OBJEXT) \
 	gofun_settings.$(OBJEXT) gofun_settings_dlg.$(OBJEXT) \
 	gofun_widget.$(OBJEXT) gofun_item_settings.$(OBJEXT) \
 	gofun_cstart.$(OBJEXT) $(am__objects_1) gofun_data.$(OBJEXT) \
-	gofun_misc.$(OBJEXT)
+	gofun_misc.$(OBJEXT) gofun_iconview.$(OBJEXT)
 gofun_OBJECTS = $(am_gofun_OBJECTS)
 gofun_DEPENDENCIES =
 am_gosu_OBJECTS = gosu.$(OBJEXT)
@@ -197,7 +197,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/gofun_cat_settings_moc.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gofun_cstart.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gofun_cstart_moc.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/gofun_data.Po ./$(DEPDIR)/gofun_item.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/gofun_data.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/gofun_iconview.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/gofun_item.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gofun_item_moc.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gofun_item_settings.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gofun_item_settings_moc.Po \
@@ -281,6 +283,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gofun_cstart.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gofun_cstart_moc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gofun_data.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gofun_iconview.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gofun_item.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gofun_item_moc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gofun_item_settings.Po@am__quote@

@@ -21,7 +21,9 @@
 #include <qlabel.h>
 
 #include "gofun_cat_settings.h"
- 
+#include "gofun_cat_button.h"
+#include "gofun_data.h"
+
 GofunCatSettings::GofunCatSettings()
 {
 	setCaption("GoFun Category Settings");
@@ -50,9 +52,9 @@ void GofunCatSettings::save()
 {
 	if(!item)
 	{
-		file.setName(caption->text() + "/" + ".desktop");
+		//file.setName(caption->text() + "/" + ".desktop");
 	}
-	
+	/*
 	if(file.open(IO_WriteOnly))
 	{
 		QTextStream stream;
@@ -65,7 +67,7 @@ void GofunCatSettings::save()
 			stream << item->data->Unknownkeys << "\n";
 		}
 		file.close();
-	}
+	}*/
 }
 
 void GofunCatSettings::apply()

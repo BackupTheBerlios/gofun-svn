@@ -26,75 +26,99 @@
 #include "gofun_cstart.h"
 #include "gofun_settings.h"
 #include "gofun_misc.h"
+#include "gofun_data.h"
+#include "gofun_cat_button.h"
+#include "gofun_item.h"
+#include "gofun_item_settings.h"
+#include "gofun_cat_settings.h"
 
 //The main constructor.
 GofunWidget::GofunWidget()
 {    
+	//Do some layout magic
 	QHBoxLayout* hbox = new QHBoxLayout(this);
 	QVBoxLayout* vbox = new QVBoxLayout();
 	QHBoxLayout* hboxr = new QHBoxLayout();
 	QHBoxLayout* hboxlabel = new QHBoxLayout();
     
+	//This button group contains the buttons for the different categories
 	cats_bg = new QVButtonGroup(this);
 	cats_bg->setExclusive(true);
 	cats_bg->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding,false);
 	connect(cats_bg, SIGNAL(clicked(int)),this, SLOT(changeCategory(int)));
     
+	//We 'load' this WidgetStack with GofunIconViews later on
 	view_ws = new QWidgetStack(this);
 	view_ws->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,false);
 	
+	//It should be obvious what that is being
 	QPushButton* quit = new QPushButton("Quit", this, "quit");
 	quit->setFont(QFont("Times", 18));
 	quit->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum,false);
+	connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
 	
+	//The button marking your way to the settings-dialog
 	QToolButton* config = new QToolButton(this);
     	config->setPixmap(QPixmap("config.png"));
 	connect(config, SIGNAL(clicked()),this, SLOT(openSettingsDlg()));
 	
+	//Layout magig, basically we add the WidgetStack and a vertical box to the
+	//top horizontal box
 	hbox->addWidget(view_ws);
 	hbox->addLayout(vbox);
 		    
+	//Isn't it nice?
 	QLabel* gflabel = new QLabel("GoFun",this);
 	gflabel->setFont(QFont("Times",28, QFont::Bold));
 	gflabel->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum,0);
 	vbox->addLayout(hboxlabel);
 	hboxlabel->addWidget(gflabel);
 	
+	//Common it is ...
 	QLabel* gficon = new QLabel(this);
 	QPixmap* pixmap = new QPixmap("gofun.png");
 	gficon->setPixmap(*pixmap);
 	hboxlabel->addWidget(gficon);
 	
+	//The last steps in our layout magic
 	vbox->addWidget(cats_bg);
 	vbox->addLayout(hboxr);
 	hboxr->addWidget(quit);            
 	hboxr->addWidget(config);
 	
-	connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
-     
+	//This toolbutton shall be used to add categories
     	QToolButton* cat_add = new QToolButton(Qt::DownArrow,cats_bg);
 	connect(cat_add, SIGNAL(clicked()),this, SLOT(addCategory()));
 	cats_bg->insert(cat_add);   
 	
+	//Now load the whole GoFun-Data and care for its displaying
 	loadData();
 }
 
 //Load Desktop Entry data
 void GofunWidget::loadData()
 {
+	//We get the data sorted nicely
 	std::vector<GofunCatData>* GfCatData = GofunDataLoader::getData();
 	    
+	//Now we iterate to the category data
 	int i = 0;
 	for(std::vector<GofunCatData>::iterator it = GfCatData->begin(); it != GfCatData->end(); ++it, ++i)
 	{
+		//We create a fresh category button, fill it with data and insert it
+		//into the category-button-group
 		GofunCatButton* cat = new GofunCatButton((*it).Name, cats_bg);
 		cat->setData(&(*it));
 		cats_bg->insert(cat,i+1);
+		
+		//For this category we create an IconView
 		GofunIconView* gicv = new GofunIconView();
 		gicv->setResizeMode(QIconView::Adjust);
 		cat->setIconView(gicv);
 		connect(gicv, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
 		connect(gicv, SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),this, SLOT(rightClickedItem(QIconViewItem*,const QPoint&)));
+		
+		//Now we iterate through the actual item-data to create new GofunItems
 		for(std::vector<GofunItemData>::iterator sit = (*it).ItemData->begin(); sit != (*it).ItemData->end(); ++sit)
 		{
 			if((*sit).Hidden == "true")
@@ -104,7 +128,10 @@ void GofunWidget::loadData()
 			GofunItem* gi = new GofunItem(gicv, (*sit).Name);
 			gi->setData(&(*sit));
 		}
+		//At last we add the new IconView to the WidgetStack
 		view_ws->addWidget(gicv, i);
+		
+		//Set current_cat to the first category (FIXME: hack-alert?) 
 		if(i == 0)
 		{
 			current_cat = cat;
@@ -117,7 +144,6 @@ void GofunWidget::openSettingsDlg()
 {
 	GofunSettings* settings_dlg = new GofunSettings();
 	settings_dlg->setGeometry(this->x(),this->geometry().y()+this->geometry().height(),this->width(),this->height());
-	settings_dlg->setIcon(QPixmap("config.png"));
 	settings_dlg->exec();
 	delete settings_dlg;
 	
@@ -196,6 +222,7 @@ void GofunWidget::popupMenuItem(int id)
 	} 
 }
 
+//Show the costumized-start-dialog for the item
 void GofunWidget::costumizedStart(GofunItem* item)
 {
 	GofunCStart* cstart_widget = new GofunCStart();
@@ -208,7 +235,7 @@ void GofunWidget::costumizedStart(GofunItem* item)
 void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 {
 	QPopupMenu* popup = new QPopupMenu(this);
-	if(item)
+	if(item) //Right-clicked on an item.
 	{
 		connect(popup,SIGNAL(activated(int)),this,SLOT(popupMenuItem(int)));
 		popup->insertItem("Start",PID_Execute);
@@ -222,7 +249,7 @@ void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 		popup->insertItem("Delete entry",PID_Delete);
 		popup->popup(pos);
 	}
-	else
+	else //Right-clicked in empty space.
 	{
 		connect(popup,SIGNAL(activated(int)),this,SLOT(popupMenuSpace(int)));
 		popup->insertItem("Add Entry",PID_Add);
@@ -233,6 +260,7 @@ void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 //Handles removement of a Desktop Entry.
 void GofunWidget::deleteEntry(GofunItem* item)
 {
+	//Kindly warn the user
 	if(QMessageBox::warning(this,"Delete entry","Do you really want to delete this entry, sir?", "Ok", "Cancel") == 0)
 	{
 		item->deleteEntry();
@@ -272,16 +300,16 @@ void GofunWidget::openDirectoryItem(GofunItem* item)
 //Switch between categories.
 void GofunWidget::changeCategory(int id)
 {
+	//If id==0 (the add-Category-button) return
 	if(!id)
-	{
 		return;
-	}
 	
+	//Do what the function is supposed to do
 	GofunCatButton* button = dynamic_cast<GofunCatButton*>(cats_bg->find(id));
 	current_cat = button;
 	
 	view_ws->raiseWidget(id-1);
-	if(QSound::isAvailable())
+	if(QSound::isAvailable()) //If sound can be played, we do so.
 	{
 		QSound::play("doublet.wav");
 	}

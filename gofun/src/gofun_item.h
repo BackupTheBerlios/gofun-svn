@@ -22,16 +22,18 @@
 #include <qprocess.h>
 #include <qiconview.h>
 
-#include "gofun.h"
-#include "gofun_data.h"
+class GofunItemData;
+class ExecuteOption;
+class GofunIconView;
 
 #ifndef GOFUN_ITEM
 #define GOFUN_ITEM
 
+///Items represent executeable Desktop Entries
 class GofunItem : public QIconViewItem
 {
 public:
-	GofunItem(QIconView*, const QString& = 0);
+	GofunItem(GofunIconView*, const QString& = 0);
 
 	void loadIcon();
 	void setData(GofunItemData*);

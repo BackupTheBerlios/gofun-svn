@@ -26,7 +26,8 @@
 
 #ifndef GOFUN_SETTINGS_DLG
 #define GOFUN_SETTINGS_DLG
- 
+
+///Base dialog for setting-dialogs in GoFun 
 class GofunSettingsDlg : public QDialog
 {
 	Q_OBJECT

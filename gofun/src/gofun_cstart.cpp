@@ -23,7 +23,9 @@
 #include <qpushbutton.h>
  
 #include "gofun_cstart.h"
- 
+#include "gofun_item.h"
+#include "gofun_data.h"
+
 GofunCStart::GofunCStart()
 {
 	setCaption("Costumized Start");

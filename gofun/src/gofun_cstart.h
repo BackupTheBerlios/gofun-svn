@@ -23,11 +23,12 @@
 #include <qcheckbox.h>
 #include <qlabel.h>
 
-#include "gofun_item.h"
+class GofunItem;
 
 #ifndef GOFUN_CSTART
 #define GOFUN_CSTART
- 
+
+///Dialog making a highly costumized start possible
 class GofunCStart : public QDialog
 {
 	Q_OBJECT

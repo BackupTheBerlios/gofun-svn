@@ -23,20 +23,28 @@
  
 #include "gofun_item.h"
 #include "gofun_cat_button.h"
+#include "gofun_cat_settings.h"
+#include "gofun.h"
+#include "gofun_data.h"
+#include "gofun_iconview.h"
  
 GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButton(str,widget)
 {
 	setText(str);
 	setToggleButton(true);	
+	//Needed so GofunItems can be moved/copied comfortably between categories
 	setAcceptDrops(true);
 
+	//Create the appendix of this button
 	conf_button = new QToolButton(this);
 	conf_button->setPalette(QPalette(QColor(int(rand()%256),int(rand()%256),int(rand()%256))));
 	connect(conf_button, SIGNAL(clicked()),this, SLOT(catSettings()));
 	
+	//Make sure it's being initialized from the start
 	data = new GofunCatData();
 }
 
+//Make sure the right-button is in the right place (!you got the word joke?)
 void GofunCatButton::resizeEvent(QResizeEvent* event)
 {
 	//conf_button->setGeometry(geometry().width()+5,0,5,geometry().height()-2);	
@@ -55,51 +63,61 @@ void GofunCatButton::catSettings()
 	delete settings_dlg;
 }
 
+//Too obvious for a comment, oh ...
 void GofunCatButton::setData(GofunCatData* d)
 {
 	data = d;
 }
 
-void GofunCatButton::setIconView(QIconView* iv)
+//Specify which IconView is related to this CatButton
+void GofunCatButton::setIconView(GofunIconView* iv)
 {
 	iconview = iv;
 }
 
+//Drag'n'Drop magic
 void GofunCatButton::dragEnterEvent(QDragEnterEvent* event)
 {
 	event->accept(QIconDrag::canDecode(event));
 }
 
+//Drag'n'Drop magic 2nd part
 void GofunCatButton::dropEvent(QDropEvent* event)
 {	
-	QIconView* itemview = dynamic_cast<QIconView*>(event->source()->parent());
+	GofunIconView* itemview = dynamic_cast<GofunIconView*>(event->source()->parent());
 		
-	if(itemview)
+	if(itemview) //Did we receive something from an itemview?
 	{
-		if(itemview->currentItem())
+		if(itemview->currentItem()) //Let's say an item?
 		{
+			//Store this information and create a new popup presenting
+			//the users options.
 			current_item = dynamic_cast<GofunItem*>(itemview->currentItem());
 			QPopupMenu* popup = new QPopupMenu(this);
 			connect(popup,SIGNAL(activated(int)),this,SLOT(popupItemDnD(int)));
-			popup->insertItem("Copy",1);
-			popup->insertItem("Move",2);
+			popup->insertItem("Copy",PID_COPY_ITEM);
+			popup->insertItem("Move",PID_MOVE_ITEM);
 			popup->popup(QCursor::pos());
 		}
 	}
 }
 
+//The popup-menu resulting from a drag'n'drop action
+//has been triggered
 void GofunCatButton::popupItemDnD(int id)
 {
+	//Wise man prepare ...
 	GofunItem* gi = new GofunItem(iconview, current_item->text());
 	GofunItemData* _data = new GofunItemData(*current_item->data);
+	
 	switch(id)
 	{
-		case 1:
+		case PID_COPY_ITEM: //Make a deep copy
 			gi->setData(_data);
 			gi->data->File = data->Catdir + gi->data->Name + ".desktop";
 			gi->save();
 			break;
-		case 2:
+		case PID_MOVE_ITEM: //Make a deep copy and remove the original
 			gi->setData(_data);
 			gi->data->File = data->Catdir + gi->data->Name + ".desktop";
 			gi->save();

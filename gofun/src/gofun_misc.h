@@ -23,6 +23,7 @@
 #ifndef GOFUN_MISC
 #define GOFUN_MISC
 
+///Mixed methods needed in GoFun
 struct GofunMisc
 {
 	static QString shell_call(const QString&);

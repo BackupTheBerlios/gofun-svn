@@ -27,30 +27,55 @@
 #include <cstdlib>
 
 #include <qapplication.h>
+#include <qdir.h>
 
 #include "gofun_widget.h"
+#include "gofun_misc.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-
+  //Do some magic to setup the right data directory
+  QString gofun_bin_dir = GofunMisc::shell_call("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").simplifyWhiteSpace();
+  QString gofun_data_dir;
+  if(!gofun_bin_dir.isEmpty())
+  {
+  	gofun_data_dir = gofun_bin_dir + "/../share/gofun/";
+	
+	QDir dir;
+	if(!dir.exists(gofun_data_dir))
+		gofun_data_dir = "";
+  }
+  
+  if(!gofun_data_dir.isEmpty())
+  	chdir(gofun_data_dir);
+	
+  //Random isn't random by default  
   srand (time (0));
 
+  //This is the app's core
   QApplication app(argc, argv);
+  //make GoFun look colorful and different every startup
   app.setPalette(QPalette(QColor(int(rand() % 256),int(rand() % 256),int(rand() % 256))));
 
+  //Here the main widget is being created
   GofunWidget gofun_widget;
   int height = 240;
   int width = 360;
+  //Move the widget to the middle of the screen
   gofun_widget.setGeometry(QApplication::desktop()->screen()->width() / 2 - width/2, QApplication::desktop()->screen()->height() / 2 - height/2, width, height);
+  //Set a caption and an icon
   gofun_widget.setCaption("GoFun");
   gofun_widget.setIcon(QPixmap("gofun.png"));
+  
+  //Declare gofun_widget to the official mainWidget
   app.setMainWidget(&gofun_widget);
+  
+  //Paint it on the screen
   gofun_widget.show();
 
-  app.exec();
-
-  return EXIT_SUCCESS;
+  //Finally we start the application!
+  return app.exec();
 }
 

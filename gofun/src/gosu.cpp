@@ -178,54 +178,6 @@ elements (char **arr)
   return n;
 }
 
-#if defined (SYSLOG_SUCCESS) || defined (SYSLOG_FAILURE)
-/* Log the fact that someone has run su to the user given by PW;
-   if SUCCESSFUL is nonzero, they gave the correct password, etc.  */
-
-static void
-log_su (const struct passwd *pw, int successful)
-{
-  const char *new_user, *old_user, *tty;
-
-# ifndef SYSLOG_NON_ROOT
-  if (pw->pw_uid)
-    return;
-# endif
-  new_user = pw->pw_name;
-  /* The utmp entry (via getlogin) is probably the best way to identify
-     the user, especially if someone su's from a su-shell.  */
-  old_user = getlogin ();
-  if (old_user == NULL)
-    {
-      /* getlogin can fail -- usually due to lack of utmp entry.
-	 Resort to getpwuid.  */
-      struct passwd *pwd = getpwuid (getuid ());
-      old_user = (pwd ? pwd->pw_name : "");
-    }
-  tty = ttyname (2);
-  if (tty == NULL)
-    tty = "none";
-  /* 4.2BSD openlog doesn't have the third parameter.  */
-  openlog (base_name (program_name), 0
-# ifdef LOG_AUTH
-	   , LOG_AUTH
-# endif
-	   );
-  syslog (LOG_NOTICE,
-# ifdef SYSLOG_NON_ROOT
-	  "%s(to %s) %s on %s",
-# else
-	  "%s%s on %s",
-# endif
-	  successful ? "" : "FAILED SU ",
-# ifdef SYSLOG_NON_ROOT
-	  new_user,
-# endif
-	  old_user, tty);
-  closelog ();
-}
-#endif
-
 /* Ask the user for a password.
    Return 1 if the user gives the correct password for entry PW,
    0 if not.  Return 1 without asking for a password if run by UID 0
@@ -429,7 +381,7 @@ usage (int status)
   else
     {
       printf ("Usage: %s [OPTION]... [-] [USER [ARG]...]\n", program_name);
-     /* fputs ("\
+      fputs ("\
 Change the effective user id and group id to that of USER.\n\
 \n\
   -, l, --login               make the shell a login shell\n\
@@ -441,8 +393,8 @@ Change the effective user id and group id to that of USER.\n\
 ", stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
       fputs (VERSION_OPTION_DESCRIPTION, stdout);
-      fputs ("\\n\A mere - implies -l.   If USER not given, assume root.\n\ ", stdout);
-      printf ("\nReport bugs to <%s>.\n", PACKAGE_BUGREPORT);*/
+      fputs ("\nA mere - implies -l.   If USER not given, assume root.\n ", stdout);
+      printf ("\nReport bugs to <%s>.\n", PACKAGE_BUGREPORT);
     }
   exit (status);
 }
@@ -550,17 +502,8 @@ main (int argc, char **argv)
 
   if (!correct_password (pw))
     {
-#ifdef SYSLOG_FAILURE
-      log_su (pw, 0);
-#endif
       error (EXIT_FAIL, 0, "incorrect password");
     }
-#ifdef SYSLOG_SUCCESS
-  else
-    {
-      log_su (pw, 1);
-    }
-#endif
 
 
   if (shell == 0 && change_environment == 0)
