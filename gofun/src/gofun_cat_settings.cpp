@@ -25,6 +25,7 @@
 #include "gofun_cat_button.h"
 #include "gofun_data.h"
 #include "gofun_iconview.h"
+#include "gofun_misc.h"
 
 GofunCatSettings::GofunCatSettings()
 {
@@ -46,8 +47,22 @@ GofunCatSettings::GofunCatSettings()
 	grid->addWidget(new QLabel(tr("Background"),widget_main),2,0);
 	grid->addWidget(background,2,1);
 	grid->addWidget(background_button,2,2);
+	
+	connect(background_button,SIGNAL(clicked()),this,SLOT(backgroundDialog()));
 
 	item = 0;	
+}
+
+void GofunCatSettings::backgroundDialog()
+{
+	QString start_dir;
+	if(!background->text().isEmpty())
+		start_dir = background->text();
+	else
+		start_dir = QDir::homeDirPath();
+	QString file = GofunMisc::fileDialogGetImage(start_dir,tr("Select background image"),tr("Images"));
+	if(!file.isEmpty())
+		background->setText(file);
 }
 
 void GofunCatSettings::save()

@@ -32,6 +32,7 @@ struct GofunMisc
 	static QString shell_call(const QString&);
 	static QString ext_filestring(const QString&);
 	static void center_window(QWidget*, int, int);
+	static QString fileDialogGetImage(const QString& start_dir,const QString& caption, const QString& filter_desc);
 };
 
 class GofunFileDialogPreview : public QLabel, public QFilePreview
@@ -40,6 +41,12 @@ class GofunFileDialogPreview : public QLabel, public QFilePreview
         GofunFileDialogPreview( QWidget *parent=0 ) : QLabel( parent ) {}
 
         void previewUrl( const QUrl &u );
+};
+
+class GofunFileIconProvider : public QFileIconProvider
+{
+	public:
+	virtual const QPixmap * pixmap ( const QFileInfo & info );
 };
 
 #endif

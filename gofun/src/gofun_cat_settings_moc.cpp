@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GofunCatSettings meta object code from reading C++ file 'gofun_cat_settings.h'
 **
-** Created: Tue Nov 30 20:24:13 2004
+** Created: Wed Dec 1 17:55:56 2004
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.3   edited Aug 5 16:40 $)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -52,9 +52,13 @@ QMetaObject* GofunCatSettings::staticMetaObject()
     if ( metaObj )
 	return metaObj;
     QMetaObject* parentObject = GofunSettingsDlg::staticMetaObject();
+    static const QUMethod slot_0 = {"backgroundDialog", 0, 0 };
+    static const QMetaData slot_tbl[] = {
+	{ "backgroundDialog()", &slot_0, QMetaData::Public }
+    };
     metaObj = QMetaObject::new_metaobject(
 	"GofunCatSettings", parentObject,
-	0, 0,
+	slot_tbl, 1,
 	0, 0,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -74,7 +78,12 @@ void* GofunCatSettings::qt_cast( const char* clname )
 
 bool GofunCatSettings::qt_invoke( int _id, QUObject* _o )
 {
-    return GofunSettingsDlg::qt_invoke(_id,_o);
+    switch ( _id - staticMetaObject()->slotOffset() ) {
+    case 0: backgroundDialog(); break;
+    default:
+	return GofunSettingsDlg::qt_invoke( _id, _o );
+    }
+    return TRUE;
 }
 
 bool GofunCatSettings::qt_emit( int _id, QUObject* _o )

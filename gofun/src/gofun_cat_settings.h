@@ -38,6 +38,7 @@ public:
 	virtual void load(GofunCatButton*);
 
 public slots:
+	void backgroundDialog();
 private:
 	virtual void save();
 	virtual void apply();

@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <qpixmap.h>
+#include <qimage.h>
 #include <qapplication.h>
  
 #include "gofun_misc.h" 
@@ -46,13 +47,49 @@ void GofunMisc::center_window(QWidget* w, int width, int height)
   w->setGeometry(QApplication::desktop()->screen()->width() / 2 - width/2, QApplication::desktop()->screen()->height() / 2 - height/2, width, height);
 }
 
+QString GofunMisc::fileDialogGetImage(const QString& start_dir,const QString& caption, const QString& filter_desc)
+{
+	GofunFileDialogPreview* pre = new GofunFileDialogPreview;
+	GofunFileIconProvider* iconpro = new GofunFileIconProvider;
+	
+	QFileDialog* fd = new QFileDialog(start_dir,filter_desc + " (*.png *.xpm *.jpg *.bmp *.ico)");
+	fd->setDir(start_dir);
+	fd->setCaption(caption);
+	fd->setContentsPreviewEnabled( TRUE );
+	fd->setContentsPreview( pre, pre );
+	fd->setIconProvider(iconpro);
+	fd->setPreviewMode( QFileDialog::Contents );
+	fd->exec();
+	QString file = fd->selectedFile();
+	delete fd;
+	return file;
+}
+
 void GofunFileDialogPreview::previewUrl(const QUrl& u)
 {
 	QString path = u.path();
-	QPixmap pix( path );
+	QImage img( path );
+	if(img.width() > 200)
+		img = img.scaleWidth(200);
+	if(img.height() > 300)
+		img = img.scaleHeight(300);
+	QPixmap pix;
+	pix.convertFromImage(img);
 	if ( pix.isNull() )
 		setText(tr("This is not a pixmap"));
 	else
 		setPixmap( pix );
 }
+
+const QPixmap * GofunFileIconProvider::pixmap ( const QFileInfo & info )
+{
+	if(!info.isFile())
+		return NULL;
+	
+	QImage image(info.filePath());
+	QPixmap* pixmap = new QPixmap;
+	pixmap->convertFromImage(image.scale(16,16));
+	return pixmap;
+}
+
 
