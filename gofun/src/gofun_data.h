@@ -58,6 +58,9 @@ struct GofunParameterData
 	QStringList Values;
 	QString Default_Value;
 	QString Prompt;
+	QString Type;
+	QString Minimum;
+	QString Maximum;
 	GofunLocaleString Comment;
 };
 
@@ -114,14 +117,6 @@ struct GofunCatEntryData : public GofunDesktopEntryData
 	bool parseLine(const QString&);
 		
 	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
-};
-
-///Data-type that can contain special start-options
-struct ExecuteOption : public GofunDesktopEntryData
-{
-	QString Exec;
-	QString terminal;
-	QString xinit;
 };
 
 ///Loads Desktop-Entry data

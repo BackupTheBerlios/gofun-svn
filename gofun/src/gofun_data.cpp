@@ -108,6 +108,18 @@ bool GofunApplicationEntryData::parseLine(const QString& line)
 		{
 			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Comment-").length()).toInt()].Comment = GofunDataLoader::getValue(line);
 		}
+		else if(line.find("X-GoFun-Parameter-Type") == 0)
+		{
+			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Type-").length()).toInt()].Type = GofunDataLoader::getValue(line);
+		}
+		else if(line.find("X-GoFun-Parameter-Minimum") == 0)
+		{
+			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Minimum-").length()).toInt()].Minimum = GofunDataLoader::getValue(line);
+		}
+		else if(line.find("X-GoFun-Parameter-Maximum") == 0)
+		{
+			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Maximum-").length()).toInt()].Maximum = GofunDataLoader::getValue(line);
+		}
 		else
 			return false;
 	}

@@ -26,11 +26,13 @@
 #ifndef GOFUN_LIST_DIALOG
 #define GOFUN_LIST_DIALOG
 
-class GofunListDialog : public QDialog
+class QValidator;
+
+class GofunListWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	GofunListDialog();
+	GofunListWidget(QWidget*);
 	QStringList returnList();
 	void fillList(const QStringList&);
 
@@ -41,16 +43,26 @@ public slots:
 	void down();
 	void updateValue(const QString&);
 	void updateEdit();
+	void setValidator(const QValidator*);
 	
 private:
 	QListView* list;
 	QLineEdit* edit;
 	QPushButton* add_button;
 	QPushButton* rem_button;
-	QPushButton* apply_button;
-	QPushButton* cancel_button;
 	QPushButton* up_button;
 	QPushButton* down_button;
+};
+
+class GofunListDialog : public QDialog
+{
+	Q_OBJECT
+public:
+	GofunListDialog();
+private:
+	GofunListWidget* list_widget;
+	QPushButton* apply_button;
+	QPushButton* cancel_button;
 };
 
 #endif

@@ -87,6 +87,9 @@ void GofunApplicationItem::save()
 				stream << "X-GoFun-Parameter-Values-" << (*it).first << "=" << (*it).second.Values.join(";") << "\n";
 				stream << "X-GoFun-Parameter-Default-" << (*it).first << "=" << (*it).second.Default_Value << "\n";
 				stream << "X-GoFun-Parameter-Prompt-" << (*it).first << "=" << (*it).second.Prompt << "\n";
+				stream << "X-GoFun-Parameter-Type-" << (*it).first << "=" << (*it).second.Type << "\n";
+				stream << "X-GoFun-Parameter-Minimum-" << (*it).first << "=" << (*it).second.Minimum << "\n";
+				stream << "X-GoFun-Parameter-Maximum-" << (*it).first << "=" << (*it).second.Maximum << "\n";	
 				(*it).second.Comment.desktopEntryPrint("X-GoFun-Parameter-Comment-" + QString::number((*it).first),stream);
 			}
 		}
@@ -122,23 +125,21 @@ void GofunApplicationItem::interpretExecString(QString& exec)
 	}
 }
 
-void GofunApplicationItem::executeCommand(ExecuteOption* option)
+void GofunApplicationItem::executeCommand(GofunApplicationEntryData* application_entry)
 {
+	if(!application_entry)
+		application_entry = data();
+		
 	QString poststring;
 	QProcess proc;
+	QString exec = application_entry->Exec;
+		
+	interpretExecString(application_entry->Exec);
 	
-	QString exec;
-	if(!option->Exec.isEmpty())
-	exec = option->Exec;
-	else
-	exec = data()->Exec;
-	
-	interpretExecString(exec);
-	
-	if(!data()->X_GoFun_Parameter.empty())
+	if(!application_entry->X_GoFun_Parameter.empty())
 	{
 		GofunParameterPrompt* prompt = new GofunParameterPrompt();
-		for(std::map<int,GofunParameterData>::iterator it = data()->X_GoFun_Parameter.begin();it != data()->X_GoFun_Parameter.end(); ++it)
+		for(std::map<int,GofunParameterData>::iterator it = application_entry->X_GoFun_Parameter.begin();it != application_entry->X_GoFun_Parameter.end(); ++it)
 		{
 			prompt->addParameter(&((*it).second));
 		}
@@ -151,9 +152,9 @@ void GofunApplicationItem::executeCommand(ExecuteOption* option)
 			return;
 		}
 	}
-	if(!data()->X_GoFun_Env.empty())
+	if(!application_entry->X_GoFun_Env.empty())
 	{
-		for(std::vector<QString>::iterator it = data()->X_GoFun_Env.begin(); it != data()->X_GoFun_Env.end(); ++it)
+		for(std::vector<QString>::iterator it = application_entry->X_GoFun_Env.begin(); it != application_entry->X_GoFun_Env.end(); ++it)
 		{
 			if((*it).isEmpty())
 			{
@@ -163,7 +164,7 @@ void GofunApplicationItem::executeCommand(ExecuteOption* option)
 			exec = "export " + vk_pair[0] + "='" + QString((*it)).remove(0,vk_pair[0].length()+1) + "';" + exec;
 		}
 	}
-	if((!option->terminal.isEmpty()) || (data()->Terminal == "true"))
+	if(application_entry->Terminal == "true")
 	{ 
 		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
 		if(exec[exec.length()-1] == ';')
@@ -172,7 +173,7 @@ void GofunApplicationItem::executeCommand(ExecuteOption* option)
 		exec += "read -n 1";
 		
 	}
-	if(data()->Path.isEmpty())
+	if(application_entry->Path.isEmpty())
 	{
 		proc.setWorkingDirectory(QDir::homeDirPath());
 		proc.addArgument("/bin/sh");
@@ -182,20 +183,20 @@ void GofunApplicationItem::executeCommand(ExecuteOption* option)
 	}
 	else
 	{
-		proc.setWorkingDirectory(QDir(data()->Path));
+		proc.setWorkingDirectory(QDir(application_entry->Path));
 		proc.addArgument("/bin/sh");
 		proc.addArgument("-c");
-		exec = "cd " + GofunMisc::shellify_path(data()->Path) + ";" + exec;
+		exec = "cd " + GofunMisc::shellify_path(application_entry->Path) + ";" + exec;
 		proc.addArgument(exec);
 	}
-	if(!data()->X_GoFun_User.isEmpty())
+	if(!application_entry->X_GoFun_User.isEmpty())
 	{		
 		QString spa_file = saveProcArguments(&proc);
 		
 		QProcess proc_gosu;
 		
 		proc_gosu.addArgument("gosu");
-		proc_gosu.addArgument(data()->X_GoFun_User);
+		proc_gosu.addArgument(application_entry->X_GoFun_User);
 		proc_gosu.addArgument("--color");
 		proc_gosu.addArgument(qApp->palette().color(QPalette::Active,QColorGroup::Background).name());
 		proc_gosu.addArgument("-l");
@@ -210,7 +211,7 @@ void GofunApplicationItem::executeCommand(ExecuteOption* option)
 		proc.addArgument("golauncher");
 		proc.addArgument("-datafile");
 		proc.addArgument(QDir::homeDirPath() + "/.gofun/tmp_proc_exec");
-		if((!option->xinit.isEmpty()) || (data()->X_GoFun_NewX == "true"))
+		if(application_entry->X_GoFun_NewX == "true")
 			proc.addArgument("-xstart");
 		proc.start();
 	}
@@ -313,16 +314,17 @@ void GofunApplicationItem::editEntry()
 //Forwards execution of a Desktop Entry.
 void GofunApplicationItem::execute(const QString& option)
 {
-	ExecuteOption* eo = new ExecuteOption();
+	GofunApplicationEntryData* eo = new GofunApplicationEntryData();
+	*eo = *data();
 	if(option != QString::null && !option.isEmpty())
 	{
 		if(option == "terminal")
 		{
-			eo->terminal = "true";
+			eo->Terminal = "true";
 		}
 		if(option == "xinit")
 		{
-			eo->xinit = "true";
+			eo->X_GoFun_NewX = "true";
 		}
 	}
 	executeCommand(eo);

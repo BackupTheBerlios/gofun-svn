@@ -117,6 +117,11 @@ void GofunFSDeviceItemSettings::load(GofunFSDeviceItem* _item)
 	unmount_icon->setText(data()->UnmountIcon);
 	unmount_icon_button->setPixmap(GofunMisc::get_icon(data()->UnmountIcon,32,32));
 	
+	device->setCurrentText(data()->Device);
+	mount_point->setCurrentText(data()->MountPoint);
+	
+	type->setCurrentText(data()->FSType);
+	
 	readonly_chk->setChecked(GofunMisc::stringToBool(data()->ReadOnly));
 }
 

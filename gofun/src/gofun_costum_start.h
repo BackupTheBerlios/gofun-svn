@@ -37,16 +37,20 @@ public:
 public slots:
 	void start();
 	virtual void load(GofunApplicationItem*);
-
+	
 private:
 
 	QLabel* caption;
 	QLineEdit* command;
-	GofunApplicationItem* item;
+	QLineEdit* directory;
 	QCheckBox* terminal;
 	QCheckBox* newxserver;
+	QCheckBox* user;
+	QComboBox* user_name;
 	QComboBox* nxs_depth;
 	QComboBox* nxs_resolution;
+	
+	GofunApplicationItem* item;
 };
 
 #endif

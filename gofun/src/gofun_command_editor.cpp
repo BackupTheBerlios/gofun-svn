@@ -29,6 +29,7 @@
 #include "gofun_misc.h"
 #include "gofun_list_popup.h"
 #include "gofun_directory_browser.h"
+#include "gofun_application_item.h"
 
 GofunExecutableBrowser::GofunExecutableBrowser()
 {
@@ -73,6 +74,8 @@ GofunCommandEditor::GofunCommandEditor()
 	grid->addItem(spacer,2,2);
 	grid->addWidget(test,2,3);
 	grid->addWidget(browse_for,0,3);
+	
+	app_item = 0;
 }
 
 void GofunCommandEditor::commandExpand()
@@ -124,6 +127,12 @@ void GofunCommandEditor::commandCompletion(QListViewItem* item)
 
 void GofunCommandEditor::test()
 {
+	if(app_item)
+	{
+		GofunApplicationEntryData app_entry = *app_item->data();
+		app_entry.Exec = text->text();
+		app_item->executeCommand(&app_entry);
+	}
 }
 
 void GofunCommandEditor::browseForDirectory()
@@ -152,6 +161,11 @@ void GofunCommandEditor::browseForFile()
 		return;
 		
 	text->insert(s);
+}
+
+void GofunCommandEditor::setApplicationItem(GofunApplicationItem *item)
+{
+	app_item = item;
 }
 
 

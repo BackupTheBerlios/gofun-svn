@@ -174,6 +174,7 @@ void GofunApplicationItemSettings::envPredefinedPopupActivated(QListViewItem* it
 void GofunApplicationItemSettings::commandEditor()
 {
 	GofunCommandEditor* cmd_editor = new GofunCommandEditor();
+	cmd_editor->setApplicationItem(dynamic_cast<GofunApplicationItem*>(item));
 	cmd_editor->setCommand(command->text());
 	if(cmd_editor->exec() == QDialog::Accepted)
 		command->setText(cmd_editor->command());	

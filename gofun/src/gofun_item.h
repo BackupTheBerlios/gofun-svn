@@ -26,7 +26,6 @@
 #include "gofun_desktop_object.h"
 
 class GofunDesktopEntryData;
-class ExecuteOption;
 class GofunIconView;
 class GofunIconViewToolTip;
 class QPopupMenu;

@@ -45,7 +45,7 @@ class GofunApplicationItem : public GofunItem
 	void save();
 	void costumizedStart();
 	void openDirectory();
-	void executeCommand(ExecuteOption* = NULL);
+	void executeCommand(GofunApplicationEntryData* = NULL);
 	QPopupMenu* rightClickPopup(const QPoint&);
 	void editEntry();
 	void performDefaultAction() { execute(); };

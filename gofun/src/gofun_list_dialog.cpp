@@ -23,7 +23,7 @@
  
 #include "gofun_list_dialog.h"
 
-GofunListDialog::GofunListDialog()
+GofunListWidget::GofunListWidget(QWidget* parent) : QWidget(parent)
 {
 	list = new QListView(this);
 	list->addColumn(tr("Values"));
@@ -38,15 +38,11 @@ GofunListDialog::GofunListDialog()
 	
 	add_button = new QPushButton(tr("Add"),this);
 	rem_button = new QPushButton(tr("Remove"),this);
-	apply_button = new QPushButton(tr("Apply"),this);
-	cancel_button = new QPushButton(tr("Cancel"),this);
 	up_button = new QPushButton(tr("Up"),this);
 	down_button = new QPushButton(tr("Down"),this);
 	
 	connect(add_button,SIGNAL(clicked()),this,SLOT(add()));
 	connect(rem_button,SIGNAL(clicked()),this,SLOT(remove()));
-	connect(apply_button,SIGNAL(clicked()),this,SLOT(accept()));
-	connect(cancel_button,SIGNAL(clicked()),this,SLOT(reject()));
 	connect(up_button,SIGNAL(clicked()),this,SLOT(up()));
 	connect(down_button,SIGNAL(clicked()),this,SLOT(down()));
 	
@@ -55,8 +51,6 @@ GofunListDialog::GofunListDialog()
 	grid->addWidget(rem_button,0,1);
 	grid->addMultiCellWidget(list,1,1,0,2);
 	grid->addMultiCellWidget(edit,2,2,0,2);
-	grid->addWidget(apply_button,3,0);
-	grid->addWidget(cancel_button,3,1);
 	
 	QGridLayout* right = new QGridLayout(4,1);
 	grid->addMultiCellLayout(right,0,4,3,3);
@@ -65,7 +59,12 @@ GofunListDialog::GofunListDialog()
 	right->addWidget(down_button,2,0);
 }
 
-QStringList GofunListDialog::returnList()
+void GofunListWidget::setValidator(const QValidator* validator)
+{
+	edit->setValidator(validator);
+}
+
+QStringList GofunListWidget::returnList()
 {
 	QStringList _list;
 	for(QListViewItem* it = list->firstChild(); it != 0; it = it->nextSibling())
@@ -74,7 +73,7 @@ QStringList GofunListDialog::returnList()
 	}
 }
 
-void GofunListDialog::fillList(const QStringList& _list)
+void GofunListWidget::fillList(const QStringList& _list)
 {
 	for(QStringList::ConstIterator it = _list.begin(); it != _list.end(); ++it)
 	{
@@ -82,18 +81,18 @@ void GofunListDialog::fillList(const QStringList& _list)
 	}
 }
 
-void GofunListDialog::add()
+void GofunListWidget::add()
 {
 	QListViewItem* new_item = new QListViewItem(list,tr("Value"));
 }
 
-void GofunListDialog::remove()
+void GofunListWidget::remove()
 {
 	if(list->selectedItem())
 		delete list->selectedItem();
 }
 
-void GofunListDialog::down()
+void GofunListWidget::down()
 {
     if (!list->currentItem())
         return;
@@ -103,7 +102,7 @@ void GofunListDialog::down()
     list->currentItem()->moveItem(list->currentItem()->nextSibling()); 
 }
 
-void GofunListDialog::up()
+void GofunListWidget::up()
 {
     if (!list->currentItem())
         return;
@@ -116,7 +115,7 @@ void GofunListDialog::up()
     item->moveItem( list->currentItem()); 
 }
 
-void GofunListDialog::updateValue(const QString& text)
+void GofunListWidget::updateValue(const QString& text)
 {
 	if(!list->selectedItem())
 		return;
@@ -124,7 +123,7 @@ void GofunListDialog::updateValue(const QString& text)
 	list->selectedItem()->setText(0,text);
 }
 
-void GofunListDialog::updateEdit()
+void GofunListWidget::updateEdit()
 {
 	if(!list->selectedItem())
 	{
@@ -136,6 +135,22 @@ void GofunListDialog::updateEdit()
 		edit->setEnabled(true);
 		edit->setText(list->selectedItem()->text(0));
 	}
+}
+
+GofunListDialog::GofunListDialog()
+{
+	QGridLayout* grid = new QGridLayout(this);
+	
+	list_widget = new GofunListWidget(this);
+	apply_button = new QPushButton(tr("Apply"),this);
+	cancel_button = new QPushButton(tr("Cancel"),this);
+	
+	connect(apply_button,SIGNAL(clicked()),this,SLOT(accept()));
+	connect(cancel_button,SIGNAL(clicked()),this,SLOT(reject()));
+	
+	grid->addMultiCellWidget(list_widget,0,0,0,1);
+	grid->addWidget(apply_button,0,0);
+	grid->addWidget(cancel_button,0,1);
 }
 
 

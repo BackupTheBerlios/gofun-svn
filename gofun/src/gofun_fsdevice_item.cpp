@@ -158,7 +158,20 @@ void GofunFSDeviceItem::open() //@TODO resolve code duplication between this and
 
 void GofunFSDeviceItem::mount()
 {
-	QString tmp = GofunMisc::shell_call("mount " + QString(GofunMisc::stringToBool(data()->ReadOnly) ? "-r " : "") + data()->MountPoint+" 2>&1");
+	QString shell_call;
+	shell_call += "mount ";
+	shell_call += QString(GofunMisc::stringToBool(data()->ReadOnly) ? "-r " : " ");
+	
+	if(!data()->Device.isEmpty() && !data()->MountPoint.isEmpty()) //When we give 'mount' both it'll end up in an error (only root bla)
+	{
+
+	}
+	
+	shell_call += QString(data()->FSType.isEmpty() ? " " : ("-t "+data()->FSType+" "));
+	shell_call += data()->Device + " ";
+	shell_call += data()->MountPoint + " ";
+	shell_call += " 2>&1";
+	QString tmp = GofunMisc::shell_call(shell_call);
 	if(!isMounted())
 		QMessageBox::warning(0,tr("Mount error"),tr("Mounting failed:\n")+tmp);
 	else

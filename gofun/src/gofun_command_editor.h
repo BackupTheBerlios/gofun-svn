@@ -25,6 +25,8 @@
 #ifndef GOFUN_COMMAND_EDITOR
 #define GOFUN_COMMAND_EDITOR
 
+class GofunApplicationItem;
+
 class GofunExecutableBrowser : public QDialog
 {
 	Q_OBJECT
@@ -41,6 +43,7 @@ class GofunCommandEditor : public QDialog
 	GofunCommandEditor();
 	void setCommand(const QString&);
 	QString command();
+	void setApplicationItem(GofunApplicationItem*);
 	
 	private slots:
 	void commandExpand();
@@ -53,6 +56,8 @@ class GofunCommandEditor : public QDialog
 	private:
 	QTextEdit* text;
 	QString cmd;
+	
+	GofunApplicationItem* app_item;
 };
 
 #endif

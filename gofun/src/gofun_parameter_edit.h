@@ -24,7 +24,7 @@
 
 class QLineEdit;
 class QComboBox;
-class GofunListDialog;
+class GofunListWidget;
  
 #ifndef GOFUN_PARAMETER_EDIT
 #define GOFUN_PARAMETER_EDIT
@@ -41,7 +41,7 @@ class GofunParameterEdit : public QDialog
 	private:
 	QLineEdit* flag;
 	QLineEdit* comment;
-	GofunListDialog* values;
+	GofunListWidget* values;
 	QComboBox* default_value;
 	QComboBox* type;
 	
