@@ -49,6 +49,7 @@ public:
 	void setData(GofunCatData*);
 	virtual void dragEnterEvent(QDragEnterEvent* event);
 	virtual void dropEvent(QDropEvent* event);
+	void save();
 	
 	GofunIconView* iconview;
 	GofunCatData* data;

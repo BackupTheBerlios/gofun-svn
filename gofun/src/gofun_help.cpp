@@ -35,7 +35,7 @@
 	std::map<QString,QPixmap*> images;
 GofunHelp::GofunHelp()
 {
-	setCaption("GoFun Help");
+	setCaption(tr("GoFun Help"));
 	setIcon(QPixmap("help.png"));
 
 	QSpacerItem* space_left = new QSpacerItem(-1,-1,QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -52,7 +52,7 @@ GofunHelp::GofunHelp()
 	back_bt->setEnabled(false);
 	home_bt = new QToolButton(this);
 	home_bt->setPixmap(QPixmap("home.png"));
-	close_bt = new QPushButton("Close",this);
+	close_bt = new QPushButton(tr("Close"),this);
 	
 	textbrowser = new QTextBrowser(this);
 	GofunMimeSourceFactory* gmf = new GofunMimeSourceFactory;

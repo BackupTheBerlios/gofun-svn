@@ -53,20 +53,20 @@ GofunSettingsContainer::~GofunSettingsContainer()
 
 GofunSettings::GofunSettings()
 {
-	setCaption("GoFun Settings");
+	setCaption(tr("GoFun Settings"));
 	
 	QWidget* widget_general = new QWidget(this);
 	QGridLayout* grid = new QGridLayout(widget_general,6,2);
-	tabwidget->addTab(widget_general,"General");
+	tabwidget->addTab(widget_general,tr("General"));
 	
 	terminal = new QLineEdit(widget_general);
 	directory = new QLineEdit(widget_general);
 	filemanager = new QLineEdit(widget_general);
-	grid->addWidget(new QLabel("Terminal command",widget_general),0,0);
+	grid->addWidget(new QLabel(tr("Terminal command"),widget_general),0,0);
 	grid->addWidget(terminal,0,1);
-	grid->addWidget(new QLabel("Directory",widget_general),1,0);
+	grid->addWidget(new QLabel(tr("Directory"),widget_general),1,0);
 	grid->addWidget(directory,1,1);
-	grid->addWidget(new QLabel("Filemanager",widget_general),2,0);
+	grid->addWidget(new QLabel(tr("Filemanager"),widget_general),2,0);
 	grid->addWidget(filemanager,2,1);
 }
 

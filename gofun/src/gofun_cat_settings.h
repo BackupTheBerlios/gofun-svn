@@ -41,8 +41,9 @@ public slots:
 private:
 	virtual void save();
 	virtual void apply();
+	virtual bool inputValid();
 
-	QLineEdit* command;
+	QLineEdit* comment;
 	QLineEdit* caption;
 	QLineEdit* background;
 	QToolButton* background_button;

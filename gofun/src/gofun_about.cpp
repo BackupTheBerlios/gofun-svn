@@ -28,15 +28,15 @@
 
 GofunAbout::GofunAbout()
 {
-	setCaption("GoFun About");
+	setCaption(tr("GoFun About"));
 	
 	QGridLayout* grid = new QGridLayout(this,3,1);
 	
-	QGroupBox* gb_gpl = new QGroupBox("License",this);
+	QGroupBox* gb_gpl = new QGroupBox(tr("License"),this);
 	gb_gpl->setColumnLayout(0, Qt::Vertical );
 	gb_gpl->layout()->setSpacing( 6 );
 	gb_gpl->layout()->setMargin( 5 );
-	QGroupBox* gb_credits = new QGroupBox("Credits",this);
+	QGroupBox* gb_credits = new QGroupBox(tr("Credits"),this);
 	gb_credits->setColumnLayout(0, Qt::Vertical );
 	gb_credits->layout()->setSpacing( 6 );
 	gb_credits->layout()->setMargin( 5 );
@@ -63,7 +63,7 @@ GofunAbout::GofunAbout()
 		file.close();
 	}
 	
-	QPushButton* close = new QPushButton("Close",this);
+	QPushButton* close = new QPushButton(tr("Close"),this);
 	connect(close,SIGNAL(clicked()),this,SLOT(hide()));
 	
 	grid->addWidget(gb_gpl,0,0);

@@ -58,7 +58,7 @@ GofunWidget::GofunWidget()
 	view_ws->addWidget(back_label,1000);
 	
 	//It should be obvious what that is being
-	QPushButton* quit = new QPushButton("Quit", this, "quit");
+	QPushButton* quit = new QPushButton(tr("Quit"), this, "quit");
 	quit->setFont(QFont("Times", 18));
 	quit->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum,false);
 	connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
@@ -141,6 +141,7 @@ void GofunWidget::loadData()
 		//For this category we create an IconView
 		GofunIconView* gicv = new GofunIconView();
 		gicv->setResizeMode(QIconView::Adjust);
+		gicv->setPaletteBackgroundPixmap(QPixmap(cat->data->X_GoFun_Background));
 		cat->setIconView(gicv);
 		connect(gicv, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));
 		connect(gicv, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(executeItem(QIconViewItem*)));		
@@ -171,7 +172,10 @@ void GofunWidget::loadData()
 void GofunWidget::openSettingsDlg()
 {
 	GofunSettings* settings_dlg = new GofunSettings();
+	if((this->geometry().y()+this->geometry().height() + 100) < QApplication::desktop()->screen()->height())
 	settings_dlg->setGeometry(this->x(),this->geometry().y()+this->geometry().height(),this->width(),-1);
+	else
+	settings_dlg->setGeometry(this->x(),this->y()-150-(this->geometry().y()-this->y()),this->width(),150);
 	settings_dlg->load();
 	settings_dlg->exec();
 	delete settings_dlg;
@@ -184,7 +188,7 @@ void GofunWidget::addEntry()
 	GofunItemSettings* settings_dlg = new GofunItemSettings();
 	int height = 200;
 	settings_dlg->setGeometry(this->x(),this->y()-height-(this->geometry().y()-this->y()),this->width(),height);
-	settings_dlg->setCaption("Add entry");
+	settings_dlg->setCaption(tr("Add entry"));
 	settings_dlg->setCategory(current_cat);
 	settings_dlg->exec();
 	delete settings_dlg;
@@ -221,7 +225,7 @@ void GofunWidget::editEntry(GofunItem* item)
 	GofunItemSettings* settings_dlg = new GofunItemSettings();
 	int height = 200;
 	settings_dlg->setGeometry(this->x(),this->y()-height-(this->geometry().y()-this->y()),this->width(),height);
-	settings_dlg->setCaption("Edit entry");
+	settings_dlg->setCaption(tr("Edit entry"));
 	settings_dlg->load(item);
 	settings_dlg->exec();
 }
@@ -268,15 +272,15 @@ void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 	if(item) //Right-clicked on an item.
 	{
 		connect(popup,SIGNAL(activated(int)),this,SLOT(popupMenuItem(int)));
-		popup->insertItem("Start",PID_Execute);
+		popup->insertItem(tr("Start"),PID_Execute);
 		popup->insertSeparator();
-		popup->insertItem("\" in Terminal",PID_Execute_in_terminal);
-		popup->insertItem("Open directory",PID_Open_directory);
-		popup->insertItem("Start in new XServer",PID_Execute_with_xinit);
-		popup->insertItem("Customized start",PID_Costumized_start);
+		popup->insertItem(tr("\" in Terminal"),PID_Execute_in_terminal);
+		popup->insertItem(tr("Open directory"),PID_Open_directory);
+		popup->insertItem(tr("Start in new XServer"),PID_Execute_with_xinit);
+		popup->insertItem(tr("Customized start"),PID_Costumized_start);
 		popup->insertSeparator();
-		popup->insertItem("Edit entry",PID_Edit);
-		popup->insertItem("Delete entry",PID_Delete);
+		popup->insertItem(tr("Edit entry"),PID_Edit);
+		popup->insertItem(tr("Delete entry"),PID_Delete);
 		popup->popup(pos);
 	}
 	else //Right-clicked in empty space.
@@ -291,7 +295,7 @@ void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 void GofunWidget::deleteEntry(GofunItem* item)
 {
 	//Kindly warn the user
-	if(QMessageBox::warning(this,"Delete entry","Do you really want to delete this entry, sir?", "Ok", "Cancel") == 0)
+	if(QMessageBox::warning(this,tr("Delete entry"),tr("Do you really want to delete this entry, sir?"), tr("Ok"), tr("Cancel")) == 0)
 	{
 		item->deleteEntry();
 	}
@@ -323,7 +327,7 @@ void GofunWidget::openDirectoryItem(GofunItem* item)
 	proc.addArgument(GofunMisc::ext_filestring(item->data->Path));
 	if(!proc.start())
 	{
-		std::cout<<"Execution of directory viewer failed. :(\n";
+		std::cout<<tr("Execution of directory viewer failed. :(\n");
 	}	
 }
 

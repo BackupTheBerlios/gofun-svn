@@ -28,17 +28,17 @@
 
 GofunCStart::GofunCStart()
 {
-	setCaption("Costumized Start");
+	setCaption(tr("Costumized Start"));
 	
 	QGridLayout* grid = new QGridLayout(this,4,2);
 	
-	caption = new QLabel("Start ",this);
-	QLabel* command_label = new QLabel("Command",this);
+	caption = new QLabel(tr("Start "),this);
+	QLabel* command_label = new QLabel(tr("Command"),this);
 	command = new QLineEdit(this);
-	terminal = new QCheckBox("Start in terminal",this);
-	newxserver = new QCheckBox("Start in new X-Server",this);
+	terminal = new QCheckBox(tr("Start in terminal"),this);
+	newxserver = new QCheckBox(tr("Start in new X-Server"),this);
 	
-	QPushButton* start_button = new QPushButton("Start", this);
+	QPushButton* start_button = new QPushButton(tr("Start"), this);
 
 	grid->addMultiCellWidget(caption,0,0,0,2);
 	grid->addWidget(command_label,1,0);
@@ -63,7 +63,7 @@ void GofunCStart::start()
 	{
 		eo.xinit  = "true";
 	}
-	eo.Exec = command->text().ascii();
+	eo.Exec = command->text();
 	item->executeCommand(&eo);
 }
 

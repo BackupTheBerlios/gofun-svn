@@ -43,34 +43,34 @@ GofunItemSettings::GofunItemSettings()
 	icon = new QLineEdit(widget_main);
 	icon_button = new QToolButton(widget_main);
 	comment = new QLineEdit(widget_main);
-	grid->addWidget(new QLabel("Caption",widget_main),0,0);
+	grid->addWidget(new QLabel(tr("Caption"),widget_main),0,0);
 	grid->addWidget(caption,0,1);
-	grid->addWidget(new QLabel("Command",widget_main),1,0);
+	grid->addWidget(new QLabel(tr("Command"),widget_main),1,0);
 	grid->addWidget(command,1,1);
-	grid->addWidget(new QLabel("Directory",widget_main),2,0);
+	grid->addWidget(new QLabel(tr("Directory"),widget_main),2,0);
 	grid->addWidget(directory,2,1);
 	grid->addWidget(dir_button,2,2);
-	grid->addWidget(new QLabel("Icon",widget_main),3,0);
+	grid->addWidget(new QLabel(tr("Icon"),widget_main),3,0);
 	grid->addWidget(icon,3,1);
 	grid->addWidget(icon_button,3,2);
-	grid->addWidget(new QLabel("Comment",widget_main),4,0);
+	grid->addWidget(new QLabel(tr("Comment"),widget_main),4,0);
 	grid->addWidget(comment,4,1);
 	
 	connect(icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	connect(dir_button, SIGNAL(clicked()),this, SLOT(dirDialog()));
 	
 	QWidget* widget_env = new QWidget(this);
-	tabwidget->addTab(widget_env,"Environment");
+	tabwidget->addTab(widget_env,tr("Environment"));
 	
 	QGridLayout* grid_env = new QGridLayout(widget_env,1,3);
 	
 	envvars = new QListView(widget_env);
-	envvars->addColumn("Name");
-	envvars->addColumn("Value");
+	envvars->addColumn(tr("Name"));
+	envvars->addColumn(tr("Value"));
 	envvars->setResizeMode(QListView::AllColumns);
-	envadd = new QPushButton("Add", widget_env);
-	envrem = new QPushButton("Remove", widget_env);
-	envpre = new QPushButton("Predefined", widget_env);
+	envadd = new QPushButton(tr("Add"), widget_env);
+	envrem = new QPushButton(tr("Remove"), widget_env);
+	envpre = new QPushButton(tr("Predefined"), widget_env);
 	grid_env->addMultiCellWidget(envvars,0,0,0,3);
 	grid_env->addWidget(envadd,1,0);
 	grid_env->addWidget(envrem,1,1);
@@ -81,14 +81,14 @@ GofunItemSettings::GofunItemSettings()
 	connect(envrem, SIGNAL(clicked()), SLOT(remEnvVar()));
 	
 	QWidget* widget_adv = new QWidget(this);
-	tabwidget->addTab(widget_adv,"Advanced");
+	tabwidget->addTab(widget_adv,tr("Advanced"));
 	
 	QGridLayout* grid_adv = new QGridLayout(widget_adv,3,2);
-	terminal_chk = new QCheckBox("Start in terminal",widget_adv);
-	user_chk = new QCheckBox("Start as (user)",widget_adv);
+	terminal_chk = new QCheckBox(tr("Start in terminal"),widget_adv);
+	user_chk = new QCheckBox(tr("Start as (user)"),widget_adv);
 	user_combo = new QComboBox(widget_adv);
 	user_combo->insertItem("root");
-	newx_chk = new QCheckBox("Start in new X-Server",widget_adv);
+	newx_chk = new QCheckBox(tr("Start in new X-Server"),widget_adv);
 	QStringList users = QStringList::split('\n',GofunMisc::shell_call("cat /etc/passwd | grep /home/ | sed -e 's/:.*$//'"));
 	for(QStringList::Iterator it = users.begin(); it != users.end(); ++it)
 	{
@@ -114,7 +114,7 @@ void GofunItemSettings::userChkToggled(bool b)
 
 void GofunItemSettings::addEnvVar()
 {
-	new QListViewItem(envvars,"NAME","VALUE");
+	new QListViewItem(envvars,tr("NAME"),tr("VALUE"));
 }
 
 void GofunItemSettings::remEnvVar()
@@ -131,17 +131,17 @@ void GofunItemSettings::envItemEdit(QListViewItem* item,const QPoint& pos,int i)
 		return;
 	
 	QDialog* edit_dlg = new QDialog(this,0,1);
-	edit_dlg->setCaption("Edit environment variable");
+	edit_dlg->setCaption(tr("Edit environment variable"));
 	QGridLayout* grid = new QGridLayout(edit_dlg,3,2);
-	grid->addWidget(new QLabel("Name",edit_dlg),0,0);
+	grid->addWidget(new QLabel(tr("Name"),edit_dlg),0,0);
 	QLineEdit* name_le = new QLineEdit(item->text(0),edit_dlg);
 	grid->addWidget(name_le,0,1);
-	grid->addWidget(new QLabel("Value",edit_dlg),1,0);
+	grid->addWidget(new QLabel(tr("Value"),edit_dlg),1,0);
 	QLineEdit* value_le = new QLineEdit(item->text(1),edit_dlg);
 	grid->addWidget(value_le,1,1);
-	QPushButton* apply = new QPushButton("Apply",edit_dlg);
+	QPushButton* apply = new QPushButton(tr("Apply"),edit_dlg);
 	connect(apply, SIGNAL(clicked()),edit_dlg, SLOT(accept()));
-	QPushButton* cancel = new QPushButton("Cancel",edit_dlg);
+	QPushButton* cancel = new QPushButton(tr("Cancel"),edit_dlg);
 	connect(cancel, SIGNAL(clicked()),edit_dlg, SLOT(reject()));
 	
 	grid->addWidget(apply,2,0);
@@ -159,7 +159,7 @@ void GofunItemSettings::iconDialog()
 	QString start_dir;
 	if(!icon->text().isEmpty())
 	{
-		start_dir = icon->text().ascii();
+		start_dir = icon->text();
 	}
 	else if(!directory->text().isEmpty())
 	{
@@ -167,9 +167,9 @@ void GofunItemSettings::iconDialog()
 	}
 	GofunFileDialogPreview* pre = new GofunFileDialogPreview;
 	
-	QFileDialog* fd = new QFileDialog(start_dir,"Icons (*.png *.xpm *.jpg *.bmp *.ico)",this,"Pick icon dialog");
+	QFileDialog* fd = new QFileDialog(start_dir,"Icons (*.png *.xpm *.jpg *.bmp *.ico)",this,tr("Pick icon dialog"));
 	fd->setDir(start_dir);
-	fd->setCaption("Pick an icon");
+	fd->setCaption(tr("Pick an icon"));
 	fd->setContentsPreviewEnabled( TRUE );
 	fd->setContentsPreview( pre, pre );
 	fd->setPreviewMode( QFileDialog::Contents );
@@ -190,7 +190,7 @@ void GofunItemSettings::dirDialog()
 	{
 		start_dir = GofunMisc::ext_filestring(directory->text());
 	}
-	QString dir = QFileDialog::getExistingDirectory(start_dir, this, "get existing directory", "Choose a directory");
+	QString dir = QFileDialog::getExistingDirectory(start_dir, this, tr("get existing directory"), tr("Choose a directory"));
 	if(!dir.isEmpty())
 	{
 		directory->setText(dir);
@@ -201,7 +201,7 @@ void GofunItemSettings::save()
 {
 	if(item && item->data->File.isEmpty())
 	{
-	 	item->data->File = category->data->Catdir + "/" + caption->text().ascii() + ".desktop";
+	 	item->data->File = category->data->Catdir + "/" + caption->text() + ".desktop";
 	}
 	item->save();
 }
@@ -210,15 +210,15 @@ void GofunItemSettings::apply()
 {
 	if(item)
 	{
-		item->data->Exec = command->text().ascii();
-		item->data->Path = directory->text().ascii();
-		item->data->Name = caption->text().ascii();
+		item->data->Exec = command->text();
+		item->data->Path = directory->text();
+		item->data->Name = caption->text();
 		item->setText(item->data->Name);
-		item->data->Icon = icon->text().ascii();
-		item->data->Comment = comment->text().ascii();
+		item->data->Icon = icon->text();
+		item->data->Comment = comment->text();
 		if(item->data->File.isEmpty())
 		{
-			item->data->File = category->data->Catdir + "/" + caption->text().ascii() + ".desktop";
+			item->data->File = category->data->Catdir + "/" + caption->text() + ".desktop";
 		}
 		item->loadIcon();
 		if(terminal_chk->isChecked())
@@ -246,7 +246,7 @@ void GofunItemSettings::apply()
 		}
 		if(user_chk->isChecked())
 		{
-			item->data->X_GoFun_User = user_combo->currentText().ascii();
+			item->data->X_GoFun_User = user_combo->currentText();
 		}
 		else
 		{
@@ -273,7 +273,7 @@ bool GofunItemSettings::inputValid()
 {
 	if(caption->text().isEmpty())
 	{
-		QMessageBox::information(this,"Caption isn't set yet","Dear User, I can set up this stuff properly for you,\n after you type in a caption for this entry. Thanks. :)");
+		QMessageBox::information(this,tr("Caption isn't set yet"),tr("Dear User, I can set up this stuff properly for you,\n after you type in a caption for this entry. Thanks. :)"));
 		caption->setFocus();
 		return false;
 	}

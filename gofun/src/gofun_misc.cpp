@@ -51,7 +51,7 @@ void GofunFileDialogPreview::previewUrl(const QUrl& u)
 	QString path = u.path();
 	QPixmap pix( path );
 	if ( pix.isNull() )
-		setText( "This is not a pixmap" );
+		setText(tr("This is not a pixmap"));
 	else
 		setPixmap( pix );
 }

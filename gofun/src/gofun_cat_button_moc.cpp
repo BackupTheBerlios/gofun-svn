@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GofunCatButton meta object code from reading C++ file 'gofun_cat_button.h'
 **
-** Created: Sun Nov 28 17:15:01 2004
+** Created: Tue Nov 30 19:28:45 2004
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.3   edited Aug 5 16:40 $)
 **
 ** WARNING! All changes made in this file will be lost!

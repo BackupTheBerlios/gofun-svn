@@ -49,6 +49,23 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 	delete data;
 }*/
 
+void GofunCatButton::save()
+{
+	QFile file( data->Catdir + "/.desktop" );
+	if ( file.open( IO_WriteOnly ) )
+	{
+		QTextStream stream( &file );
+		stream << "[Desktop Entry]\n";
+		stream << "Version=0.9.4\n";
+		stream << "Encoding=UTF-8\n";
+		stream << "Type=Directory\n";
+		stream << "Name=" << data->Name << "\n";
+		stream << "Comment=" << data->Comment << "\n";
+		stream << "X-GoFun-Background=" << data->X_GoFun_Background << "\n";
+		file.close();
+	}
+}
+
 //Make sure the right-button is in the right place (!you got the word joke?)
 void GofunCatButton::resizeEvent(QResizeEvent* event)
 {
@@ -102,8 +119,8 @@ void GofunCatButton::dropEvent(QDropEvent* event)
 			current_item = dynamic_cast<GofunItem*>(itemview->currentItem());
 			QPopupMenu* popup = new QPopupMenu(this);
 			connect(popup,SIGNAL(activated(int)),this,SLOT(popupItemDnD(int)));
-			popup->insertItem("Copy",PID_COPY_ITEM);
-			popup->insertItem("Move",PID_MOVE_ITEM);
+			popup->insertItem(tr("Copy"),PID_COPY_ITEM);
+			popup->insertItem(tr("Move"),PID_MOVE_ITEM);
 			popup->popup(QCursor::pos());
 		}
 	}

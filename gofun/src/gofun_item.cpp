@@ -111,13 +111,15 @@ void GofunItem::interpretExecString(QString& exec)
 		{
 			int i = QInputDialog::getInteger("Enter a number","Enter a number");
 			exec.remove(off,off+QString("$GPN").length());
-			exec.insert(off,QString::number(i).ascii());
+			exec.insert(off,QString::number(i));
 		}
 		else if(exec.find("$GPT") == off)
 		{
 		}
 	}
 }
+
+#include <qtranslator.h>
 
 void GofunItem::executeCommand(ExecuteOption* option)
 {
@@ -146,7 +148,7 @@ void GofunItem::executeCommand(ExecuteOption* option)
 	if((!option->terminal.isEmpty()) || (data->Terminal == "true"))
 	{ 
 		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
-		exec =  exec + ";echo -e \"\\E[${2:-44};${3:-7}m\nEnd of execution has been reached. Press any key to remove this terminal\"; read evar";
+		exec =  exec + ";echo -e \"\\E[${2:-44};${3:-7}m\n" + QObject::tr("End of execution has been reached. Press any key to remove this terminal\"; read evar");
 	}
 	if((!option->xinit.isEmpty()) || (data->X_GoFun_NewX == "true"))
 	{
