@@ -42,6 +42,8 @@ class GofunAdjustAbleIconView : public QIconView
 	void adjustMe();
 };
 
+class GofunIconItemData;
+
 class GofunIconDialog : public QDialog
 {
 	Q_OBJECT
@@ -68,8 +70,9 @@ class GofunIconDialog : public QDialog
 	GofunAdjustAbleIconView* filter_view;
 	QProgressBar* load_progress;
 	QGridLayout* grid;
+	std::vector<GofunIconItem*> taken_icons;
 	
-	static std::vector<GofunIconItem*> icon_pool;
+	static std::vector<GofunIconItemData*> icon_pool;
 	GofunIconLoadThread* icon_loader;
 	
 friend class GofunIconLoadThread;
@@ -85,6 +88,15 @@ class GofunIconLoadThread : public QThread
 	private:
 	GofunIconDialog* icon_dialog;
 	bool dead;
+};
+
+struct GofunIconItemData
+{
+	GofunIconItemData(const QImage _pixmap, const QString& _text, const QString& _file) : pixmap(_pixmap), text(_text), file(_file) {}
+
+	QImage pixmap;
+	QString text;
+	QString file;
 };
 
 class GofunIconItem : public QIconViewItem
@@ -105,11 +117,9 @@ class GofunIconItemDataEvent : public QCustomEvent
 {
 	public:
 	GofunIconItemDataEvent(const QString _text, const QImage _pixmap, const QString _file)
-	: QCustomEvent(IconItemEventID) , text(_text) ,pixmap(_pixmap) , file(_file) {}
+	: QCustomEvent(IconItemEventID) , data(_pixmap,_text,_file) {}
 	
-	QString text;
-	QImage pixmap;
-	QString file;
+	GofunIconItemData data;
 };
 
 class GofunIconsLoadedEvent : public QCustomEvent

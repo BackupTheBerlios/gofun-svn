@@ -34,6 +34,7 @@
 #include "gofun_list_dialog.h"
 #include "gofun_command_editor.h"
 #include "gofun_desktop_entry_settings_widget.h"
+#include "gofun_icon_dialog.h"
 
 GofunItemSettings::GofunItemSettings()
 {
@@ -42,18 +43,22 @@ GofunItemSettings::GofunItemSettings()
 
 void GofunItemSettings::iconDialog()
 {
+	GofunIconDialog* id = new GofunIconDialog();
 	QString start_dir;
 	if(!desw->icon.isEmpty())
 	{
 		start_dir = desw->icon;
+		id->setStartIcon(desw->icon);
 	}
-	
-	QString file = GofunMisc::fileDialogGetImage(start_dir,tr("Pick an icon"),tr("Icons"));
-	if(!file.isEmpty())
+	if(!start_dir.isEmpty())
+		start_dir = "/usr/share/icons";
+	id->setStartDir(start_dir);
+	if(id->exec() == QDialog::Accepted)
 	{
-		desw->icon = file;
-		desw->icon_button->setPixmap(QPixmap(file));
+		desw->icon = id->selected();
+		desw->icon_button->setPixmap(QPixmap(id->selected()));
 	}
+	delete id;
 }
 
 void GofunItemSettings::save()
@@ -111,7 +116,7 @@ void GofunItemSettings::load(GofunItem* _item)
 	desw->comment->setText(data()->Comment);
 }
 
-GofunItemData* GofunItemSettings::data()
+GofunDesktopEntryData* GofunItemSettings::data()
 {
 	return item->data();
 }

@@ -31,7 +31,7 @@
 #include "gofun_icon_dialog.h"
 #include "gofun_misc.h"
 
-std::vector<GofunIconItem*> GofunIconDialog::icon_pool;
+std::vector<GofunIconItemData*> GofunIconDialog::icon_pool;
 
 GofunIconDialog::GofunIconDialog()
 {
@@ -73,7 +73,6 @@ GofunIconDialog::GofunIconDialog()
 	grid_filter->addWidget(filter_edit,0,1);
 	grid_filter->addMultiCellWidget(filter_view,1,1,0,1);
 	
-	load_progress = new QProgressBar(100,this);
 
 	QHBox* hbox_oc = new QHBox(this);
 	QPushButton* ok = new QPushButton(tr("Ok"),hbox_oc);
@@ -85,11 +84,20 @@ GofunIconDialog::GofunIconDialog()
 	grid->addWidget(gb_selected,0,0);
 	grid->addWidget(gb_icon_browse,1,0);
 	grid->addWidget(gb_icon_filter,2,0);
-	grid->addWidget(load_progress,3,0);
 	grid->addWidget(hbox_oc,4,0);
 	
-	GofunIconLoadThread* icon_loader = new GofunIconLoadThread(this);
-	icon_loader->start();
+	if(icon_pool.empty())
+	{
+		load_progress = new QProgressBar(100,this);
+		grid->addWidget(load_progress,3,0);
+		GofunIconLoadThread* icon_loader = new GofunIconLoadThread(this);
+		icon_loader->start();
+	}
+	else
+	{
+		for(std::vector<GofunIconItemData*>::iterator it = icon_pool.begin(); it != icon_pool.end(); ++it)
+			new GofunIconItem(filter_view,(*it)->text,(*it)->pixmap,(*it)->file);
+	}
 }
 
 GofunIconDialog::~GofunIconDialog()
@@ -156,8 +164,9 @@ void GofunIconDialog::customEvent(QCustomEvent* event)
 	{ 
             GofunIconItemDataEvent* icon_event = dynamic_cast<GofunIconItemDataEvent*>(event);
 	    QPixmap pix;
-	    pix.convertFromImage(icon_event->pixmap);
-	    icon_pool.push_back(new GofunIconItem(filter_view,icon_event->text,pix,icon_event->file));
+	    pix.convertFromImage(icon_event->data.pixmap);
+	    icon_pool.push_back(new GofunIconItemData(icon_event->data.pixmap,icon_event->data.text,icon_event->data.file));
+	    new GofunIconItem(filter_view,icon_event->data.text,icon_event->data.pixmap,icon_event->data.file);
 	    
 	    if(load_progress)
 	    	load_progress->setProgress(filter_view->count());
@@ -171,18 +180,26 @@ void GofunIconDialog::customEvent(QCustomEvent* event)
 }
 
 void GofunIconDialog::updateFilterView( const QString & filter)
-{		
-	for(std::vector<GofunIconItem*>::iterator it = icon_pool.begin(); it != icon_pool.end(); ++it)
-	{
+{
+	for(std::vector<GofunIconItem*>::iterator it = taken_icons.begin(); it != taken_icons.end(); ++it)
+	{;
 		if(filter.isEmpty() || (*it)->text().contains(filter,false) != 0)
-		{
 			filter_view->insertItem((*it));
-		}
-		else
+	}
+	QIconViewItem* item;
+	QIconViewItem* next;
+	for(item = filter_view->firstItem(); item;)
+	{
+		next = item->nextItem();
+		if(!(filter.isEmpty() || item->text().contains(filter,false) != 0))
 		{
-			if((*it)->iconView() == filter_view)
-				filter_view->takeItem((*it));
+			if(item->iconView() == filter_view)
+			{
+				filter_view->takeItem(item);
+				taken_icons.push_back(dynamic_cast<GofunIconItem*>(item));
+			}
 		}
+		item = next;
 	}
 	filter_view->adjustMe();
 }
