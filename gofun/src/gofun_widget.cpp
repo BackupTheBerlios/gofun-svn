@@ -56,7 +56,7 @@ GofunWidget::GofunWidget()
 	//We 'load' this WidgetStack with GofunIconViews later on
 	view_ws = new QWidgetStack(this);
 	view_ws->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,false);
-	QLabel* back_label = new QLabel("Test",this);
+	back_label = new QLabel("Test",this);
 	view_ws->addWidget(back_label,1000);
 	
 	//It should be obvious what that is being
@@ -161,6 +161,8 @@ void GofunWidget::unloadData()
 		cats_bg->remove(cb);
 		delete cb;
 	}
+	
+	view_ws->raiseWidget(back_label);
 }
 
 //Load Desktop Entry data
@@ -364,7 +366,10 @@ void GofunWidget::executeItem(QIconViewItem* item,const QString& option)
 void GofunWidget::openDirectoryItem(GofunItem* item)
 {
 	QProcess proc(GSC::get()->filemanager_cmd,this);
-	proc.addArgument((GofunMisc::ext_filestring(item->data()->Path)).simplifyWhiteSpace());
+	if(!item->data()->Path.isEmpty())
+		proc.addArgument((GofunMisc::ext_filestring(item->data()->Path)).simplifyWhiteSpace());
+	else
+		proc.addArgument(QDir::homeDirPath());
 	if(!proc.start())
 	{
 		std::cout<<tr("Execution of directory viewer failed. :(\n");

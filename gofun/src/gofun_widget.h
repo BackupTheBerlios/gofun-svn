@@ -92,6 +92,7 @@ private:
 	QWidgetStack * view_ws;
 	GofunCatButton* current_cat;
 	QVButtonGroup* cats_bg;
+	QLabel* back_label;
 	
 friend class GofunCatSettings;
 friend class GofunCatButton;
