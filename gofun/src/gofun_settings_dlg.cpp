@@ -36,12 +36,12 @@ GofunSettingsDlg::GofunSettingsDlg()
 	
 	top_grid->addMultiCellWidget(tabwidget,0,0,0,1);
 	
-	QPushButton* apply = new QPushButton(tr("Apply"),this);
-	connect(apply,SIGNAL(clicked()),this,SLOT(accept()));
+	apply_button = new QPushButton(tr("Apply"),this);
+	connect(apply_button,SIGNAL(clicked()),this,SLOT(accept()));
 	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
 	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
 
-	top_grid->addWidget(apply,1,0);
+	top_grid->addWidget(apply_button,1,0);
 	top_grid->addWidget(cancel,1,1);
 	
 }

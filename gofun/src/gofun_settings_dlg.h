@@ -40,6 +40,7 @@ public slots:
 	void dirDialog();
 protected:
 	QTabWidget* tabwidget;
+	QPushButton* apply_button;
 private:
 	virtual void save();
 	virtual void apply();

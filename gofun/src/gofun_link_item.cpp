@@ -46,9 +46,8 @@ void GofunLinkItem::setData(GofunDesktopEntryData* d)
 {
 	delete m_data;
 	m_data = dynamic_cast<GofunLinkEntryData*>(d);
-	loadIcon();
-	if(!data()->Comment.isEmpty())
-		setToolTipText(data()->Comment);
+	
+	implementData();
 }
 
 QPopupMenu* GofunLinkItem::rightClickPopup(const QPoint& pos)
@@ -66,13 +65,10 @@ void GofunLinkItem::popupActivated(int id)
 {
 	GofunItem::popupActivated(id);
 
-	//if(GofunItem* item = (GofunItemdynamic_cast<GofunIconView*>(view_ws->visibleWidget()))->currentItem() )
+	switch(id)
 	{
-		switch(id)
-		{
-			case PID_OpenLink:
-				open(); break;
-		}
+		case PID_OpenLink:
+			open(); break;
 	}
 }
 

@@ -94,9 +94,8 @@ void GofunApplicationItem::setData(GofunDesktopEntryData* d)
 {
 	delete m_data;
 	m_data = dynamic_cast<GofunApplicationEntryData*>(d);
-	loadIcon();
-	if(!data()->Comment.isEmpty())
-		setToolTipText(data()->Comment);
+	
+	implementData();
 }
 
 void GofunApplicationItem::interpretExecString(QString& exec)
@@ -278,22 +277,18 @@ void GofunApplicationItem::popupActivated(int id)
 {
 	GofunItem::popupActivated(id);
 
-	//if(GofunItem* item = (GofunItemdynamic_cast<GofunIconView*>(view_ws->visibleWidget()))->currentItem() )
+	switch(id)
 	{
-		switch(id)
-		{
-			case PID_Execute:
-				execute(); break;
-			case PID_Execute_in_terminal:
-				execute( "terminal" ); break;
-			case PID_Open_directory:
-				openDirectory();
-				break;
-			case PID_Execute_with_xinit: 
-				execute("xinit"); break;
-			case PID_Costumized_start: 
-				costumizedStart(); break;
-		}
+		case PID_Execute:
+			execute(); break;
+		case PID_Execute_in_terminal:
+			execute( "terminal" ); break;
+		case PID_Open_directory:
+			openDirectory(); break;
+		case PID_Execute_with_xinit: 
+			execute("xinit"); break;
+		case PID_Costumized_start: 
+			costumizedStart(); break;
 	}
 }
 

@@ -64,8 +64,12 @@ public:
 	
 	virtual GofunDesktopEntryData* data() { return m_data; }
 	virtual void performDefaultAction() {};
+	bool isReadOnly() { return readonly; }
+	
 public slots:
 	virtual void popupActivated(int);
+protected:
+	virtual void implementData();
 private:
 	QString saveProcArguments(QProcess*);
 	void interpretExecString(QString&);
@@ -75,6 +79,7 @@ private:
 	
 	QString toolTipText;
 	GofunIconViewToolTip* toolTip;
+	bool readonly;
 };
 
 

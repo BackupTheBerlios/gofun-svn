@@ -82,9 +82,8 @@ void GofunItem::setData(GofunDesktopEntryData* d)
 {
 	delete m_data;
 	m_data = d;
-	loadIcon();
-	if(!data()->Comment.isEmpty())
-		setToolTipText(data()->Comment);
+	
+	implementData();
 }
 
 void GofunItem::loadIcon()
@@ -139,25 +138,28 @@ QPopupMenu* GofunItem::rightClickPopup(const QPoint& pos)
 	QPopupMenu* popup = new QPopupMenu();
 	QObject::connect(popup,SIGNAL(activated(int)),this,SLOT(popupActivated(int)));
 	popup->insertSeparator();
-	popup->insertItem(tr("Edit entry"),PID_Edit);
-	popup->insertItem(tr("Delete entry"),PID_Delete);
+	
+	if(!isReadOnly())
+	{
+		popup->insertItem(tr("Edit entry"),PID_Edit);
+		popup->insertItem(tr("Delete entry"),PID_Delete);
+	}
+	else
+		popup->insertItem(tr("View settings"),PID_Edit);
 	popup->popup(pos);
 
 	return popup;
 }
 
 void GofunItem::popupActivated(int id)
-{
-	//if(GofunItem* item = (dynamic_cast<GofunIconView*>(view_ws->visibleWidget()))->currentItem() )
-	{
-		switch(id)
-		{
-			case PID_Edit:
-				editEntry(); break;
-			case PID_Delete: 
-				deleteEntry();
-				//dynamic_cast<QIconView*>(view_ws->visibleWidget())->arrangeItemsInGrid(); break; //FIXME
-		}
+{	
+	switch(id)
+	{		
+		case PID_Edit:
+			editEntry(); break;
+		case PID_Delete: 
+			deleteEntry();
+			//dynamic_cast<QIconView*>(view_ws->visibleWidget())->arrangeItemsInGrid();break; //FIXME
 	}
 }
 
@@ -170,5 +172,17 @@ void GofunItem::createNewItem(GofunCatButton* cat)
 	settings_dlg->setCategory(cat);
 	settings_dlg->exec();
 	delete settings_dlg;
+}
+
+void GofunItem::implementData()
+{
+	loadIcon();
+	if(!data()->Comment.isEmpty())
+		setToolTipText(data()->Comment);
+		
+	if(GofunMisc::shell_call("[ -w '"+data()->File+"' ] && echo true").simplifyWhiteSpace() != "true")
+		readonly = true;
+	else
+		readonly = false;
 }
 

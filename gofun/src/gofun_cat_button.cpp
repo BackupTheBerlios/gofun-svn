@@ -83,13 +83,18 @@ void GofunCatButton::popupConfButton()
 	connect(popup,SIGNAL(activated(int)),this,SLOT(popupCBActivated(int)));
 	connect(add_popup,SIGNAL(activated(int)),this,SLOT(popupCBActivated(int )));
 	
-	add_popup->insertItem("Application",PID_Add_Application);
-	add_popup->insertItem("Device",PID_Add_Device);
-	add_popup->insertItem("Link",PID_Add_Link);
-	popup->insertItem(tr("Add Entry"),add_popup);
-	popup->insertItem(tr("Add Entry Wizard"),PID_Add_Wizard);
-	popup->insertSeparator();
-	popup->insertItem(tr("Settings"),PID_SETTINGS);
+	if(!readonly)
+	{
+		add_popup->insertItem("Application",PID_Add_Application);
+		add_popup->insertItem("Device",PID_Add_Device);
+		add_popup->insertItem("Link",PID_Add_Link);
+		popup->insertItem(tr("Add Entry"),add_popup);
+		popup->insertItem(tr("Add Entry Wizard"),PID_Add_Wizard);
+		popup->insertSeparator();
+		popup->insertItem(tr("Settings"),PID_SETTINGS);
+	}
+	else
+		popup->insertItem(tr("View settings"),PID_SETTINGS);
 	popup->popup(QCursor::pos());
 	
 	emit clicked();
@@ -156,7 +161,7 @@ void GofunCatButton::catSettings()
 {
 	GofunCatSettings* settings_dlg = new GofunCatSettings();
 	settings_dlg->load(this);
-	QWidget* p = dynamic_cast<QWidget*>(parent()->parent());
+	QWidget* p = qApp->mainWidget(); //dynamic_cast<QWidget*>(parent()->parent());
 	GofunMisc::attach_window(p,settings_dlg,D_Right,D_Left,275,200);
 	settings_dlg->exec();
 	delete settings_dlg;
@@ -168,6 +173,10 @@ void GofunCatButton::setData(GofunCatEntryData* d)
 	delete m_data;
 	m_data = d;
 	
+	if(GofunMisc::shell_call("[ -w '"+data()->Catdir+"' ] && echo true").simplifyWhiteSpace() != "true")
+		readonly = true;
+	else
+		readonly = false;
 	loadIcon();
 	setupToolTip();
 		

@@ -277,6 +277,7 @@ void GofunWidget::loadData()
 		delete (*it).ItemData;
 	}
 	tools_cat->setOn(true);
+	current_cat = tools_cat;
 }
 
 void GofunWidget::changeToTools()
@@ -285,6 +286,7 @@ void GofunWidget::changeToTools()
 		dynamic_cast<QPushButton*>(cats_bg->find(cats_bg->id(cats_bg->selected())))->setOn(false);
 	tools_cat->setOn(true);
 	view_ws->raiseWidget(1001);
+	current_cat = tools_cat;
 }
 
 void GofunWidget::insertCategory(GofunCatButton* cat)
@@ -360,6 +362,9 @@ void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 	}
 	else //Right-clicked in empty space.
 	{
+		if(current_cat->isReadOnly())
+			return;
+	
 		QPopupMenu* popup = new QPopupMenu(this);
 		QPopupMenu* add_popup = new QPopupMenu(this);
 		connect(popup,SIGNAL(activated(int)),this,SLOT(popupMenuSpace(int)));

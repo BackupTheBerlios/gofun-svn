@@ -141,4 +141,6 @@ void GofunCatSettings::load(GofunCatButton* _item)
 	background_button->setPixmap(QPixmap(item->data()->X_GoFun_Background));
 	desw->icon = item->data()->Icon;
 	desw->icon_button->setPixmap(item->confButtonPixmap()?*item->confButtonPixmap():0);
+	if(item->isReadOnly())
+		apply_button->setEnabled(false);
 }

@@ -65,6 +65,7 @@ public:
 	const QPixmap* confButtonPixmap() { return conf_button->pixmap(); }
 	void setupToolTip();
 	void runNewItemWizard();
+	bool isReadOnly() { return readonly;}
 
 	GofunIconView* iconview;
 	
@@ -74,6 +75,8 @@ private:
 	QString directory;
 	QToolButton* conf_button;
 	GofunDesktopEntrySettingsWidget* desw;
+	
+	bool readonly;	
 };
 
 #endif

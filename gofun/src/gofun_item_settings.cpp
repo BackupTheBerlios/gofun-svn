@@ -114,6 +114,9 @@ void GofunItemSettings::load(GofunItem* _item)
 	desw->icon = data()->Icon;
 	desw->icon_button->setPixmap(item->pixmap()?*item->pixmap():0);
 	desw->comment->setText(data()->Comment);
+	
+	if(item->isReadOnly())
+		apply_button->setEnabled(false);
 }
 
 GofunDesktopEntryData* GofunItemSettings::data()

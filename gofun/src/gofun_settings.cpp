@@ -134,10 +134,10 @@ GofunSettings::GofunSettings()
 	directory = new QLineEdit(widget_general);
 	filemanager = new QLineEdit(widget_general);
 	browser = new QLineEdit(widget_general);
-	grid_general->addWidget(new QLabel(tr("Terminal"),widget_general),0,0);
-	grid_general->addWidget(terminal,0,1);
 	grid_general->addWidget(new QLabel(tr("Directory"),widget_general),1,0);
-	grid_general->addWidget(directory,1,1);
+	grid_general->addWidget(directory,0,1);
+	grid_general->addWidget(new QLabel(tr("Terminal"),widget_general),0,0);
+	grid_general->addWidget(terminal,1,1);
 	grid_general->addWidget(new QLabel(tr("Filemanager"),widget_general),2,0);
 	grid_general->addWidget(filemanager,2,1);
 	grid_general->addWidget(new QLabel(tr("Browser"),widget_general),3,0);

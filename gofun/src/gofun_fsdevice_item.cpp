@@ -48,9 +48,7 @@ void GofunFSDeviceItem::setData(GofunDesktopEntryData* d)
 {
 	delete m_data;
 	m_data = dynamic_cast<GofunFSDeviceEntryData*>(d);
-	loadIcon();
-	if(!data()->Comment.isEmpty())
-		setToolTipText(data()->Comment);
+	implementData();
 }
 
 void GofunFSDeviceItem::loadIcon()
@@ -86,17 +84,14 @@ void GofunFSDeviceItem::popupActivated(int id)
 {
 	GofunItem::popupActivated(id);
 
-	//if(GofunItem* item = (GofunItemdynamic_cast<GofunIconView*>(view_ws->visibleWidget()))->currentItem() )
+	switch(id)
 	{
-		switch(id)
-		{
-			case PID_Open:
-				open(); break;
-			case PID_Mount:
-				mount(); break;
-			case PID_Unmount:
-				unMount(); break;
-		}
+		case PID_Open:
+			open(); break;
+		case PID_Mount:
+			mount(); break;
+		case PID_Unmount:
+			unMount(); break;
 	}
 }
 
