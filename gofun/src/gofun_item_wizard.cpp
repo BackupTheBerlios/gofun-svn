@@ -34,6 +34,7 @@ GofunItemWizard::GofunItemWizard()
 	
 	command = new QLineEdit(tr("Command"),widget_start);
 	grid_start->addWidget(new QLabel(tr("This wizard will guide you through the creation of a Gofun Desktop Entry"),widget_start),0,0);
+	
 	grid_start->addWidget(command,1,0);
 }
 

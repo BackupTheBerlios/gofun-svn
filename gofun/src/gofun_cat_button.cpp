@@ -81,7 +81,7 @@ void GofunCatButton::popupConfButton()
 	QPopupMenu* popup = new QPopupMenu(this);
 	QPopupMenu* add_popup = new QPopupMenu(this);
 	connect(popup,SIGNAL(activated(int)),this,SLOT(popupCBActivated(int)));
-	connect(add_popup,SIGNAL(activated(int)),this,SLOT(popupMenuSpace(int )));
+	connect(add_popup,SIGNAL(activated(int)),this,SLOT(popupCBActivated(int )));
 	
 	add_popup->insertItem("Application",PID_Add_Application);
 	add_popup->insertItem("Device",PID_Add_Device);

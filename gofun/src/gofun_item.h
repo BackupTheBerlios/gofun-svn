@@ -48,7 +48,7 @@ class GofunItem : public QObject, public QIconViewItem , public GofunDesktopObje
 
 public:
 	GofunItem(GofunIconView*, const QString& = 0);
-	//virtual ~GofunItem();
+	virtual ~GofunItem();
 
 	virtual void setData(GofunItemData*);
 	virtual void save();

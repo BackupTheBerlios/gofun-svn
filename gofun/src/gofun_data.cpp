@@ -322,8 +322,7 @@ std::vector<GofunItemData*>* GofunDataLoader::parse_catdir(const QString& catdir
 		{
 			continue;
 		}
-		GofunItemData* p_idata = parse_gofun_file(files.gl_pathv[i]);
-		VoID->push_back(p_idata);
+		VoID->push_back(parse_gofun_file(files.gl_pathv[i]));
 	}
 	globfree(&files);
 	
@@ -351,8 +350,7 @@ std::vector<GofunCatData>* GofunDataLoader::getData()
 	
 	for(std::vector<GofunCatData>::iterator it = VaCD->begin(); it != VaCD->end(); ++it)
 	{
-		std::vector<GofunItemData*>* _gofun = parse_catdir((*it).Catdir);
-		(*it).ItemData = _gofun;
+		(*it).ItemData = parse_catdir((*it).Catdir);
 	}
  
 	return VaCD;

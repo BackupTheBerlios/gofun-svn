@@ -208,7 +208,16 @@ void GofunWidget::unloadData()
 	{
 		GofunCatButton* cb = dynamic_cast<GofunCatButton*>(cats_bg->find(i));
 		if(cb)
+		{
+			
+			for(QIconViewItem* item = cb->iconview->firstItem(); item; 0)
+			{
+				QIconViewItem* next = item->nextItem();
+				delete item;
+				item = next;
+			}
 			view_ws->removeWidget(cb->iconview);
+		}
 		cats_bg->remove(cb);
 		delete cb;
 	}
@@ -257,7 +266,7 @@ void GofunWidget::loadData()
 			GofunItem* gi = dynamic_cast<GofunItem*>((*sit)->GofunDesktopObjectFactory(cat->iconview));
 			gi->setData((*sit));
 		}
-
+		delete (*it).ItemData;
 	}
 	tools_cat->setOn(true);
 }

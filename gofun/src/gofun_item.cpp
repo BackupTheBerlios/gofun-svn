@@ -43,10 +43,11 @@ GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconView
 	toolTip = NULL;
 }
 
-/*GofunItem::~GofunItem()
+GofunItem::~GofunItem()
 {
-	delete data;
-}*/
+	delete data();
+	delete toolTip;
+}
 
 void GofunItem::save()
 {

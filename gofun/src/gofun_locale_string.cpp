@@ -52,7 +52,12 @@ void GofunLocale::setLocale(const QString& locale)
 
 GofunLocale::operator const QString()
 {
-	return lang;
+	QString tmp = lang;
+	if(!country.isEmpty())
+	tmp += "_" + country;
+	if(!modifier.isEmpty())
+	tmp += "@" + modifier;
+	return tmp;
 }
 
 GofunLocaleString::GofunLocaleString() : QString()
@@ -88,6 +93,7 @@ bool GofunLocaleString::isBetterMatch(const GofunLocale& locale)
 		return true;
 	if((best_match_locale.modifier != system_locale.modifier) && !locale.modifier.isEmpty() && (locale.modifier == system_locale.modifier))
 		return true;
+	return false;
 }
 
 QString GofunLocaleString::desktopEntryPrint(const QString& key)
@@ -107,6 +113,12 @@ GofunLocaleString& GofunLocaleString::operator=( const QString& string)
 {
 	if(found_match)
 		(*locale_strings.find(best_match)).second = string;
+	else
+	{
+		found_match = true;
+		locale_strings[system_locale] = string;
+		best_match = system_locale;
+	}
 
 	QString::operator=(string);
 	return *this;

@@ -69,7 +69,18 @@ void GofunParameterPrompt::addParameter(GofunParameterData* pd)
 	
 	grid->addWidget(gb,grid->numRows(),0);
 	cb->insertStringList(pd->Values);
-	cb->setCurrentText(pd->Default_Value);
+	if(!pd->Default_Value.isEmpty())
+	{
+		cb->setCurrentText(pd->Default_Value);
+	}
+	else
+	{
+		if(cb->count() > 0)
+		{
+			cb->insertItem("");
+			cb->setCurrentText("");
+		}
+	}		
 	cb->setEditable(true);
 
 	spd.combo = cb;
