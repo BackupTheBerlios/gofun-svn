@@ -65,6 +65,7 @@ struct GofunApplicationEntryData : public GofunDesktopEntryData
 {
 
 	QString Exec;
+	QString TryExec;
 	QString Path;
 	QString Terminal;
 	std::vector<QString> X_GoFun_Env;

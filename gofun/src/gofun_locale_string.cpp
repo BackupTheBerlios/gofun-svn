@@ -100,6 +100,9 @@ void GofunLocaleString::desktopEntryPrint(const QString& key, QTextStream& strea
 {
 	for(std::map<QString,QString>::iterator it = locale_strings.begin(); it != locale_strings.end(); ++it)
 	{
+		if((*it).second.isEmpty())
+			continue;
+		
 		if(!(*it).first.isEmpty())
 		{
 		stream << key + "[" + (*it).first + "]=";

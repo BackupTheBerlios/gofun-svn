@@ -134,8 +134,8 @@ GofunIconItem::GofunIconItem(QIconView* iv,const QString& text, const QPixmap& p
 
 void GofunIconLoadThread::run() //@TODO: Fix segfault on deletion of the dialog (this method() doesn't know that it got deleted.
 {
-	QStringList icon_paths = QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons -path \\*32\\*.png"));
-	icon_paths += QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons -maxdepth 1 -path \\*.png"));
+	QStringList icon_paths = QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps -path \\*32\\*.png"));
+	icon_paths += QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps -maxdepth 1 -path \\*.png"));
 	icon_dialog->load_progress->setTotalSteps(icon_paths.count());
 	QFileInfo fi;
 	for(QStringList::Iterator it = icon_paths.begin(); it != icon_paths.end() && icon_dialog; ++it)

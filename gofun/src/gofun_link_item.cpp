@@ -82,7 +82,8 @@ void GofunLinkItem::save()
 	{
 		QTextStream stream( &file );
 		stream << "Type=Link\n";
-		stream << "URL=" << data()->URL << "\n";
+		if(!data()->URL.isEmpty())
+			stream << "URL=" << data()->URL << "\n";
 		stream << data()->Unknownkeys.join("\n") << "\n";
 		file.close();
 	}

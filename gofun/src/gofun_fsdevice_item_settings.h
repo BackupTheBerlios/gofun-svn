@@ -32,8 +32,10 @@ public:
 	GofunFSDeviceItemSettings();
 	void load(GofunFSDeviceItem*);
 	
-public slots:
+private slots:
 	void dirDialog();
+	void deviceDialog();
+	void mountPointDirectoryDialog();
 private:
 	void save();
 	void apply();

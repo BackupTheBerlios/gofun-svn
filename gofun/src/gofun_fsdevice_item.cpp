@@ -105,9 +105,12 @@ void GofunFSDeviceItem::save()
 	{
 		QTextStream stream( &file );
 		stream << "Type=FSDevice\n";
-		stream << "Dev=" << data()->Device << "\n";
-		stream << "FSType=" << data()->FSType << "\n";
-		stream << "MountPoint=" << data()->MountPoint << "\n";
+		if(!data()->Device.isEmpty())
+			stream << "Dev=" << data()->Device << "\n";
+		if(!data()->FSType.isEmpty())
+			stream << "FSType=" << data()->FSType << "\n";
+		if(!data()->MountPoint.isEmpty())
+			stream << "MountPoint=" << data()->MountPoint << "\n";
 		stream << "ReadOnly=" << data()->ReadOnly << "\n";
 		stream << data()->Unknownkeys.join("\n") << "\n";
 		file.close();

@@ -79,6 +79,7 @@ bool GofunApplicationEntryData::parseLine(const QString& line)
 		return true;
 
 	if(GofunDataLoader::parseLine("Exec",line,Exec)
+	|| GofunDataLoader::parseLine("TryExec",line,TryExec)
 	|| GofunDataLoader::parseLine("Path",line,Path)
 	|| GofunDataLoader::parseLine("Terminal",line,Terminal)
 	|| GofunDataLoader::parseLine("X-GoFun-NewX",line,X_GoFun_NewX)

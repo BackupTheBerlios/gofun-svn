@@ -58,8 +58,12 @@ void GofunApplicationItem::save()
 	{
 		QTextStream stream( &file );
 		stream << "Type=Application\n";
-		stream << "Exec=" << data()->Exec << "\n";
-		stream << "Path=" << data()->Path << "\n";
+		if(!data()->Exec.isEmpty())
+			stream << "Exec=" << data()->Exec << "\n";
+		if(!data()->TryExec.isEmpty())
+			stream << "TryExec=" << data()->TryExec << "\n";
+		if(!data()->Path.isEmpty())
+			stream << "Path=" << data()->Path << "\n";
 		stream << "Terminal=" << data()->Terminal << "\n";
 		stream << "X-GoFun-NewX=" << data()->X_GoFun_NewX << "\n";
 		if(!data()->X_GoFun_Env.empty())
@@ -73,7 +77,8 @@ void GofunApplicationItem::save()
 			}
 			stream << "\n";
 		}
-		stream << "X-GoFun-User=" << data()->X_GoFun_User << "\n";
+		if(!data()->X_GoFun_User.isEmpty())
+			stream << "X-GoFun-User=" << data()->X_GoFun_User << "\n";
 		if(!data()->X_GoFun_Parameter.empty())
 		{
 			for(std::map<int,GofunParameterData>::iterator it = data()->X_GoFun_Parameter.begin(); it != data()->X_GoFun_Parameter.end(); ++it)
@@ -96,6 +101,8 @@ void GofunApplicationItem::setData(GofunDesktopEntryData* d)
 	m_data = dynamic_cast<GofunApplicationEntryData*>(d);
 	
 	implementData();
+	if(!data()->TryExec.simplifyWhiteSpace().isEmpty() && !QFileInfo(data()->TryExec).isExecutable())
+		iconView()->takeItem(this);	
 }
 
 void GofunApplicationItem::interpretExecString(QString& exec)

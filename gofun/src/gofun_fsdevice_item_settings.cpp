@@ -29,6 +29,7 @@
 #include "gofun_misc.h"
 #include "gofun_cat_button.h"
 #include "gofun_desktop_entry_settings_widget.h"
+#include "gofun_directory_browser.h"
 
 GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 {	
@@ -39,8 +40,11 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 		
 	desw = new GofunDesktopEntrySettingsWidget(widget_main);
 	device = new QComboBox(true,widget_main);
+	QToolButton* device_button = new QToolButton(widget_main);
 	mount_point = new QComboBox(true,widget_main);
-	
+	mount_point->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+	QToolButton* mount_point_button = new QToolButton(widget_main);
+		
 	FILE* fp = setmntent("/etc/fstab","r");
 	struct mntent* me;
 	while((me = getmntent(fp)) != NULL)
@@ -55,8 +59,13 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 	grid->addMultiCellWidget(desw,0,0,0,2);
 	grid->addWidget(new QLabel(tr("Device"),widget_main),1,0);
 	grid->addWidget(device,1,1);
+	grid->addWidget(device_button,1,2);
 	grid->addWidget(new QLabel(tr("MountPoint"),widget_main),2,0);
 	grid->addWidget(mount_point,2,1);
+	grid->addWidget(mount_point_button,2,2);
+	
+	connect(mount_point_button,SIGNAL(clicked()),this,SLOT(mountPointDirectoryDialog()));
+	connect(device_button,SIGNAL(clicked()),this,SLOT(deviceDialog()));
 	
 	QWidget* widget_advanced = new QWidget(this);
 	QGridLayout* grid_adv = new QGridLayout(widget_advanced,3,3);
@@ -74,11 +83,31 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 	grid_adv->addWidget(unmount_icon,0,1);
 	grid_adv->addWidget(unmount_icon_button,0,2);
 	grid_adv->addMultiCellWidget(readonly_chk,1,1,0,2);
-	grid_adv->addWidget(type,2,0);
+	grid_adv->addWidget(new QLabel(tr("Filesystem"),widget_advanced),2,0);
+	grid_adv->addWidget(type,2,1);
 	
 	connect(desw->icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	
 	item = 0;
+}
+
+void GofunFSDeviceItemSettings::deviceDialog()
+{
+	
+}
+
+void GofunFSDeviceItemSettings::mountPointDirectoryDialog()
+{
+	QString start_dir;
+	if(!mount_point->currentText().isEmpty())
+		start_dir = GofunMisc::ext_filestring(mount_point->currentText());
+	else
+		start_dir = "/mnt";
+	
+	GofunDirectoryBrowser dir_browser;
+	dir_browser.setStartDirectory(start_dir);
+	if(dir_browser.exec() == QDialog::Accepted)
+		mount_point->setCurrentText(dir_browser.selected());
 }
 
 void GofunFSDeviceItemSettings::load(GofunFSDeviceItem* _item)

@@ -90,7 +90,7 @@ QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height
 			file = name;
 		else if( QFile::exists(GofunMisc::ext_filestring(name)))
 			file = GofunMisc::ext_filestring(name);
-		else if(!(file = GofunMisc::shell_call("find /usr/share/icons -path *"+name+"*")).isEmpty())
+		else if(!(file = GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps -path *"+name+"*")).isEmpty())
 		{
 			//FIXME: that code still looks quite hackish
 			QStringList::Iterator choice;
