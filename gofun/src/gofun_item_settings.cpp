@@ -163,12 +163,22 @@ void GofunItemSettings::iconDialog()
 	{
 		start_dir = GofunMisc::ext_filestring(directory->text());
 	}
-	QString file = QFileDialog::getOpenFileName(start_dir,"Icons (*.png *.xpm *.jpg *.bmp *.ico)", this, "Pick icon dialog", "Pick an icon");
+	GofunFileDialogPreview* pre = new GofunFileDialogPreview;
+	
+	QFileDialog* fd = new QFileDialog(start_dir,"Icons (*.png *.xpm *.jpg *.bmp *.ico)",this,"Pick icon dialog");
+	fd->setDir(start_dir);
+	fd->setCaption("Pick an icon");
+	fd->setContentsPreviewEnabled( TRUE );
+	fd->setContentsPreview( pre, pre );
+	fd->setPreviewMode( QFileDialog::Contents );
+	fd->exec();
+	QString file =  fd->selectedFile();
 	if(!file.isEmpty())
 	{
 		icon->setText(file);
 		icon_button->setPixmap(QPixmap(file));
 	}
+	delete fd;
 }
 
 void GofunItemSettings::dirDialog()

@@ -45,6 +45,7 @@ public:
 private:
 	QString saveProcArguments(QProcess*);
 	void interpretExecString(QString&);
+	void addSplittedProcArgument(QProcess*,const QString&);
 };
 
 #endif

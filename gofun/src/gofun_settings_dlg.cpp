@@ -24,9 +24,11 @@
 
 GofunSettingsDlg::GofunSettingsDlg()
 {
-
+	//Every config dialog has the same Icon by default
 	setIcon(QPixmap("config.png"));	
 
+	//The top grid contains the tabwidget and the buttons ever
+	//config dialog shares
 	QGridLayout* top_grid = new QGridLayout(this,2,2);
 			
 	tabwidget = new QTabWidget(this);
@@ -94,10 +96,13 @@ bool GofunSettingsDlg::inputValid()
 
 void GofunSettingsDlg::accept()
 {
+	//call inputValid() to validate, if the settings are sufficient
 	if(inputValid())
 	{
+		//if so, we apply those settings and save them
 		apply();
 		save();
+		
 		hide();
 	}
 }

@@ -27,6 +27,7 @@
 #include "gofun.h"
 #include "gofun_data.h"
 #include "gofun_iconview.h"
+#include "gofun_settings.h"
  
 GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconViewItem(iconview,string)
 {
@@ -130,9 +131,8 @@ void GofunItem::executeCommand(ExecuteOption* option)
 	}
 	if((!option->terminal.isEmpty()) || (data->Terminal == "true"))
 	{ 
-		proc.addArgument("xterm");
-		proc.addArgument("-e");
-		exec =  exec + ";echo -e \"\\E[${2:-44};${3:-47}m\nEnd of execution has been reached. Press any key to remove this terminal\"; read evar";
+		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
+		exec =  exec + ";echo -e \"\\E[${2:-44};${3:-7}m\nEnd of execution has been reached. Press any key to remove this terminal\"; read evar";
 	}
 	if(!option->xinit.isEmpty())
 	{
@@ -176,6 +176,15 @@ void GofunItem::executeCommand(ExecuteOption* option)
 	else
 	{
 		proc.start();
+	}
+}
+
+void GofunItem::addSplittedProcArgument(QProcess* proc,const QString& argument)
+{
+	QStringList arguments = QStringList::split(' ',argument);
+	for(QStringList::Iterator it = arguments.begin(); it != arguments.end(); ++it)
+	{
+		proc->addArgument((*it));
 	}
 }
 

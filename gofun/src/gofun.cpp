@@ -31,6 +31,7 @@
 
 #include "gofun_widget.h"
 #include "gofun_misc.h"
+#include "gofun_settings.h"
 
 using namespace std;
 
@@ -76,6 +77,12 @@ int main(int argc, char *argv[])
   gofun_widget.show();
 
   //Finally we start the application!
-  return app.exec();
+  int ret = app.exec();
+  
+  //Destroy the global GofunSettingsContainer instance and save its status
+  GSC::save();
+  
+  //Return the return-value returned by app.exec() :)
+  return ret;  
 }
 

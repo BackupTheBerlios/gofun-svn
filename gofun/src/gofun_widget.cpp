@@ -143,7 +143,8 @@ void GofunWidget::loadData()
 void GofunWidget::openSettingsDlg()
 {
 	GofunSettings* settings_dlg = new GofunSettings();
-	settings_dlg->setGeometry(this->x(),this->geometry().y()+this->geometry().height(),this->width(),this->height());
+	settings_dlg->setGeometry(this->x(),this->geometry().y()+this->geometry().height(),this->width(),-1);
+	settings_dlg->load();
 	settings_dlg->exec();
 	delete settings_dlg;
 	
@@ -165,7 +166,8 @@ void GofunWidget::addEntry()
 void GofunWidget::addCategory()
 {
 	GofunCatSettings* settings_dlg = new GofunCatSettings();
-	settings_dlg->setGeometry(geometry().x()+this->width(),this->y(),this->width(),this->height());
+	int width = 275;
+	settings_dlg->setGeometry(geometry().x()+this->width(),this->y(),width,this->height());
 	GofunCatButton* cat = new GofunCatButton("New category",cats_bg);
 	cats_bg->insert(cat,cats_bg->count()-1);
 	settings_dlg->load(cat);

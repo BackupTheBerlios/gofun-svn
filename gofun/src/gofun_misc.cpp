@@ -17,6 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+
+#include <qpixmap.h>
  
 #include "gofun_misc.h" 
 
@@ -36,5 +38,15 @@ QString GofunMisc::shell_call(const QString& call)
 QString GofunMisc::ext_filestring(const QString& str)
 {
 	return shell_call("echo "+ str);
+}
+
+void GofunFileDialogPreview::previewUrl(const QUrl& u)
+{
+	QString path = u.path();
+	QPixmap pix( path );
+	if ( pix.isNull() )
+		setText( "This is not a pixmap" );
+	else
+		setPixmap( pix );
 }
 

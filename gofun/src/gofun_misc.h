@@ -19,6 +19,8 @@
  ***************************************************************************/
 
 #include <qstring.h>
+#include <qfiledialog.h>
+#include <qlabel.h>
  
 #ifndef GOFUN_MISC
 #define GOFUN_MISC
@@ -28,6 +30,14 @@ struct GofunMisc
 {
 	static QString shell_call(const QString&);
 	static QString ext_filestring(const QString&);
+};
+
+class GofunFileDialogPreview : public QLabel, public QFilePreview
+{
+	public:
+        GofunFileDialogPreview( QWidget *parent=0 ) : QLabel( parent ) {}
+
+        void previewUrl( const QUrl &u );
 };
 
 #endif

@@ -25,6 +25,26 @@
 #ifndef GOFUN_SETTINGS
 #define GOFUN_SETTINGS
 
+class QSettings;
+
+class GofunSettingsContainer
+{
+public:
+	~GofunSettingsContainer();
+	static GofunSettingsContainer* get() { _instance ? _instance : _instance = new GofunSettingsContainer(); return _instance; }
+	static void save() { delete _instance; _instance = 0; }
+	
+	QString terminal_cmd;
+	QString gofun_dir;
+private:
+	GofunSettingsContainer();
+	
+	QSettings* m_settings;
+	static GofunSettingsContainer* _instance;
+};
+
+typedef GofunSettingsContainer GSC;
+
 class GofunSettings : public GofunSettingsDlg
 {
 	Q_OBJECT
@@ -36,6 +56,7 @@ public slots:
 private:
 	virtual void save();
 	virtual void apply();
+	virtual bool inputValid();
 
 	QLineEdit* terminal;
 	QLineEdit* directory;
@@ -43,3 +64,6 @@ private:
 };
 
 #endif
+
+
+

@@ -20,8 +20,31 @@
 
 #include <qfile.h>
 #include <qlabel.h>
+#include <qsettings.h>
+#include <qdir.h>
 
 #include "gofun_settings.h" 
+
+GofunSettingsContainer* GofunSettingsContainer::_instance = NULL;
+
+GofunSettingsContainer::GofunSettingsContainer()
+{
+	m_settings = new QSettings(QSettings::Native);
+	
+	m_settings->insertSearchPath( QSettings::Unix, QDir::homeDirPath() + "/.gofun/");
+	
+	m_settings->beginGroup("config");
+	m_settings->beginGroup("commands");
+	terminal_cmd = m_settings->readEntry("terminal");
+	m_settings->endGroup();
+}
+
+GofunSettingsContainer::~GofunSettingsContainer()
+{
+	m_settings->writeEntry("/commands/terminal",terminal_cmd);
+	m_settings->endGroup();
+	delete m_settings;
+}
 
 GofunSettings::GofunSettings()
 {
@@ -56,8 +79,14 @@ void GofunSettings::save()
 	}*/
 }
 
+bool GofunSettings::inputValid()
+{
+	return true;
+}
+
 void GofunSettings::apply()
 {
+	GSC::get()->terminal_cmd = terminal->text();
 	/*if(item)
 	{
 		item->setCommand(command->text());
@@ -79,4 +108,5 @@ void GofunSettings::load()
 	command->setText(item->data->Exec);
 	directory->setText(item->data->Path);
 	file = item->file;*/
+	terminal->setText(GSC::get()->terminal_cmd);
 }

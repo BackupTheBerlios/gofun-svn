@@ -1,7 +1,7 @@
 /****************************************************************************
 ** GofunSettings meta object code from reading C++ file 'gofun_settings.h'
 **
-** Created: Sat Nov 13 14:33:46 2004
+** Created: Sat Nov 20 18:21:34 2004
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.3   edited Aug 5 16:40 $)
 **
 ** WARNING! All changes made in this file will be lost!
