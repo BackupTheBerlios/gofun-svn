@@ -29,6 +29,7 @@
 #include <qapplication.h>
 #include <qdir.h>
 #include <qtextcodec.h>
+#include <qstyle.h>
 
 #include "gofun_widget.h"
 #include "gofun_misc.h"
@@ -60,11 +61,10 @@ int main(int argc, char *argv[])
   //This is the app's core
   QApplication app(argc, argv);
   GofunWidget::system_palette = qApp->palette();
-  
-  if(!GSC::get()->style.isEmpty())
-  	app.setStyle(GSC::get()->style);
-  
+  GofunWidget::system_style = qApp->style().name();
+    
   //make GoFun look colorful and different every startup
+  GofunWidget::applyStyleSettings();
   GofunWidget::applyColorSettings();  
   
   //Here the main widget is being created

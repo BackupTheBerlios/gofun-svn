@@ -24,6 +24,7 @@
 #include <qhttp.h>
 #include <qcursor.h>
 #include <qaccel.h>
+#include <qstyle.h>
  
 #include "gofun_iconview.h"
 #include "gofun_widget.h" 
@@ -43,6 +44,7 @@
 #include "gofun_link_item.h"
 
 QPalette GofunWidget::system_palette;
+QString GofunWidget::system_style;
 
 class GofunVButtonGroup : public QVButtonGroup
 {
@@ -407,4 +409,12 @@ void GofunWidget::toggleFullscreen( )
 		showNormal();
 	else
 		showFullScreen();
+}
+
+void GofunWidget::applyStyleSettings( )
+{
+	if(!GSC::get()->style.isEmpty())
+		qApp->setStyle(GSC::get()->style);
+	else if(system_style != qApp->style().name())
+		qApp->setStyle(system_style);
 }

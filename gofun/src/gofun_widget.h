@@ -79,7 +79,9 @@ public slots:
 	void toggleFullscreen();
 	
 	static void applyColorSettings();
+	static void applyStyleSettings();
 	static QPalette system_palette;
+	static QString system_style;
 private:
 	void costumizedStart(GofunItem*);
 	void editEntry(GofunItem*);

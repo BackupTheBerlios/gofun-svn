@@ -198,10 +198,7 @@ void GofunSettings::apply()
 	if(GSC::get()->style != styles->currentText())
 	{
 		if(styles->currentItem() != 0)
-		{
-			qApp->setStyle(styles->currentText());
 			GSC::get()->style = styles->currentText();
-		}
 		else
 			GSC::get()->style = "";
 	}
@@ -213,6 +210,7 @@ void GofunSettings::apply()
 	
 	GSC::get()->costum_color = costum_col_bt->paletteBackgroundColor().name();
 	
+	GofunWidget::applyStyleSettings();
 	GofunWidget::applyColorSettings();
 		
 	dynamic_cast<GofunWidget*>(qApp->mainWidget())->reloadData();
