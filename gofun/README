@@ -1,0 +1,29 @@
+Dependencies:
+-------------
+To compile GoFun you need the Qt3 development packages.
+
+Short install guide:
+--------------------
+
+Type the following commands:
+
+#make -f Makefile.cvs
+#./configure
+#make
+#su
+#make install
+
+It's possible that you have to
+give following parameter to ./configure,
+
+--with-qt-dir=/path/to/qtdir
+
+because the configure script isn't able
+to find the Qt directory on everysystem.
+
+I wish you the best luck one can have.
+
+Troubleshooting:
+----------------
+Should there occur problems don't fear
+to drop me an email <tobi.web@gmx.de>.
