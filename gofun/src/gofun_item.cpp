@@ -167,7 +167,7 @@ void GofunItem::executeCommand(ExecuteOption* option)
 		QString spa_file = saveProcArguments(&proc);
 		
 		QProcess proc_gosu;
-		proc_gosu.addArgument("./gosu");
+		proc_gosu.addArgument("gosu");
 		proc_gosu.addArgument(data->X_GoFun_User);
 		proc_gosu.addArgument("-l");
 		proc_gosu.addArgument("-g");
