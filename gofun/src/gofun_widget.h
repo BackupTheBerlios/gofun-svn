@@ -77,7 +77,8 @@ public slots:
 	void changeToTools();
 	void performDefaultActionOnItem(QIconViewItem*);
 	void toggleFullscreen();
-	
+
+public:
 	static void applyColorSettings();
 	static void applyStyleSettings();
 	static QPalette system_palette;
