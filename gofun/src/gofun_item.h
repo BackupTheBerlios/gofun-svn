@@ -41,7 +41,7 @@ enum
   PID_Delete
 };
 
-///Items represent executeable Desktop Entries
+///Items represent executable Desktop Entries
 class GofunItem : public QObject, public QIconViewItem , public GofunDesktopObject
 {
 	Q_OBJECT

@@ -21,9 +21,13 @@
 #include <qpixmap.h>
 #include <qimage.h>
 #include <qapplication.h>
- 
+#include <qprocess.h>
+
 #include "gofun_misc.h" 
 #include "gofun_settings.h"
+
+GofunProcessLogger* GofunProcessLogger::_instance = 0;
+QStringList GofunMisc::icon_files = QStringList::split('\n',GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps"));
 
 QString GofunMisc::shell_call(const QString& call)
 {
@@ -83,40 +87,42 @@ QString GofunMisc::fileDialogGetImage(const QString& start_dir,const QString& ca
 
 QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height)
 {
-	if(!name.isEmpty())
-	{
-		QString file;
-		if(QFile::exists(name))
-			file = name;
-		else if( QFile::exists(GofunMisc::ext_filestring(name)))
-			file = GofunMisc::ext_filestring(name);
-		else if(!(file = GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps -path *"+name+"*")).isEmpty())
-		{
-			//FIXME: that code still looks quite hackish
-			QStringList::Iterator choice;
-			int m_width = 0;
-			QStringList files = QStringList::split("\n",file);
-			for(QStringList::Iterator it = files.begin(); it != files.end(); ++it)
-			{
-				QImage img((*it));
-				if(img.width() > m_width)
-				{
-					file = (*it);
-					m_width = img.width();
-				}
-				if(img.width() == pref_width)
-					break;
-			}
-		}
-		if(!QFile::exists(file))
-			return QPixmap();
+	if(name.isEmpty())
+		return QPixmap();
 		
-		QImage image(file);
-		QPixmap pixmap;
-		pixmap.convertFromImage(image.scale(pref_width,pref_height));
-		return pixmap;
+	QString file;
+	if(QFile::exists(name))
+		file = name;
+	else if( QFile::exists(GofunMisc::ext_filestring(name)))
+		file = GofunMisc::ext_filestring(name);
+	else
+	{		
+		//FIXME: that code still looks quite hackish
+		QStringList::Iterator choice;
+		int m_width = 0;
+		QStringList files = QStringList::split("\n",file);
+		for(QStringList::Iterator it = icon_files.begin(); it != icon_files.end(); ++it)
+		{
+			if(!(*it).contains(name))
+				continue;
+		
+			QImage img((*it));
+			if(img.width() > m_width)
+			{
+				file = (*it);
+				m_width = img.width();
+			}
+			if(img.width() == pref_width)
+				break;
+		}
 	}
-	return QPixmap();
+	if(!QFile::exists(file))
+		return QPixmap();
+	
+	QImage image(file);
+	QPixmap pixmap;
+	pixmap.convertFromImage(image.scale(pref_width,pref_height));
+	return pixmap;
 }
 
 void GofunFileDialogPreview::previewUrl(const QUrl& u)
@@ -227,4 +233,27 @@ QString GofunMisc::boolToString(bool b)
 	else
 		return "false";
 }
+
+void GofunProcessLogger::connectProcToStdout(const QProcess* proc)
+{
+	connect(proc,SIGNAL(readyReadStdout()),this,SLOT(readProcStdout()));
+	connect(proc,SIGNAL(readyReadStderr()),this,SLOT(readProcStderr()));
+}
+
+void GofunProcessLogger::readProcStderr()
+{
+	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
+	while(proc->canReadLineStderr())
+		qDebug(proc->readLineStderr());
+}
+
+void GofunProcessLogger::readProcStdout()
+{
+	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
+	while(proc->canReadLineStdout())
+		qDebug(proc->readLineStdout());
+}
+
+
+
 

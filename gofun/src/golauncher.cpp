@@ -47,7 +47,7 @@ void Golauncher::launch()
 		QString xservnum = GofunMisc::shell_call("ps -Ac | grep X | wc -l").simplifyWhiteSpace();
 		proc->addArgument(":"+xservnum);
 		proc->start();
-		
+
 		sleep(2000);
 			
 		return;
@@ -85,17 +85,19 @@ void Golauncher::launch()
 				launch();
 			}
 		}
-		
-	if(xmode)
-	{
-	GolauncherWidget wid;
+	//We _could_ get the processes started by the process with processIdentifier using 'ps --ppid'
+	//the first number in the line is alway a pidi
 	
-	  //Declare gofun_widget to the official mainWidget
-  	qApp->setMainWidget(&wid);
-  	//Paint it on the screen
-  	wid.show();
-  	//Finally we start the application!
-  	qApp->exec();
+	if(xmode)
+	{	
+		GolauncherWidget wid;
+		
+		//Declare gofun_widget to the official mainWidget
+		qApp->setMainWidget(&wid);
+		//Paint it on the screen
+		wid.show();
+		//Finally we start the application!
+		qApp->exec();
 	}	
 }
 
@@ -124,7 +126,7 @@ int main(int argc, char *argv[])
 {
 	QApplication app(argc,argv);
 	Golauncher golauncher;
-		
+			
 	for ( int i = 0; i < app.argc(); i++ )
 	{
 		if((QString(app.argv()[i]) == "-datafile") && (i+1 < app.argc()))
@@ -136,5 +138,6 @@ int main(int argc, char *argv[])
 	}
 	
 	golauncher.launch();
+	return 0;
 }
 

@@ -65,20 +65,20 @@ class GofunVButtonGroup : public QVButtonGroup
 		}
 		else if(e->delta() < 0)
 		{
-			if(!(button = find(selectedId()+1)))
+			if(!(button = find(id(selected())+1)))
 				button = find(1);
 		}
 		else
 		{
 			if(id(selected()) == 1)
 				button = find(count()-1);
-			else if(button = find(selectedId()-1))
+			else if(button = find(id(selected())-1))
 				;
 		}
 		if(button)
 		{
 			(dynamic_cast<GofunCatButton*>(button))->setOn(true);
-			dynamic_cast<GofunWidget*>(qApp->mainWidget())->changeCategory(selectedId());
+			dynamic_cast<GofunWidget*>(qApp->mainWidget())->changeCategory(id(selected()));
 		}
 	}
 };

@@ -89,18 +89,19 @@ void GofunLinkItem::save()
 	}
 }
 
-void GofunLinkItem::open()
+
+void GofunLinkItem::open(const QString& _url)
 {
-	QUrl url(GofunMisc::ext_filestring(data()->URL));
+	QUrl url(GofunMisc::ext_filestring(_url));
 	QProcess proc;
 	if(url.protocol() == "file")
 		proc.addArgument(GSC::get()->filemanager_cmd);
 	else
 	{
 		proc.addArgument(GSC::get()->browser_cmd);
-		url = data()->URL;
+		url = _url;
 	}
-	if(!data()->URL.isEmpty())
+	if(!_url.isEmpty())
 		proc.addArgument(url.toString());
 	else
 		proc.addArgument(QDir::homeDirPath());
@@ -108,6 +109,12 @@ void GofunLinkItem::open()
 	{
 		std::cout<<QObject::tr("Execution of directory viewer failed. :(\n");
 	}	
+}
+
+
+void GofunLinkItem::open()
+{
+	open(data()->URL);
 }
 
 void GofunLinkItem::performDefaultAction()
@@ -126,4 +133,5 @@ void GofunLinkItem::createNewItem(GofunCatButton* cat)
 	settings_dlg->exec();
 	delete settings_dlg;
 }
+
 

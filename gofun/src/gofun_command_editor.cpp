@@ -21,24 +21,23 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qcursor.h>
- 
-#include "gofun_command_editor.h"
+#include <qapplication.h> 
+#include <qheader.h>
+#include <qvbuttongroup.h>
 
-GofunListPopup::GofunListPopup() : QListView( 0, 0, WType_Popup )
+#include "gofun_command_editor.h"
+#include "gofun_misc.h"
+#include "gofun_list_popup.h"
+#include "gofun_directory_browser.h"
+
+GofunExecutableBrowser::GofunExecutableBrowser()
 {
-        setFrameStyle( WinPanel|Raised );
-        resize(150,100);
-        setMouseTracking( TRUE );
+	QGridLayout* grid = new QGridLayout(this);
+	
 }
 
-void GofunListPopup::popup()
+QString GofunExecutableBrowser::getExecutable()
 {
- /*   popupParent = parent;
-    setText("Move the mouse!");
-    if (popupParent)
-        move( popupParent->mapToGlobal( popupParent->rect().bottomLeft() ) );*/
-    move(QCursor::pos());
-    show();
 }
 
 GofunCommandEditor::GofunCommandEditor()
@@ -50,16 +49,30 @@ GofunCommandEditor::GofunCommandEditor()
 	text->setWordWrap(QTextEdit::NoWrap);
 	QPushButton* apply = new QPushButton(tr("Apply"),this);
 	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
+	QPushButton* test = new QPushButton(tr("Test"),this);
 	
 	connect(text,SIGNAL(textChanged()),this,SLOT(commandExpand()));
-	
 	connect(apply,SIGNAL(clicked()),this,SLOT(accept()));
 	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
+	connect(test,SIGNAL(clicked()),this,SLOT(test()));
 	
-	QGridLayout* grid = new QGridLayout(this,3,3);
-	grid->addMultiCellWidget(text,1,1,0,2);
+	QVButtonGroup* browse_for = new QVButtonGroup(tr("Browse for"),this);
+	QPushButton* browse_for_executable = new QPushButton(tr("Executable"),browse_for);
+	QPushButton* browse_for_directory = new QPushButton(tr("Directory"),browse_for);
+	QPushButton* browse_for_file = new QPushButton(tr("File"),browse_for);
+	
+	connect(browse_for_executable,SIGNAL(clicked()),this,SLOT(browseForExecutable()));
+	connect(browse_for_directory,SIGNAL(clicked()),this,SLOT(browseForDirectory()));
+	connect(browse_for_file,SIGNAL(clicked()),this,SLOT(browseForFile()));
+	
+	QGridLayout* grid = new QGridLayout(this,3,4);
+	grid->addMultiCellWidget(text,0,1,0,2);
 	grid->addWidget(apply,2,0);
 	grid->addWidget(cancel,2,1);
+	QSpacerItem* spacer = new QSpacerItem(40,20,QSizePolicy::Expanding,QSizePolicy::Minimum);
+	grid->addItem(spacer,2,2);
+	grid->addWidget(test,2,3);
+	grid->addWidget(browse_for,0,3);
 }
 
 void GofunCommandEditor::commandExpand()
@@ -67,13 +80,30 @@ void GofunCommandEditor::commandExpand()
 	if( text->text()[text->text().length()-1] == '/' && text->text()[text->text().length()-2] == '.' )
 	{
 		GofunListPopup* expand_list = new GofunListPopup;
-		expand_list->popup();
+		expand_list->addColumn("files");
+		expand_list->header()->hide();
+		qDebug(text->text(text->paragraphs()-1));
+		QStringList files = QStringList::split('\n',GofunMisc::shell_call(text->text(text->paragraphs()-1)+"\t"));
+		for(QStringList::Iterator it = files.begin(); it != files.end(); ++it)
+		new QListViewItem(expand_list,(*it));
+		
+		QFontMetrics metrics(text->font());
+		int x,y;
+		text->getCursorPosition(&y,&x);
+		
+		int xp = metrics.size(Qt::SingleLine,text->text(y)).width();
+		int yp = metrics.lineSpacing() * (y+1);
+		expand_list->popup(text->mapToGlobal(QPoint(xp,yp)));
+		
+		connect(expand_list,SIGNAL(clicked(QListViewItem*)),this,SLOT(commandCompletion(QListViewItem*)));
+		connect(expand_list,SIGNAL(returnPressed(QListViewItem*)),this,SLOT(commandCompletion(QListViewItem*)));
+		connect(expand_list,SIGNAL(spacePressed(QListViewItem*)),this,SLOT(commandCompletion(QListViewItem*)));
 	}
 }
 
 void GofunCommandEditor::setCommand(const QString& _cmd)
 {
-	cmd = _cmd;	
+	cmd = _cmd;
 	text->setText(cmd.replace(';',"\n"));
 }
 
@@ -83,4 +113,46 @@ QString GofunCommandEditor::command()
 	cmd = cmd.replace('\n',";");
 	return cmd;
 }
+
+void GofunCommandEditor::commandCompletion(QListViewItem* item)
+{
+	if(!item)
+		return;
+		
+	text->insert(item->text(0));
+}
+
+void GofunCommandEditor::test()
+{
+}
+
+void GofunCommandEditor::browseForDirectory()
+{
+	GofunDirectoryBrowser dir_browser;
+	if(dir_browser.exec() == QDialog::Accepted)
+		text->insert(dir_browser.selected());
+}
+
+void GofunCommandEditor::browseForExecutable()
+{
+	GofunExecutableBrowser exec_browser;
+	if(exec_browser.exec() == QDialog::Accepted)
+		text->insert(exec_browser.getExecutable());
+}
+
+void GofunCommandEditor::browseForFile()
+{
+	QString s = QFileDialog::getOpenFileName(
+                    "/home",
+                    "*.*",
+                    this,
+                    "Browse for file",
+                    "Choose a file" );
+	if(s.isNull())
+		return;
+		
+	text->insert(s);
+}
+
+
 

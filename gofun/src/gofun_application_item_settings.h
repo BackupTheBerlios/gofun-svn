@@ -53,14 +53,16 @@ public slots:
 	void addEnvVar(const QString&, const QString&);
 	void remEnvVar();
 	void envItemEdit(QListViewItem*,const QPoint&,int);
+	void envItemEdit();
 	void envItemEditInterpreted(const QString&);
 	void envPredefinedPopup();
-	void envPredefinedPopupActivated(int);
+	void envPredefinedPopupActivated(QListViewItem*);
 	void userChkToggled(bool);
 	void addParRow();
 	void remParRow();
-	void parValEditDialog();
+	void parEditDialog();
 	void commandEditor();
+	void editableEnvVar();
 private:
 	void save();
 	void apply();
@@ -68,6 +70,7 @@ private:
 	
 	GofunApplicationEntryData* data();
 
+	QValueList<GofunParameterData> par_data;
 	QLineEdit* command;
 	QToolButton* command_button;
 	QLineEdit* directory;
@@ -76,6 +79,7 @@ private:
 	QPushButton* envadd;
 	QPushButton* envrem;
 	QPushButton* envpre;
+	QPushButton* envedit;
 	QTable* tb_par;
 	QPushButton* paradd;
 	QPushButton* parrem;

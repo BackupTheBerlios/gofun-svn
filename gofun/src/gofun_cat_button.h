@@ -27,7 +27,6 @@
 class GofunItem;
 class GofunCatEntryData;
 class GofunIconView;
-class GofunDesktopEntrySettingsWidget;
 
 #ifndef GOFUN_CAT_BUTTON
 #define GOFUN_CAT_BUTTON
@@ -37,7 +36,8 @@ enum {
 	PID_COPY_ITEM,
 	PID_ADD_ENTRY,
 	PID_ADD_ENTRY_WIZARD,
-	PID_SETTINGS
+	PID_SETTINGS,
+	PID_DELETE
 	};
 
 ///Represents a directory and a category
@@ -66,6 +66,9 @@ public:
 	void setupToolTip();
 	void runNewItemWizard();
 	bool isReadOnly() { return readonly;}
+	void deleteEntry();
+	void deleteEntryFile();
+	void makeCurrent();
 
 	GofunIconView* iconview;
 	
@@ -74,7 +77,6 @@ private:
 	GofunItem* current_item;
 	QString directory;
 	QToolButton* conf_button;
-	GofunDesktopEntrySettingsWidget* desw;
 	
 	bool readonly;	
 };

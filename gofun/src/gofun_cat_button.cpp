@@ -59,10 +59,8 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 	//For this category we create an IconView
 	iconview = new GofunIconView();
 		
-	//Make sure it's being initialized from the start
-	m_data = new GofunCatEntryData();
-	
-	loadIcon();
+	//You don't want wild pointers.
+	m_data = 0;
 	
 	if(dynamic_cast<GofunWidget*>(qApp->mainWidget()))
 		dynamic_cast<GofunWidget*>(qApp->mainWidget())->insertCategory(this);
@@ -92,13 +90,13 @@ void GofunCatButton::popupConfButton()
 		popup->insertItem(tr("Add Entry Wizard"),PID_Add_Wizard);
 		popup->insertSeparator();
 		popup->insertItem(tr("Settings"),PID_SETTINGS);
+		popup->insertItem(tr("Delete"),PID_DELETE);
 	}
 	else
 		popup->insertItem(tr("View settings"),PID_SETTINGS);
 	popup->popup(QCursor::pos());
 	
-	emit clicked();
-	setOn(true);
+	makeCurrent();
 }
 
 void GofunCatButton::popupCBActivated(int id)
@@ -120,7 +118,28 @@ void GofunCatButton::popupCBActivated(int id)
 		case PID_SETTINGS:
 			catSettings();
 			break;
+		case PID_DELETE:
+			deleteEntry();
+			break;
 	}
+}
+
+void GofunCatButton::deleteEntry()
+{
+	//Kindly warn the user
+	if(!(QMessageBox::warning(qApp->mainWidget(),tr("Delete category"),tr("Do you really want to delete this category and all its entries, sir?"), tr("Ok"), tr("Cancel")) == 0))
+		return;
+	
+	deleteEntryFile();
+	GofunMisc::shell_call("rm -rf '"+data()->Catdir+"'");
+	delete iconview;
+	//delete m_data; //FIXME: uncommentings this results segfault/fatal glibc error
+	delete this;
+}
+
+void GofunCatButton::deleteEntryFile()
+{
+	QFile::remove(data()->File);
 }
 
 void GofunCatButton::runNewItemWizard()
@@ -173,7 +192,7 @@ void GofunCatButton::setData(GofunCatEntryData* d)
 	delete m_data;
 	m_data = d;
 	
-	if(GofunMisc::shell_call("[ -w '"+data()->Catdir+"' ] && echo true").simplifyWhiteSpace() != "true")
+	if(!data()->Catdir.isEmpty() && !QFileInfo(data()->Catdir).isWritable())
 		readonly = true;
 	else
 		readonly = false;
@@ -291,11 +310,14 @@ void GofunCatButton::mouseReleaseEvent( QMouseEvent * event )
 	if (event->button() & RightButton)
 		popupConfButton();
 	else if(event->button() & MidButton)
-	{
-		emit clicked();
-		setOn(true);
-	}
+		makeCurrent();
 		
 	QPushButton::mouseReleaseEvent(event);
+}
+
+void GofunCatButton::makeCurrent( )
+{
+	emit clicked();
+	setOn(true);
 }
 

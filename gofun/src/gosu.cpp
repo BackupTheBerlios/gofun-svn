@@ -33,6 +33,8 @@
 #include <qapplication.h>
 #include <qprocess.h>
 
+#include "gofun_password_dialog.h"
+
 /* Hide any system prototype for getusershell.
    This is necessary because some Cray systems have a conflicting
    prototype (returning `int') in <unistd.h>.  */
@@ -202,19 +204,40 @@ correct_password (const struct passwd *pw)
   correct = pw->pw_passwd;
   if (getuid () == 0 || correct == 0 || correct[0] == '\0')
     return 1;
-   QString unenqt = QInputDialog::getText(QObject::tr("Password dialog"),QObject::tr("Password"),QLineEdit::Password);
+   /*QString unenqt = QInputDialog::getText(QObject::tr("Password dialog"),QObject::tr("Password"),QLineEdit::Password);*/
    
+   GofunPasswordDialog* password_dialog = new GofunPasswordDialog(Qt::WType_Dialog);
+   password_dialog->setUser(pw->pw_name);
+   
+   while(true) //TODO: Clean this whole stuff and finish GofunPasswordDialog
+   {
+    QString unenqt;
+    if(password_dialog->exec() == QDialog::Accepted) 
+    	unenqt = password_dialog->getPassword();
+    else
+    	return 0;
+	
+	qDebug(unenqt);
+	
+    if(unenqt.isNull())
+    	continue;
+	
     unencrypted = (char*) malloc(strlen(unenqt.ascii()));
     strcpy(unencrypted,unenqt.ascii());
-size_t h = 100;
-  if (unencrypted == NULL)
+    size_t h = 100;
+    if(unencrypted == NULL)
     {
 //      error (0, 0, _("getpass: cannot open /dev/tty"));
-      return 0;
+//      return 0;
+	continue;
     }
+    
   encrypted = crypt (unencrypted, correct);
   memset (unencrypted, 0, strlen (unencrypted));
-  return strcmp (encrypted, correct) == 0;
+  
+  if(strcmp(encrypted, correct) == 0)
+  	return true;
+  }
 }
 
 /* Update `environ' for the new shell based on PW, with SHELL being

@@ -18,42 +18,28 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qdialog.h>
-#include <qtextedit.h>
 #include <qlistview.h>
+ 
+#ifndef GOFUN_LIST_POPUP
+#define GOFUN_LIST_POPUP
 
-#ifndef GOFUN_COMMAND_EDITOR
-#define GOFUN_COMMAND_EDITOR
-
-class GofunExecutableBrowser : public QDialog
+class GofunListPopup : public QListView
 {
 	Q_OBJECT
-	public:
-	GofunExecutableBrowser();
-	QString getExecutable();
 	
-};
-
-class GofunCommandEditor : public QDialog
-{
-	Q_OBJECT
 	public:
-	GofunCommandEditor();
-	void setCommand(const QString&);
-	QString command();
+	GofunListPopup();
 	
-	private slots:
-	void commandExpand();
-	void commandCompletion(QListViewItem*);
-	void test();
-	void browseForDirectory();
-	void browseForExecutable();
-	void browseForFile();
+	void popup(const QPoint&);
 	
 	private:
-	QTextEdit* text;
-	QString cmd;
+	void fitSizeToContent();
+	void placeProperly();
+	
+	protected:
+	virtual void mouseReleaseEvent(QMouseEvent*);
+	virtual void closeEvent(QCloseEvent*);
+	virtual void keyPressEvent(QKeyEvent*);
 };
 
 #endif
-

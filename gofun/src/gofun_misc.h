@@ -35,6 +35,8 @@ enum Side {
 	D_None
 };
 
+class QProcess;
+
 ///Mixed methods needed in GoFun
 struct GofunMisc
 {
@@ -49,6 +51,25 @@ struct GofunMisc
 	static QString shellify_path(const QString&);
 	static bool stringToBool(const QString&);
 	static QString boolToString(bool);
+	
+	static QStringList icon_files;
+};
+
+class GofunProcessLogger : public QObject
+{
+	Q_OBJECT
+	public:
+	static GofunProcessLogger* get() { _instance ? _instance : _instance = new GofunProcessLogger(); return _instance; }
+	void connectProcToStdout(const QProcess*);
+		
+	public slots:
+	void readProcStdout();
+	void readProcStderr();
+	
+	private:
+	GofunProcessLogger() {}; //Singleton
+	
+	static GofunProcessLogger* _instance;
 };
 
 class GofunFileDialogPreview : public QLabel, public QFilePreview

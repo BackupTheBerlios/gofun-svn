@@ -28,6 +28,7 @@ class QLabel;
 class QIconView;
 class QProgressBar;
 class QGridLayout;
+class QLineEdit;
 class GofunIconItem;
 class GofunIconLoadThread;
 
@@ -55,6 +56,7 @@ class GofunIconDialog : public QDialog
 	void setStartIcon(const QString&);
 	void setStartDir(const QString&);
 		
+	static std::vector<GofunIconItemData*> icon_pool;
 	private slots:
 	void setSelectedIcon(QIconViewItem*);
 	void browseForIcon();
@@ -63,31 +65,46 @@ class GofunIconDialog : public QDialog
 	private:
 	void loadIcons();
 	void customEvent(QCustomEvent*);
+	void removeProgressBar();
+	void loadFromIconPool();
 	
 	QString start_dir;
 	QLabel* icon_preview;
 	QLabel* icon_file;
 	GofunAdjustAbleIconView* filter_view;
+	QLineEdit* filter_edit;
 	QProgressBar* load_progress;
 	QGridLayout* grid;
 	std::vector<GofunIconItem*> taken_icons;
 	
-	static std::vector<GofunIconItemData*> icon_pool;
-	GofunIconLoadThread* icon_loader;
-	
 friend class GofunIconLoadThread;
+friend class GofunIconLoad;
+};
+
+class GofunIconLoad : public QObject
+{
+	public:
+	static GofunIconLoad* get() { _instance ? _instance : _instance = new GofunIconLoad(); return _instance; }
+	~GofunIconLoad() { delete _instance; _instance = 0; }
+	void setInitiator(GofunIconDialog* _initiator) { initiator = _initiator; }
+	
+	private:
+	void customEvent(QCustomEvent*);
+	
+	GofunIconLoad() {};
+	
+	GofunIconDialog* initiator;
+	static GofunIconLoad* _instance;
 };
 
 class GofunIconLoadThread : public QThread
 {
 	public:
-	GofunIconLoadThread(GofunIconDialog* id) { icon_dialog = id; };
-	void setDead();
+	GofunIconLoadThread(GofunIconLoad* _icon_load) { icon_load = _icon_load; };
 	virtual void run();
 	
 	private:
-	GofunIconDialog* icon_dialog;
-	bool dead;
+	GofunIconLoad* icon_load;
 };
 
 struct GofunIconItemData
@@ -110,7 +127,8 @@ class GofunIconItem : public QIconViewItem
 enum
 {
 	IconItemEventID = 5555,
-	IconsLoadedEventID = 6666
+	IconsLoadedEventID = 6666,
+	IconTotalStepsEventID = 77777
 };
 
 class GofunIconItemDataEvent : public QCustomEvent
@@ -126,6 +144,14 @@ class GofunIconsLoadedEvent : public QCustomEvent
 {
 	public:
 	GofunIconsLoadedEvent() : QCustomEvent(IconsLoadedEventID) {}
+};
+
+class GofunIconTotalStepsEvent : public QCustomEvent
+{
+	public:
+	GofunIconTotalStepsEvent(int _total_steps) : QCustomEvent(IconTotalStepsEventID) , total_steps(_total_steps) {}
+	
+	int total_steps;
 };
 
 #endif

@@ -36,6 +36,8 @@
 #include "gofun_icon_dialog.h"
 #include "gofun_directory_browser.h"
 #include "gofun_desktop_entry_settings_widget.h"
+#include "gofun_parameter_edit.h"
+#include "gofun_list_popup.h"
  
 GofunApplicationItemSettings::GofunApplicationItemSettings()
 {	
@@ -45,26 +47,19 @@ GofunApplicationItemSettings::GofunApplicationItemSettings()
 	tabwidget->addTab(widget_main,tr("Main"));
 		
 	desw = new GofunDesktopEntrySettingsWidget(widget_main);
-	//QLineEdit* genre = new QLineEdit(widget_main);
 	command = new QLineEdit(widget_main);
 	command_button = new QToolButton(widget_main);
 	directory = new QLineEdit(widget_main);
 	dir_button = new QToolButton(widget_main);
 	grid->addMultiCellWidget(desw,0,0,0,2);
-	/*grid->addWidget(new QLabel(tr("Genre"),widget_main),1,0);
-	grid->addWidget(genre,1,1);
-	grid->addWidget(icon_button,3,2);*/
-	/*QLabel* sep = new QLabel(widget_main);
-	sep->setFrameStyle( QFrame::HLine | QFrame::Raised );
-	sep->setLineWidth(2);
-	sep->setMaximumHeight(4);
-	grid->addMultiCellWidget(sep,4,4,0,2);*/
 	grid->addWidget(new QLabel(tr("Command"),widget_main),1,0);
 	grid->addWidget(command,1,1);
 	grid->addWidget(command_button,1,2);
 	grid->addWidget(new QLabel(tr("Directory"),widget_main),2,0);
 	grid->addWidget(directory,2,1);
 	grid->addWidget(dir_button,2,2);
+	/*QSpacerItem* spacer = new QSpacerItem(1,1,QSizePolicy::Minimum, QSizePolicy::Expanding);
+	grid->addMultiCell(spacer,3,3,0,3);*/ //I'm not sure, if it looks better or worse.
 	
 	connect(command_button, SIGNAL(clicked()),this, SLOT(commandEditor()));
 	connect(dir_button, SIGNAL(clicked()),this, SLOT(dirDialog()));
@@ -73,7 +68,7 @@ GofunApplicationItemSettings::GofunApplicationItemSettings()
 	QWidget* widget_env = new QWidget(this);
 	tabwidget->addTab(widget_env,tr("Environment"));
 	
-	QGridLayout* grid_env = new QGridLayout(widget_env,1,3);
+	QGridLayout* grid_env = new QGridLayout(widget_env,1,4);
 	
 	envvars = new QListView(widget_env);
 	envvars->addColumn(tr("Name"));
@@ -83,32 +78,37 @@ GofunApplicationItemSettings::GofunApplicationItemSettings()
 	envadd = new QPushButton(tr("Add"), widget_env);
 	envrem = new QPushButton(tr("Remove"), widget_env);
 	envpre = new QPushButton(tr("Predefined"), widget_env);
-	grid_env->addMultiCellWidget(envvars,0,0,0,3);
-	grid_env->addWidget(envadd,1,0);
-	grid_env->addWidget(envrem,1,1);
+	envedit = new QPushButton(tr("Edit"), widget_env);
+	envedit->setEnabled(false);
+	grid_env->addMultiCellWidget(envvars,0,0,0,4);
+	grid_env->addWidget(envedit,1,0);
+	grid_env->addWidget(envadd,1,1);
+	grid_env->addWidget(envrem,1,2);
 	QSpacerItem* envspacer = new QSpacerItem(40,20,QSizePolicy::Expanding,QSizePolicy::Minimum);
-	grid_env->addItem(envspacer,1,2);
-	grid_env->addWidget(envpre,1,3);
+	grid_env->addItem(envspacer,1,3);
+	grid_env->addWidget(envpre,1,4);
 		
 	connect(envvars, SIGNAL(doubleClicked(QListViewItem*,const QPoint&,int)), SLOT(envItemEdit(QListViewItem*,const QPoint&,int)));
+	connect(envvars, SIGNAL(selectionChanged()),this,SLOT(editableEnvVar()));
 	connect(envadd, SIGNAL(clicked()), SLOT(addEnvVar()));
 	connect(envrem, SIGNAL(clicked()), SLOT(remEnvVar()));
 	connect(envpre, SIGNAL(clicked()), this, SLOT(envPredefinedPopup()));
+	connect(envedit, SIGNAL(clicked()), this, SLOT(envItemEdit()));
 	
 	QWidget* widget_par = new QWidget(this);
 	tabwidget->addTab(widget_par,tr("Parameter"));
 	
 	QGridLayout* grid_par = new QGridLayout(widget_par,3,3);
-	tb_par = new QTable(0,4,widget_par);
+	tb_par = new QTable(0,3,widget_par);
 	QHeader* tb_h = tb_par->horizontalHeader();
-	tb_h->setLabel(0,"Flag");
-	tb_h->setLabel(1,"Values");
-	tb_h->setLabel(2,"Default");
-	tb_h->setLabel(3,"Prompt");
+	tb_h->setLabel(0,tr("Comment"));
+	tb_h->setLabel(1,tr("Prompt"));
+	tb_h->setLabel(2,"    ");
 	tb_par->adjustColumn(0);
 	tb_par->adjustColumn(1);
 	tb_par->adjustColumn(2);
-	tb_par->adjustColumn(3);
+	tb_par->setColumnReadOnly(0,true);
+	tb_par->setColumnStretchable(0,true);
 	paradd = new QPushButton(tr("Add"), widget_par);
 	parrem = new QPushButton(tr("Remove"), widget_par);	
 	
@@ -153,22 +153,22 @@ void GofunApplicationItemSettings::envItemEditInterpreted(const QString& string)
 
 void GofunApplicationItemSettings::envPredefinedPopup()
 {
-	QPopupMenu* popup = new QPopupMenu;
+	GofunListPopup* popup = new GofunListPopup;
+	popup->addColumn(tr("Predefined environment variables"));
+	popup->header()->hide();
 	
 	QStringList envs = QStringList::split("\n",GofunMisc::shell_call("set | sed -e 's/=.*$//'"));
 	
-	int i = 0;
-	for(QStringList::Iterator it = envs.begin(); it != envs.end(); ++it, ++i)
-		popup->insertItem((*it),i);
+	for(QStringList::Iterator it = envs.begin(); it != envs.end(); ++it)
+		new QListViewItem(popup,(*it));
 	
-	connect(popup,SIGNAL(activated(int)),this,SLOT(envPredefinedPopupActivated(int)));
+	connect(popup,SIGNAL(clicked(QListViewItem*)),this,SLOT(envPredefinedPopupActivated(QListViewItem*)));
 	popup->popup(QCursor::pos());
 }
 
-void GofunApplicationItemSettings::envPredefinedPopupActivated(int id)
+void GofunApplicationItemSettings::envPredefinedPopupActivated(QListViewItem* item)
 {
-	QStringList envs = QStringList::split("\n",GofunMisc::shell_call("set | sed -e 's/=.*$//'"));
-	addEnvVar(envs[id],"$"+envs[id]);
+	addEnvVar(item->text(0),"$"+item->text(0));
 }
 
 void GofunApplicationItemSettings::commandEditor()
@@ -183,24 +183,44 @@ void GofunApplicationItemSettings::addParRow()
 {
 	tb_par->insertRows(tb_par->numRows());
 	tb_par->setItem(tb_par->numRows()-1,0,new QTableItem(tb_par,QTableItem::WhenCurrent,""));
-	QPushButton* par_valedit_bt = new QPushButton(tr("Edit"),tb_par);
-	connect(par_valedit_bt,SIGNAL(clicked()),this,SLOT(parValEditDialog()));
+	QPushButton* par_edit_bt = new QPushButton(tr("Edit"),tb_par);
+	connect(par_edit_bt,SIGNAL(clicked()),this,SLOT(parEditDialog()));
+
+	tb_par->setItem(tb_par->numRows()-1,1,new QCheckTableItem(tb_par,""));
+	tb_par->setCellWidget(tb_par->numRows()-1,2,par_edit_bt);
 	
-	tb_par->setCellWidget(tb_par->numRows()-1,1,par_valedit_bt);
-	QStringList* sl = new QStringList;
-	tb_par->setItem(tb_par->numRows()-1,2,new QComboTableItem(tb_par,*sl));
-	tb_par->setItem(tb_par->numRows()-1,3,new QCheckTableItem(tb_par,""));
+	par_data.push_back(GofunParameterData());
 }
 
-void GofunApplicationItemSettings::parValEditDialog()
+void GofunApplicationItemSettings::parEditDialog()
 {
-	GofunListDialog* dialog = new GofunListDialog();
-	dialog->exec();
+	const QWidget* widget = dynamic_cast<const QWidget*>(sender());
+	int y = widget->y() + dynamic_cast<QWidget*>(widget->parent())->y();
+	int row = tb_par->rowAt(y);
+	
+	GofunParameterEdit* par_edit = new GofunParameterEdit();
+	par_edit->setParameterData(par_data[row]);
+	if(par_edit->exec() == QDialog::Accepted)
+	{
+		par_data[row] = par_edit->getParameterData();
+		tb_par->item(row,0)->setText(par_data[row].Comment);
+		dynamic_cast<QCheckTableItem*>(tb_par->item(row,1))->setChecked(GofunMisc::stringToBool(par_data[row].Prompt));
+		tb_par->updateCell(row,0);
+		tb_par->updateCell(row,1);
+	}
 }
 
 void GofunApplicationItemSettings::remParRow()
 {
 	tb_par->removeRow(tb_par->currentRow());
+	
+	if(tb_par->numRows() > 1)
+	{
+		QValueList<GofunParameterData>::Iterator it = par_data.at(tb_par->currentRow());
+		par_data.erase(it);
+	}
+	else
+		par_data.clear();
 }
 
 void GofunApplicationItemSettings::userChkToggled(bool b)
@@ -269,6 +289,11 @@ void GofunApplicationItemSettings::envItemEdit(QListViewItem* item,const QPoint&
 		item->setText(1,value_le->text());
 		item->setText(2,GofunMisc::shell_call("echo -n "+value_le->text()));
 	}
+}
+
+void GofunApplicationItemSettings::envItemEdit()
+{
+	envItemEdit(envvars->selectedItem(),QPoint(),0);
 }
 
 void GofunApplicationItemSettings::iconDialog()
@@ -344,14 +369,11 @@ void GofunApplicationItemSettings::apply()
 		data()->X_GoFun_Env.clear();
 	}
 	data()->X_GoFun_Parameter.clear();
-	if(tb_par->numRows() > 0)
+	int i = 0;
+	for(QValueList<GofunParameterData>::Iterator it = par_data.begin(); it != par_data.end(); ++it, ++i)
 	{
-		for(int i = 0; i < tb_par->numRows(); ++i)
-		{
-			data()->X_GoFun_Parameter[i].Flag = tb_par->item(i,0)->text();
-			data()->X_GoFun_Parameter[i].Default_Value = dynamic_cast<QComboTableItem*>(tb_par->item(i,2))->currentText();
-			data()->X_GoFun_Parameter[i].Prompt = GofunMisc::boolToString(dynamic_cast<QCheckTableItem*>(tb_par->item(i,3))->isChecked());
-		}
+		(*it).Prompt = GofunMisc::boolToString(dynamic_cast<QCheckTableItem*>(tb_par->item(i,1))->isChecked());
+		data()->X_GoFun_Parameter[i] = (*it);
 	}
 	if(user_chk->isChecked())
 	{
@@ -401,17 +423,17 @@ void GofunApplicationItemSettings::load(GofunApplicationItem* _item)
 	{
 		for(std::map<int,GofunParameterData>::iterator it = data()->X_GoFun_Parameter.begin(); it != data()->X_GoFun_Parameter.end(); ++it)
 		{
+			par_data.push_back((*it).second);
+		
 			tb_par->insertRows(tb_par->numRows());
-			tb_par->setItem(tb_par->numRows()-1,0,new QTableItem(tb_par,QTableItem::WhenCurrent,(*it).second.Flag));
-			QPushButton* par_valedit_bt = new QPushButton(tr("Edit"),tb_par);
-			connect(par_valedit_bt,SIGNAL(clicked()),this,SLOT(parValEditDialog()));
-	
-			tb_par->setCellWidget(tb_par->numRows()-1,1,par_valedit_bt);
-			QStringList* sl = new QStringList((*it).second.Values);
-			tb_par->setItem(tb_par->numRows()-1,2,new QComboTableItem(tb_par,*sl));
-			dynamic_cast<QComboTableItem*>(tb_par->item(tb_par->numRows()-1,2))->setCurrentItem((*it).second.Default_Value);
-			tb_par->setItem(tb_par->numRows()-1,3,new QCheckTableItem(tb_par,""));
-			dynamic_cast<QCheckTableItem*>(tb_par->item(tb_par->numRows()-1,3))->setChecked(GofunMisc::stringToBool((*it).second.Prompt));
+			tb_par->setItem(tb_par->numRows()-1,0,new QTableItem(tb_par,QTableItem::WhenCurrent,(*it).second.Comment));
+
+			tb_par->setItem(tb_par->numRows()-1,1,new QCheckTableItem(tb_par,""));
+			dynamic_cast<QCheckTableItem*>(tb_par->item(tb_par->numRows()-1,1))->setChecked(GofunMisc::stringToBool((*it).second.Prompt));
+			
+			QPushButton* par_edit_bt = new QPushButton(tr("Edit"),tb_par);
+			tb_par->setCellWidget(tb_par->numRows()-1,2,par_edit_bt);
+			connect(par_edit_bt,SIGNAL(clicked()),this,SLOT(parEditDialog()));
 		}
 	}
 }
@@ -420,5 +442,13 @@ void GofunApplicationItemSettings::load(GofunApplicationItem* _item)
 GofunApplicationEntryData* GofunApplicationItemSettings::data()
 {
 	return dynamic_cast<GofunApplicationItem*>(item)->data();
+}
+
+void GofunApplicationItemSettings::editableEnvVar()
+{
+	if(envvars->selectedItem())
+		envedit->setEnabled(true);
+	else
+		envedit->setEnabled(false);
 }
 

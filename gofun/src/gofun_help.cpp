@@ -26,6 +26,7 @@
 #include <qsimplerichtext.h>
 #include <qimage.h>
 #include <qlabel.h>
+#include <qurl.h>
 
 #include "gofun_help.h"
 
@@ -80,6 +81,7 @@ GofunHelp::GofunHelp()
 	connect(http,SIGNAL(requestFinished(int,bool)),this,SLOT(httpData(int,bool)));
 	
 	base_url = "http://gofun.berlios.de/tipiwiki/";
+	host = "www.berlios.de";
 	textbrowser->setSource( "index.php");
 }
 
@@ -98,9 +100,17 @@ void GofunHelp::httpData(int id, bool error)
 }
 
 void GofunHelp::openLink(const QString& link)
-{
-	http->setHost("www.berlios.de");
-	http->get(base_url + link);
+{;
+	QString final_link = link;
+	if(link.find("http") == 0)
+	{
+		base_url = link;
+		base_url.remove(link.findRev("/"),link.length()-link.findRev("/"));
+		final_link.remove(0,link.findRev("/"));
+		host = QUrl(link).host();
+	}
+	http->setHost(host);
+	http->get(base_url + final_link);
 }
 
 void GofunHelp::print()
@@ -163,6 +173,7 @@ const QMimeSource* GofunMimeSourceFactory::data(const QString& abs_name) const
 			return r;
 		}
 	
+		
 		http->setHost("www.berlios.de");
 		http->get(abs_name);
 		
@@ -174,13 +185,14 @@ const QMimeSource* GofunMimeSourceFactory::data(const QString& abs_name) const
 		else
 		{
 			++image_countdown[http->currentRequest().path()];
-		}		
+		}
 	}
-	const QMimeSource * r = QMimeSourceFactory::data( abs_name );
-	if(abs_name.contains("index.php"))
+	else //if(abs_name.contains("index.php"))
 	{
 		p_gofun_help->openLink(abs_name);
 	}
+	
+	const QMimeSource * r = QMimeSourceFactory::data( abs_name );
 	return r;
 }
 

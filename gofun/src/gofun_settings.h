@@ -69,6 +69,7 @@ public slots:
 
 private slots:
 	void costumColorDialog();
+	void directoryDialog();
 private:
 	virtual void save();
 	virtual void apply();

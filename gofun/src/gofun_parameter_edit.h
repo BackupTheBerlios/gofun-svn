@@ -19,41 +19,33 @@
  ***************************************************************************/
 
 #include <qdialog.h>
-#include <qtextedit.h>
-#include <qlistview.h>
 
-#ifndef GOFUN_COMMAND_EDITOR
-#define GOFUN_COMMAND_EDITOR
+#include "gofun_data.h"
 
-class GofunExecutableBrowser : public QDialog
+class QLineEdit;
+class QComboBox;
+class GofunListDialog;
+ 
+#ifndef GOFUN_PARAMETER_EDIT
+#define GOFUN_PARAMETER_EDIT
+
+class GofunParameterEdit : public QDialog
 {
 	Q_OBJECT
-	public:
-	GofunExecutableBrowser();
-	QString getExecutable();
-	
-};
 
-class GofunCommandEditor : public QDialog
-{
-	Q_OBJECT
 	public:
-	GofunCommandEditor();
-	void setCommand(const QString&);
-	QString command();
-	
-	private slots:
-	void commandExpand();
-	void commandCompletion(QListViewItem*);
-	void test();
-	void browseForDirectory();
-	void browseForExecutable();
-	void browseForFile();
+	GofunParameterEdit();
+	void setParameterData(const GofunParameterData&);
+	GofunParameterData getParameterData();
 	
 	private:
-	QTextEdit* text;
-	QString cmd;
+	QLineEdit* flag;
+	QLineEdit* comment;
+	GofunListDialog* values;
+	QComboBox* default_value;
+	QComboBox* type;
+	
+	GofunParameterData par_data;
 };
 
 #endif
-

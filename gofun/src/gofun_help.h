@@ -51,6 +51,7 @@ class GofunHelp : public QDialog
 	QPushButton* close_bt;
 	QHttp* http;
 	QString base_url;
+	QString host;
 
 	friend class GofunMimeSourceFactory;
 };

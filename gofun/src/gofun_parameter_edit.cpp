@@ -18,40 +18,59 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qlineedit.h>
-#include <qtoolbutton.h>
-#include <qlayout.h>
 #include <qlabel.h>
+#include <qlineedit.h>
+#include <qlayout.h>
+#include <qpushbutton.h>
+#include <qcombobox.h>
 
-#include "gofun_desktop_entry_settings_widget.h"
+#include "gofun_parameter_edit.h"
+#include "gofun_list_dialog.h"
 
-GofunDesktopEntrySettingsWidget::GofunDesktopEntrySettingsWidget(QWidget* parent) : QFrame(parent)
+GofunParameterEdit::GofunParameterEdit()
 {
-	setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Fixed);
-
-	QGridLayout* grid = new QGridLayout(this,3,3);
-	grid->layout()->setMargin(3);
-	grid->layout()->setSpacing(1);
+	QGridLayout* grid = new QGridLayout(this);
+	QGridLayout* grid_paredit = new QGridLayout();
 	
-	caption = new QLineEdit(this);
+	flag = new QLineEdit(this);
+	
 	comment = new QLineEdit(this);
-	icon_button = new QToolButton(this);
-	icon_button->setFixedWidth(32);
-	icon_button->setFixedHeight(32);
-	QToolButton* more = new QToolButton(Qt::RightArrow,this);
-	more->setFixedHeight(7);
+	default_value = new QComboBox(this);
+	values = new GofunListDialog;
+	values->reparent(this,QPoint());
+
+	QPushButton* ok_button = new QPushButton(tr("Ok"),this);
+	QPushButton* cancel_button = new QPushButton(tr("Cancel"),this);
 	
-	connect(more,SIGNAL(clicked()),this,SLOT(showMoreSettings()));
+	connect(ok_button,SIGNAL(clicked()),this,SLOT(accept()));
+	connect(cancel_button,SIGNAL(clicked()),this,SLOT(reject()));
 	
-	grid->addWidget(icon_button,0,0);
-	grid->addWidget(new QLabel(tr("Caption"),this),0,1);
-	grid->addWidget(caption,0,2);
-	grid->addWidget(new QLabel(tr("Comment"),this),1,0);
-	grid->addMultiCellWidget(comment,1,1,1,2);
-	grid->addMultiCellWidget(more,2,2,0,2);
+	grid_paredit->addWidget(new QLabel(tr("Flag"),this),0,0);
+	grid_paredit->addWidget(flag,0,1);
+	grid_paredit->addWidget(new QLabel(tr("Comment"),this),1,0);
+	grid_paredit->addWidget(comment,1,1);
+	grid_paredit->addWidget(new QLabel(tr("Default"),this),2,0);
+	grid_paredit->addWidget(default_value,2,1);
+	grid_paredit->addMultiCellWidget(values,3,3,0,1);
+	
+	grid->addMultiCellLayout(grid_paredit,0,0,0,1);
+	grid->addWidget(ok_button,1,0);
+	grid->addWidget(cancel_button,1,1);
 }
 
-void GofunDesktopEntrySettingsWidget::showMoreSettings()
+void GofunParameterEdit::setParameterData(const GofunParameterData& _par_data)
 {
+	par_data = _par_data;
+	flag->setText(par_data.Flag);
+	comment->setText(par_data.Comment);
 }
+
+GofunParameterData GofunParameterEdit::getParameterData()
+{
+	par_data.Comment = comment->text();
+	par_data.Flag = flag->text();
+
+	return par_data;
+}
+
 

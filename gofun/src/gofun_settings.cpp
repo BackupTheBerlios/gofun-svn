@@ -30,6 +30,7 @@
 #include "gofun_settings.h" 
 #include "gofun_widget.h"
 #include "gofun_misc.h"
+#include "gofun_directory_browser.h"
 
 GofunSettingsContainer* GofunSettingsContainer::_instance = NULL;
 
@@ -132,10 +133,15 @@ GofunSettings::GofunSettings()
 	
 	terminal = new QLineEdit(widget_general);
 	directory = new QLineEdit(widget_general);
+	QToolButton* directory_button = new QToolButton(widget_general);
 	filemanager = new QLineEdit(widget_general);
 	browser = new QLineEdit(widget_general);
+	
+	connect(directory_button,SIGNAL(clicked()),this,SLOT(directoryDialog()));
+	
 	grid_general->addWidget(new QLabel(tr("Directory"),widget_general),0,0);
 	grid_general->addWidget(directory,0,1);
+	grid_general->addWidget(directory_button,0,2);
 	grid_general->addWidget(new QLabel(tr("Terminal"),widget_general),1,0);
 	grid_general->addWidget(terminal,1,1);
 	grid_general->addWidget(new QLabel(tr("Filemanager"),widget_general),2,0);
@@ -177,6 +183,17 @@ GofunSettings::GofunSettings()
 	grid_laf->addWidget(style_group,0,0);
 	grid_laf->addWidget(col_group,1,0);
 	grid_laf->addWidget(save_main_geom,2,0);
+}
+
+void GofunSettings::directoryDialog()
+{
+	GofunDirectoryBrowser dir_browser;
+	if(!directory->text().isEmpty())
+		dir_browser.setStartDirectory(directory->text());
+	else
+		dir_browser.setStartDirectory(QDir::homeDirPath());
+	if(dir_browser.exec() == QDialog::Accepted)
+		directory->setText(dir_browser.selected());
 }
 
 void GofunSettings::save()

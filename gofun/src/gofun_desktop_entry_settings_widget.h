@@ -28,6 +28,8 @@ class QLineEdit;
 
 class GofunDesktopEntrySettingsWidget : public QFrame
 {
+	Q_OBJECT
+
 	public:
 	GofunDesktopEntrySettingsWidget(QWidget*);
 	
@@ -35,6 +37,9 @@ class GofunDesktopEntrySettingsWidget : public QFrame
 	QString icon;
 	QLineEdit* caption;
 	QLineEdit* comment;
+	
+	public slots:
+	void showMoreSettings();
 };
 
 #endif

@@ -41,6 +41,7 @@ GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconView
 {
 	m_data = new GofunDesktopEntryData();
 	toolTip = NULL;
+	readonly = false;
 }
 
 GofunItem::~GofunItem()
@@ -73,14 +74,7 @@ void GofunItem::deleteEntry()
 
 void GofunItem::deleteEntryFile()
 {
-	QProcess proc;
-	proc.addArgument("rm");
-	proc.addArgument("-f");
-	proc.addArgument(data()->File);
-	proc.start();
-	while(proc.isRunning())
-	{
-	}
+	QFile::remove(data()->File);
 }
 
 void GofunItem::setData(GofunDesktopEntryData* d)
@@ -95,7 +89,10 @@ void GofunItem::loadIcon()
 {
 	QPixmap px = GofunMisc::get_icon(data()->Icon,32,32); //@todo: let the user choose the icon-size
 	if(!px.isNull())
+	{
 		setPixmap(px);
+		
+	}
 }
 
 void GofunItem::setToolTipText(const QString text)
@@ -186,7 +183,7 @@ void GofunItem::implementData()
 	if(!data()->Comment.isEmpty())
 		setToolTipText(data()->Comment);
 		
-	if(!data()->File.isEmpty() && QFile::exists(data()->File)  && GofunMisc::shell_call("[ -w '"+data()->File+"' ] && echo true").simplifyWhiteSpace() != "true")
+	if(!data()->File.isEmpty() && QFile::exists(data()->File)  && !QFileInfo(data()->File).isWritable())
 		readonly = true;
 	else
 		readonly = false;

@@ -52,6 +52,7 @@ void GofunLinkItemSettings::urlComposer()
 {
 	GofunURLComposer* url_composer = new GofunURLComposer;
 	url_composer->setStartURL(url->text());
+	url_composer->setLinkItem(dynamic_cast<GofunLinkItem*>(item));
 	if(url_composer->exec() == QDialog::Accepted)
 		url->setText(url_composer->getURL());
 }

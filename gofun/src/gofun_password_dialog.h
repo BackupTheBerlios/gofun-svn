@@ -19,41 +19,26 @@
  ***************************************************************************/
 
 #include <qdialog.h>
-#include <qtextedit.h>
-#include <qlistview.h>
+ 
+#ifndef GOFUN_PASSWORD_DIALOG
+#define GOFUN_PASSWORD_DIALOG
 
-#ifndef GOFUN_COMMAND_EDITOR
-#define GOFUN_COMMAND_EDITOR
+class QLineEdit;
+class QLabel;
 
-class GofunExecutableBrowser : public QDialog
+class GofunPasswordDialog : public QDialog
 {
 	Q_OBJECT
-	public:
-	GofunExecutableBrowser();
-	QString getExecutable();
 	
-};
-
-class GofunCommandEditor : public QDialog
-{
-	Q_OBJECT
 	public:
-	GofunCommandEditor();
-	void setCommand(const QString&);
-	QString command();
-	
-	private slots:
-	void commandExpand();
-	void commandCompletion(QListViewItem*);
-	void test();
-	void browseForDirectory();
-	void browseForExecutable();
-	void browseForFile();
+	GofunPasswordDialog(WFlags f = 0);
+	void setUser(const QString&);
+	QString getPassword();	
 	
 	private:
-	QTextEdit* text;
-	QString cmd;
+	QLabel* description;
+	QLineEdit* password;
+	QString user;
 };
 
 #endif
-

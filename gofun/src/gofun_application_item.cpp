@@ -193,6 +193,7 @@ void GofunApplicationItem::executeCommand(ExecuteOption* option)
 		QString spa_file = saveProcArguments(&proc);
 		
 		QProcess proc_gosu;
+		
 		proc_gosu.addArgument("gosu");
 		proc_gosu.addArgument(data()->X_GoFun_User);
 		proc_gosu.addArgument("--color");
@@ -271,8 +272,8 @@ QPopupMenu* GofunApplicationItem::rightClickPopup(const QPoint& pos)
 	popup->insertItem(tr("Start"),PID_Execute,0);
 	popup->insertSeparator(1);
 	popup->insertItem(tr("\" in Terminal"),PID_Execute_in_terminal,2);
-	popup->insertItem(tr("Open directory"),PID_Open_directory,3);
-	popup->insertItem(tr("Start in new XServer"),PID_Execute_with_xinit,4);
+	popup->insertItem(tr("\" in new XServer"),PID_Execute_with_xinit,3);
+	popup->insertItem(tr("Open directory"),PID_Open_directory,4);
 	popup->insertItem(tr("Customized start"),PID_Costumized_start,5);
 
 	popup->popup(pos);

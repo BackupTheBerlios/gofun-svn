@@ -18,42 +18,53 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qdialog.h>
-#include <qtextedit.h>
-#include <qlistview.h>
+#include <qlayout.h>
+#include <qlabel.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
 
-#ifndef GOFUN_COMMAND_EDITOR
-#define GOFUN_COMMAND_EDITOR
+#include "gofun_password_dialog.h"
 
-class GofunExecutableBrowser : public QDialog
+GofunPasswordDialog::GofunPasswordDialog(WFlags f) : QDialog(0,0,0,f)
 {
-	Q_OBJECT
-	public:
-	GofunExecutableBrowser();
-	QString getExecutable();
-	
-};
+	setCaption(tr("Password dialog"));
+	setModal(true);
 
-class GofunCommandEditor : public QDialog
+	QGridLayout* grid = new QGridLayout(this);
+	grid->layout()->setSpacing(5);
+	grid->layout()->setMargin(5);
+	
+	password = new QLineEdit(this);
+	password->setEchoMode(QLineEdit::Password);
+	
+	QPushButton* ok_button = new QPushButton(tr("Ok"),this);
+	QPushButton* cancel_button = new QPushButton(tr("Cancel"),this);
+	
+	connect(ok_button,SIGNAL(clicked()),this,SLOT(accept()));
+	connect(cancel_button,SIGNAL(clicked()),this,SLOT(reject()));
+	
+	description = new QLabel(tr("Enter password:"),this);
+	description->setTextFormat(Qt::RichText);
+	
+	grid->addMultiCellWidget(description,0,0,0,2);
+	grid->addMultiCellWidget(password,1,1,0,2);
+	QSpacerItem* spacer = new QSpacerItem(40,20,QSizePolicy::Expanding,QSizePolicy::Minimum);
+	grid->addItem(spacer,2,0);
+	grid->addWidget(ok_button,2,1);
+	grid->addWidget(cancel_button,2,2);
+	
+	
+}
+
+void GofunPasswordDialog::setUser(const QString& _user)
 {
-	Q_OBJECT
-	public:
-	GofunCommandEditor();
-	void setCommand(const QString&);
-	QString command();
+	user = _user;
+	description->setText(tr("Enter your <b>"+user+"</b> password:"));
 	
-	private slots:
-	void commandExpand();
-	void commandCompletion(QListViewItem*);
-	void test();
-	void browseForDirectory();
-	void browseForExecutable();
-	void browseForFile();
-	
-	private:
-	QTextEdit* text;
-	QString cmd;
-};
+}
 
-#endif
+QString GofunPasswordDialog::getPassword()
+{
+	return password->text();
+}
 

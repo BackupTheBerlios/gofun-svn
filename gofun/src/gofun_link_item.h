@@ -23,6 +23,8 @@
 #ifndef GOFUN_LINK_ITEM
 #define GOFUN_LINK_ITEM
 
+class GofunURLComposer;
+
 enum
 {
 	PID_OpenLink = PID_Delete + 1
@@ -41,6 +43,7 @@ class GofunLinkItem : public GofunItem
 	virtual void editEntry();
 	void performDefaultAction();
 	void open();
+	void open(const QString&);
 	
 	static void createNewItem(GofunCatButton*);
 	
@@ -51,6 +54,8 @@ class GofunLinkItem : public GofunItem
 	
 	private:
 	GofunLinkEntryData* m_data;
+	
+friend class GofunURLComposer;
 };
 
 #endif

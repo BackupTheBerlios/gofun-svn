@@ -32,6 +32,7 @@
 #include "gofun_misc.h"
 
 std::vector<GofunIconItemData*> GofunIconDialog::icon_pool;
+GofunIconLoad* GofunIconLoad::_instance = NULL;
 
 GofunIconDialog::GofunIconDialog()
 {
@@ -62,8 +63,9 @@ GofunIconDialog::GofunIconDialog()
 	QGridLayout* grid_filter = new QGridLayout(gb_icon_filter);
 	grid_filter->setSpacing( 6 );
 	grid_filter->setMargin( 5) ;
-	QLineEdit* filter_edit = new QLineEdit(gb_icon_filter);
+	filter_edit = new QLineEdit(gb_icon_filter);
 	filter_view = new GofunAdjustAbleIconView(gb_icon_filter);
+	filter_view->setMinimumHeight(200);
 	
 	connect(filter_edit,SIGNAL(textChanged(const QString& )), this,SLOT(updateFilterView(const QString&)));
 	connect(filter_view,SIGNAL(doubleClicked(QIconViewItem*)),this,SLOT(setSelectedIcon(QIconViewItem*)));
@@ -88,22 +90,29 @@ GofunIconDialog::GofunIconDialog()
 	
 	if(icon_pool.empty())
 	{
+		GofunIconLoad::get()->setInitiator(this);
 		load_progress = new QProgressBar(100,this);
 		grid->addWidget(load_progress,3,0);
-		GofunIconLoadThread* icon_loader = new GofunIconLoadThread(this);
+		GofunIconLoadThread* icon_loader = new GofunIconLoadThread(GofunIconLoad::get());
 		icon_loader->start();
 	}
 	else
 	{
-		for(std::vector<GofunIconItemData*>::iterator it = icon_pool.begin(); it != icon_pool.end(); ++it)
-			new GofunIconItem(filter_view,(*it)->text,(*it)->pixmap,(*it)->file);
+		loadFromIconPool();
 	}
+}
+
+void GofunIconDialog::loadFromIconPool()
+{
+	for(std::vector<GofunIconItemData*>::iterator it = icon_pool.begin(); it != icon_pool.end(); ++it)
+		new GofunIconItem(filter_view,(*it)->text,(*it)->pixmap,(*it)->file);
+	updateFilterView(filter_edit->text());
 }
 
 GofunIconDialog::~GofunIconDialog()
 {
-	//icon_loader->setDead();
-	//icon_loader->terminate();
+	GofunIconLoad::get()->setInitiator(0);
+	delete filter_view;
 }
 
 void GofunIconDialog::browseForIcon()
@@ -136,9 +145,9 @@ void GofunIconLoadThread::run() //@TODO: Fix segfault on deletion of the dialog 
 {
 	QStringList icon_paths = QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps -path \\*32\\*.png"));
 	icon_paths += QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps -maxdepth 1 -path \\*.png"));
-	icon_dialog->load_progress->setTotalSteps(icon_paths.count());
+	QApplication::postEvent(icon_load,new GofunIconTotalStepsEvent(icon_paths.count()));
 	QFileInfo fi;
-	for(QStringList::Iterator it = icon_paths.begin(); it != icon_paths.end() && icon_dialog; ++it)
+	for(QStringList::Iterator it = icon_paths.begin(); it != icon_paths.end(); ++it)
 	{
 		fi.setFile((*it));
 		QImage pix((*it));
@@ -146,16 +155,11 @@ void GofunIconLoadThread::run() //@TODO: Fix segfault on deletion of the dialog 
 		{
 			pix = pix.scale(48,48);
 		}
-		QApplication::postEvent(icon_dialog,new GofunIconItemDataEvent(fi.baseName(),pix,(*it)));
+		QApplication::postEvent(icon_load,new GofunIconItemDataEvent(fi.baseName(),pix,(*it)));
 		usleep(20);
 	}
 	
-	QApplication::postEvent(icon_dialog,new GofunIconsLoadedEvent());
-}
-
-void GofunIconLoadThread::setDead()
-{
-	QThread::exit();
+	QApplication::postEvent(icon_load,new GofunIconsLoadedEvent());
 }
 
 void GofunIconDialog::customEvent(QCustomEvent* event)
@@ -166,16 +170,58 @@ void GofunIconDialog::customEvent(QCustomEvent* event)
 	    QPixmap pix;
 	    pix.convertFromImage(icon_event->data.pixmap);
 	    icon_pool.push_back(new GofunIconItemData(icon_event->data.pixmap,icon_event->data.text,icon_event->data.file));
-	    new GofunIconItem(filter_view,icon_event->data.text,icon_event->data.pixmap,icon_event->data.file);
+	    GofunIconItem* item = new GofunIconItem(filter_view,icon_event->data.text,icon_event->data.pixmap,icon_event->data.file);
+	    if(!(filter_edit->text().isEmpty() || item->text().contains(filter_edit->text(),false) != 0))
+	    {
+			filter_view->takeItem(item);
+			taken_icons.push_back(dynamic_cast<GofunIconItem*>(item));
+	    }
 	    
 	    if(load_progress)
-	    	load_progress->setProgress(filter_view->count());
+	    	load_progress->setProgress(load_progress->progress()+1);
         }
 	else if ( event->type() == static_cast<QEvent::Type>(IconsLoadedEventID) )
 	{
 		grid->remove(load_progress);
 		delete load_progress;
 		load_progress = 0;
+	}
+}
+
+void GofunIconLoad::customEvent(QCustomEvent* event)
+{
+        if ( event->type() == static_cast<QEvent::Type>(IconItemEventID) )
+	{ 
+            GofunIconItemDataEvent* icon_event = dynamic_cast<GofunIconItemDataEvent*>(event);
+	    QPixmap pix;
+	    pix.convertFromImage(icon_event->data.pixmap);
+	    GofunIconDialog::icon_pool.push_back(new GofunIconItemData(icon_event->data.pixmap,icon_event->data.text,icon_event->data.file));
+	    
+	    if(initiator && initiator->load_progress)
+	    	initiator->load_progress->setProgress(initiator->load_progress->progress()+1);
+	    /*GofunIconItem* item = new GofunIconItem(filter_view,icon_event->data.text,icon_event->data.pixmap,icon_event->data.file);
+	    if(!(filter_edit->text().isEmpty() || item->text().contains(filter_edit->text(),false) != 0))
+	    {
+			filter_view->takeItem(item);
+			taken_icons.push_back(dynamic_cast<GofunIconItem*>(item));
+	    }
+	    
+	    if(load_progress)
+	    	load_progress->setProgress(load_progress->progress()+1);*/
+        }
+	else if ( event->type() == static_cast<QEvent::Type>(IconTotalStepsEventID) )
+	{
+		GofunIconTotalStepsEvent* icon_event = dynamic_cast<GofunIconTotalStepsEvent*>(event);
+		if(initiator)
+			initiator->load_progress->setTotalSteps(icon_event->total_steps);
+	}	
+	else if ( event->type() == static_cast<QEvent::Type>(IconsLoadedEventID) )
+	{
+		if(initiator)
+		{
+			initiator->loadFromIconPool();
+			initiator->removeProgressBar();
+		}
 	}
 }
 
@@ -193,11 +239,8 @@ void GofunIconDialog::updateFilterView( const QString & filter)
 		next = item->nextItem();
 		if(!(filter.isEmpty() || item->text().contains(filter,false) != 0))
 		{
-			if(item->iconView() == filter_view)
-			{
-				filter_view->takeItem(item);
-				taken_icons.push_back(dynamic_cast<GofunIconItem*>(item));
-			}
+			filter_view->takeItem(item);
+			taken_icons.push_back(dynamic_cast<GofunIconItem*>(item));
 		}
 		item = next;
 	}
@@ -226,6 +269,16 @@ void GofunIconDialog::setStartIcon( const QString& _icon)
 {
 		icon_file->setText(_icon);
 		icon_preview->setPixmap(GofunMisc::get_icon(_icon));
+}
+
+void GofunIconDialog::removeProgressBar( )
+{
+	if(load_progress)
+	{
+		grid->remove(load_progress);
+		delete load_progress;
+		load_progress = 0;
+	}
 }
 
 
