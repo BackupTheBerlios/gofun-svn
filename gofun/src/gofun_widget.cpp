@@ -153,7 +153,8 @@ void GofunWidget::reloadData()
 
 void GofunWidget::unloadData()
 {
-	for(int i = 1; i < cats_bg->count()+1 && cats_bg->count() > 1; ++i)
+	int cats_bg_count = cats_bg->count();
+	for(int i = 1; i < cats_bg_count+1 && cats_bg_count > 1; ++i)
 	{
 		GofunCatButton* cb = dynamic_cast<GofunCatButton*>(cats_bg->find(i));
 		cats_bg->remove(cb);
@@ -358,7 +359,7 @@ void GofunWidget::executeItem(QIconViewItem* item,const QString& option)
 void GofunWidget::openDirectoryItem(GofunItem* item)
 {
 	QProcess proc(GSC::get()->filemanager_cmd,this);
-	proc.addArgument(GofunMisc::ext_filestring(item->data()->Path));
+	proc.addArgument((GofunMisc::ext_filestring(item->data()->Path)).simplifyWhiteSpace());
 	if(!proc.start())
 	{
 		std::cout<<tr("Execution of directory viewer failed. :(\n");
