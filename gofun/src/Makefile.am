@@ -27,15 +27,16 @@ gofun_CPPFLAGS = -DQT_THREAD_SUPPORT
 
 gofun_LDADD = $(QT_LDFLAGS) $(QT_LIB)
 noinst_HEADERS = gofun_widget.h gofun_item.h gofun_item_settings.h \
-													gofun_settings_dlg.h gofun_cat_button.h gofun_iconview.h gofun_cat_settings.h \
-											gofun_costum_start.h 		gofun_settings.h gofun.h gofun_data.h gofun_misc.h gofun_help.h \
-											gofun_about.h 		gofun_desktop_object.h gofun_list_dialog.h gofun_command_editor.h \
-											gofun_item_wizard.h 		gofun_parameter_prompt.h gofun_settings_wizard.h \
-											gofun_application_item.h 		gofun_application_item_settings.h gofun_icon_dialog.h \
-										gofun_directory_browser.h gofun_fsdevice_item.h gofun_link_item.h gofun_fsdevice_item_settings.h \
-									gofun_link_item_settings.h gofun_locale_string.h gofun_desktop_entry_settings_widget.h \
-						gofun_url_composer.h gofun_parameter_edit.h gofun_password_dialog.h gofun_list_popup.h \
-		gofun_executable_browser.h gofun_process_logger.h gofun_file_dialog_preview.h gofun_file_dialog.h
+														gofun_settings_dlg.h gofun_cat_button.h gofun_iconview.h gofun_cat_settings.h \
+												gofun_costum_start.h 		gofun_settings.h gofun.h gofun_data.h gofun_misc.h gofun_help.h \
+												gofun_about.h 		gofun_desktop_object.h gofun_list_dialog.h gofun_command_editor.h \
+												gofun_item_wizard.h 		gofun_parameter_prompt.h gofun_settings_wizard.h \
+												gofun_application_item.h 		gofun_application_item_settings.h gofun_icon_dialog.h \
+											gofun_directory_browser.h gofun_fsdevice_item.h gofun_link_item.h gofun_fsdevice_item_settings.h \
+										gofun_link_item_settings.h gofun_locale_string.h gofun_desktop_entry_settings_widget.h \
+							gofun_url_composer.h gofun_parameter_edit.h gofun_password_dialog.h gofun_list_popup.h \
+			gofun_executable_browser.h gofun_process_logger.h gofun_file_dialog_preview.h gofun_file_dialog.h \
+	gofun_process_problem_feedback.h
 	
 gofun_MOC = gofun_widget_moc.cpp
 
@@ -50,6 +51,7 @@ install-exec-local: gosu
 	$(MOC) -o $@ $<
 gosu_SOURCES = gosu.cpp gofun_password_dialog_moc.cpp gofun_password_dialog.cpp
 gosu_LDADD = $(QT_LIB) $(QT_LDFLAGS) -lcrypt
-golauncher_SOURCES = golauncher.cpp gofun_misc.cpp gofun_process_logger.cpp gofun_process_logger_moc.cpp
+golauncher_SOURCES = golauncher.cpp gofun_misc.cpp gofun_process_logger.cpp \
+	gofun_process_logger_moc.cpp gofun_process_problem_feedback.cpp
 golauncher_LDADD = $(QT_LDFLAGS) $(QT_LIB)
 

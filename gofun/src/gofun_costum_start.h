@@ -39,7 +39,7 @@ public slots:
 	virtual void load(GofunApplicationItem*);
 	
 private:
-
+	QLabel* icon;
 	QLabel* caption;
 	QLineEdit* command;
 	QLineEdit* directory;

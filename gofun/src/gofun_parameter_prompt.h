@@ -21,19 +21,53 @@
 #include <vector>
  
 #include <qdialog.h>
-#include <qlayout.h>
-#include <qcombobox.h>
 
 #include "gofun_data.h"
  
 #ifndef GOFUN_PARAMETER_PROMPT
 #define GOFUN_PARAMETER_PROMPT
 
-struct GofunSmallParameterData
+class QGridLayout;
+class QComboBox;
+class QSpinBox;
+class QSlider;
+class GofunDecimalSpinBox;
+
+struct GofunParameterPromptWidget : public QWidget
 {
-	QString Flag;
-	QString Value;
-	QComboBox* combo;
+	GofunParameterPromptWidget(QWidget*parent) : QWidget(parent) {};
+	virtual void setParameterData(const GofunParameterData& _par_data) { par_data = _par_data; }
+	virtual QString returnParameter() { return par_data.Flag + " " + par_data.Default_Value; }
+	GofunParameterData par_data;
+};
+
+struct GofunParameterStringPromptWidget : public GofunParameterPromptWidget
+{
+	GofunParameterStringPromptWidget(QWidget*);
+	void setParameterData(const GofunParameterData&);
+	QString returnParameter();
+	
+	QComboBox* value;
+};
+
+struct GofunParameterIntegerPromptWidget : public GofunParameterPromptWidget
+{
+	GofunParameterIntegerPromptWidget(QWidget*);
+	void setParameterData(const GofunParameterData&);
+	QString returnParameter();
+	
+	QSpinBox* value_spin;
+	QSlider* value_slider;
+};
+
+struct GofunParameterDecimalPromptWidget : public GofunParameterPromptWidget
+{
+	GofunParameterDecimalPromptWidget(QWidget*);
+	void setParameterData(const GofunParameterData&);
+	QString returnParameter();
+	
+	GofunDecimalSpinBox* value_spin;
+	QSlider* value_slider;
 };
 
 class GofunParameterPrompt : public QDialog
@@ -46,9 +80,8 @@ class GofunParameterPrompt : public QDialog
 	QString parameterString();
 	
 	private:
-	QGridLayout* grid;	
-	//std::vector<GofunParameterData*> parameter;
-	std::vector<GofunSmallParameterData> parameter;
+	QGridLayout* grid;
+	std::vector<GofunParameterPromptWidget*> parameter;
 };
 
 #endif

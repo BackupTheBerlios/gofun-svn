@@ -23,6 +23,7 @@
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
+#include <qfiledialog.h>
  
 #include "gofun_fsdevice_item_settings.h"
 #include "gofun_fsdevice_item.h"
@@ -95,7 +96,9 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 
 void GofunFSDeviceItemSettings::deviceDialog()
 {
-	
+	QString dev_str = QFileDialog::getOpenFileName("/dev/","*",this,"",tr("Select device"));
+	if(!dev_str.isNull())
+		device->setCurrentText(dev_str);
 }
 
 void GofunFSDeviceItemSettings::mountPointDirectoryDialog()

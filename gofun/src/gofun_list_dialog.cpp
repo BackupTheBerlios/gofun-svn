@@ -74,6 +74,7 @@ QStringList GofunListWidget::returnList()
 	{
 		_list += (*it).text(0);
 	}
+	return _list;
 }
 
 void GofunListWidget::fillList(const QStringList& _list)
@@ -82,17 +83,23 @@ void GofunListWidget::fillList(const QStringList& _list)
 	{
 		new QListViewItem(list,(*it));
 	}
+	
+	emit listChanged();
 }
 
 void GofunListWidget::add()
 {
 	QListViewItem* new_item = new QListViewItem(list,tr("Value"));
+	
+	emit listChanged();
 }
 
 void GofunListWidget::remove()
 {
 	if(list->selectedItem())
 		delete list->selectedItem();
+		
+	emit listChanged();
 }
 
 void GofunListWidget::down()
@@ -103,6 +110,8 @@ void GofunListWidget::down()
         return;
 
     list->currentItem()->moveItem(list->currentItem()->nextSibling()); 
+    
+	emit listChanged();
 }
 
 void GofunListWidget::up()
@@ -116,6 +125,8 @@ void GofunListWidget::up()
     while (item->nextSibling() != list->currentItem())
         item = item->nextSibling();
     item->moveItem( list->currentItem()); 
+
+	emit listChanged();
 }
 
 void GofunListWidget::updateValue(const QString& text)
@@ -124,6 +135,8 @@ void GofunListWidget::updateValue(const QString& text)
 		return;
 	
 	list->selectedItem()->setText(0,text);
+	
+	emit listChanged();
 }
 
 void GofunListWidget::updateEdit()

@@ -76,6 +76,7 @@ void GofunItemSettings::apply()
 	item->setText(data()->Name);
 	data()->Icon = desw->icon;
 	data()->Comment = desw->comment->text();
+	data()->GenericName = desw->generic_name;
 	if(!data()->Comment.isEmpty())
 		item->setToolTipText(data()->Comment);
 	if(data()->File.isEmpty())
@@ -111,6 +112,7 @@ void GofunItemSettings::load(GofunItem* _item)
 	desw->icon = data()->Icon;
 	desw->icon_button->setPixmap(item->pixmap()?*item->pixmap():0);
 	desw->comment->setText(data()->Comment);
+	desw->generic_name = data()->GenericName;
 	
 	if(item->isReadOnly())
 		apply_button->setEnabled(false);

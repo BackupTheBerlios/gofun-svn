@@ -21,7 +21,12 @@
 #include <qlabel.h>
 #include <qgroupbox.h>
 #include <qpushbutton.h>
- 
+#include <qlayout.h>
+#include <qcombobox.h>
+#include <qspinbox.h>
+#include <qslider.h>
+
+#include "gofun_parameter_edit.h"
 #include "gofun_parameter_prompt.h"
 
 GofunParameterPrompt::GofunParameterPrompt()
@@ -53,53 +58,130 @@ GofunParameterPrompt::GofunParameterPrompt()
 
 void GofunParameterPrompt::addParameter(GofunParameterData* pd)
 {
-	GofunSmallParameterData spd;
-	spd.Flag = pd->Flag;
-	spd.Value = pd->Default_Value;
-	
 	if(pd->Prompt != "true")
 	{
-		spd.combo = 0;
-		parameter.push_back(spd);
+		
+		//parameter.push_back(spd);
 		return;	
 	}
 	
 	QGroupBox* gb = new QGroupBox(1,Qt::Horizontal,pd->Comment + " ( " + tr("Flag") + ": " + pd->Flag + " )",this);
-	QComboBox* cb = new QComboBox(gb);
 	
-	grid->addWidget(gb,grid->numRows(),0);
-	cb->insertStringList(pd->Values);
-	if(!pd->Default_Value.isEmpty())
-	{
-		cb->setCurrentText(pd->Default_Value);
-	}
+	GofunParameterPromptWidget* ppw;
+	if(pd->Type == "String")
+		ppw = new GofunParameterStringPromptWidget(gb);
+	else if(pd->Type == "Integer")
+		ppw = new GofunParameterIntegerPromptWidget(gb);
+	else if(pd->Type == "Decimal")
+		ppw = new GofunParameterDecimalPromptWidget(gb);
 	else
-	{
-		if(cb->count() > 0)
-		{
-			cb->insertItem("");
-			cb->setCurrentText("");
-		}
-	}		
-	cb->setEditable(true);
+		ppw = new GofunParameterStringPromptWidget(gb);
 
-	spd.combo = cb;
-	parameter.push_back(spd);
+	ppw->setParameterData(*pd);
+	grid->addWidget(gb,grid->numRows(),0);
+
+	parameter.push_back(ppw);
 }
  
 QString GofunParameterPrompt::parameterString()
 {
 	QString parstr;
-	for(std::vector<GofunSmallParameterData>::iterator it = parameter.begin(); it != parameter.end(); ++it)
+	for(std::vector<GofunParameterPromptWidget*>::iterator it = parameter.begin(); it != parameter.end(); ++it)
 	{
-		if((*it).combo != 0)
-			(*it).Value = (*it).combo->currentText();
-		if(!(*it).Value.isEmpty())
-		{
-			parstr += " " + (*it).Flag;
-			parstr += " " + (*it).Value;
-		}
+		parstr += " " + (*it)->returnParameter();
 	}
 	return parstr;
+}
+
+GofunParameterStringPromptWidget::GofunParameterStringPromptWidget(QWidget* parent) : GofunParameterPromptWidget(parent)
+{
+	QGridLayout* grid = new QGridLayout(this);
+	value = new QComboBox(this);
+	value->setEditable(true);
+	
+	grid->addWidget(value,0,0);
+}
+
+void GofunParameterStringPromptWidget::setParameterData(const GofunParameterData& _par_data)
+{
+	GofunParameterPromptWidget::setParameterData(_par_data);
+	
+	value->insertStringList(par_data.Values);
+	value->setCurrentText(par_data.Default_Value);
+}
+
+GofunParameterIntegerPromptWidget::GofunParameterIntegerPromptWidget(QWidget* parent) : GofunParameterPromptWidget(parent)
+{
+	QGridLayout* grid = new QGridLayout(this);
+	value_spin = new QSpinBox(this);
+	
+	grid->addWidget(value_spin,0,1);
+}
+
+GofunParameterDecimalPromptWidget::GofunParameterDecimalPromptWidget(QWidget* parent) : GofunParameterPromptWidget(parent)
+{
+	QGridLayout* grid = new QGridLayout(this);
+	value_spin = new GofunDecimalSpinBox(this);
+	
+	grid->addWidget(value_spin,0,1);
+}
+
+QString GofunParameterStringPromptWidget::returnParameter( )
+{
+	return par_data.Flag + " " + value->currentText();
+}
+
+void GofunParameterIntegerPromptWidget::setParameterData(const GofunParameterData& _par_data)
+{
+	GofunParameterPromptWidget::setParameterData(_par_data);
+	
+	if(!par_data.Minimum.isEmpty())	
+		value_spin->setMinValue(par_data.Minimum.toInt());
+	if(!par_data.Maximum.isEmpty())
+		value_spin->setMaxValue(par_data.Maximum.toInt());
+	if(!par_data.Minimum.isEmpty() && !par_data.Maximum.isEmpty())
+	{
+		value_slider = new QSlider(Qt::Horizontal,this);
+		value_slider->setMinValue(par_data.Minimum.toInt());
+		value_slider->setMaxValue(par_data.Maximum.toInt());
+		value_slider->setValue(par_data.Default_Value.toInt());
+		
+		connect(value_slider,SIGNAL(valueChanged(int)),value_spin,SLOT(setValue(int)));
+		connect(value_spin,SIGNAL(valueChanged(int)),value_slider,SLOT(setValue(int)));
+	}
+	
+	value_spin->setValue(_par_data.Default_Value.toInt());
+}
+
+QString GofunParameterIntegerPromptWidget::returnParameter( )
+{
+	return par_data.Flag + " " + QString::number(value_spin->value());
+}
+
+void GofunParameterDecimalPromptWidget::setParameterData(const GofunParameterData& _par_data)
+{
+	GofunParameterPromptWidget::setParameterData(_par_data);
+	
+	if(!par_data.Minimum.isEmpty())	
+		value_spin->setMinValue(par_data.Minimum.toInt());
+	if(!par_data.Maximum.isEmpty())
+		value_spin->setMaxValue(par_data.Maximum.toInt());
+	if(!par_data.Minimum.isEmpty() && !par_data.Maximum.isEmpty())
+	{
+		value_slider = new QSlider(Qt::Horizontal,this);
+		value_slider->setMinValue(par_data.Minimum.toInt());
+		value_slider->setMaxValue(par_data.Maximum.toInt());
+		value_slider->setValue(par_data.Default_Value.toInt());
+		
+		connect(value_slider,SIGNAL(valueChanged(int)),value_spin,SLOT(setValue(int)));
+		connect(value_spin,SIGNAL(valueChanged(int)),value_slider,SLOT(setValue(int)));
+	}
+	
+	value_spin->setValue(_par_data.Default_Value.toInt());
+}
+
+QString GofunParameterDecimalPromptWidget::returnParameter( )
+{
+	return par_data.Flag + " " + value_spin->mapValueToText(value_spin->value());
 }
 

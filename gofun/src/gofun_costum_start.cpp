@@ -33,6 +33,7 @@ GofunCostumStart::GofunCostumStart()
 	
 	QGridLayout* grid = new QGridLayout(this,4,2);
 	
+	icon = new QLabel(this);
 	caption = new QLabel(tr("Start "),this);
 	QLabel* command_label = new QLabel(tr("Command"),this);
 	command = new QLineEdit(this);
@@ -49,11 +50,12 @@ GofunCostumStart::GofunCostumStart()
 	QPushButton* start_button = new QPushButton(tr("Start"), this);
 	QPushButton* cancel_button = new QPushButton(tr("Cancel"), this);
 
-	grid->addMultiCellWidget(caption,0,0,0,2);
+	grid->addWidget(icon,0,0);
+	grid->addMultiCellWidget(caption,0,0,1,2);
 	grid->addWidget(command_label,1,0);
-	grid->addWidget(command,1,1);
+	grid->addMultiCellWidget(command,1,1,1,2);
 	grid->addWidget(new QLabel(tr("Directory"),this),2,0);
-	grid->addWidget(directory,2,1);
+	grid->addMultiCellWidget(directory,2,2,1,2);
 	grid->addMultiCellWidget(terminal,3,3,0,1);
 	grid->addMultiCellWidget(newxserver,4,4,0,1);
 	grid->addMultiCellWidget(user,5,5,0,1);
@@ -70,18 +72,13 @@ GofunCostumStart::GofunCostumStart()
 void GofunCostumStart::start()
 {
 	GofunApplicationEntryData eo = *item->data();
-	if(terminal->isChecked())
-	{
-		eo.Terminal = "true";
-	}
-	if(newxserver->isChecked())
-	{
-		eo.X_GoFun_NewX  = "true";
-	}
+	eo.Terminal = GofunMisc::boolToString(terminal->isChecked());
+	eo.X_GoFun_NewX  = newxserver->isChecked();
 	if(user->isChecked())
-	{
 		eo.X_GoFun_User = user_name->currentText();
-	}
+	else
+		eo.X_GoFun_User = "";
+	
 	eo.Exec = command->text();
 	eo.Path = directory->text();
 	item->executeCommand(&eo);
@@ -95,7 +92,12 @@ void GofunCostumStart::load(GofunApplicationItem* _item)
 	directory->setText(item->data()->Path);
 	if(!item->data()->Icon.isEmpty())
 	{
-		setIcon(QPixmap(item->data()->Icon));
+		QPixmap px = GofunMisc::get_icon(item->data()->Icon,64,64);
+		if(!px.isNull())
+		{
+			setIcon(px);
+			icon->setPixmap(px);
+		}
 	}
 	terminal->setChecked(GofunMisc::stringToBool(item->data()->Terminal));
 	newxserver->setChecked(GofunMisc::stringToBool(item->data()->X_GoFun_NewX));

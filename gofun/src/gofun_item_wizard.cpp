@@ -30,7 +30,7 @@ GofunItemWizard::GofunItemWizard()
 	setCaption(tr("")+tr("Add Entry Wizard"));
 	
 	QWidget* widget_start = new QWidget(this);
-	addPage(widget_start,tr("Start"));
+	addPage(widget_start,"<b>This feature isn't implemented!</b>" + tr("Start"));
 	
 	
 	

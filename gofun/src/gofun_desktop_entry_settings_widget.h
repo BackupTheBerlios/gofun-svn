@@ -38,6 +38,7 @@ class GofunDesktopEntrySettingsWidget : public QFrame
 	QString icon;
 	QLineEdit* caption;
 	QLineEdit* comment;
+	QString generic_name;
 	
 	public slots:
 	void showMoreSettings();
@@ -50,6 +51,8 @@ class GofunDesktopEntrySettingsMore : public QDialog
 	
 	private:
 	QLineEdit* generic_name;	
+	
+friend class GofunDesktopEntrySettingsWidget;
 };
 
 

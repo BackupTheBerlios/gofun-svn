@@ -431,6 +431,7 @@ void GofunApplicationItemSettings::load(GofunApplicationItem* _item)
 			par_data.push_back((*it).second);
 		
 			tb_par->insertRows(tb_par->numRows());
+			
 			tb_par->setItem(tb_par->numRows()-1,0,new QTableItem(tb_par,QTableItem::WhenCurrent,(*it).second.Comment));
 
 			tb_par->setItem(tb_par->numRows()-1,1,new QCheckTableItem(tb_par,""));

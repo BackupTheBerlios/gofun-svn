@@ -33,12 +33,19 @@ QString GofunFileDialog::getOpenImageFileName(const QString& start_dir,const QSt
 	fd->setContentsPreview( pre, pre );
 	fd->setIconProvider(iconpro);
 	fd->setPreviewMode( QFileDialog::Contents );
-	fd->exec();
-	QString file = fd->selectedFile();
-	delete fd;
-	if(QFileInfo(file).isFile())
-		return file;
+	if(fd->exec() == QDialog::Accepted)
+	{
+		QString file = fd->selectedFile();
+		delete fd;
+		if(QFileInfo(file).isFile())
+			return file;
+		else
+			return QString();
+	}
 	else
+	{
+		delete fd;
 		return QString();
+	}
 }
 

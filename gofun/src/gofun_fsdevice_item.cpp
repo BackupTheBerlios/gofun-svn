@@ -112,6 +112,7 @@ void GofunFSDeviceItem::save()
 		if(!data()->MountPoint.isEmpty())
 			stream << "MountPoint=" << data()->MountPoint << "\n";
 		stream << "ReadOnly=" << data()->ReadOnly << "\n";
+		stream << "UnmountIcon=" << data()->UnmountIcon << "\n";
 		stream << data()->Unknownkeys.join("\n") << "\n";
 		file.close();
 	}
@@ -161,16 +162,27 @@ void GofunFSDeviceItem::mount()
 	QString shell_call;
 	shell_call += "mount ";
 	shell_call += QString(GofunMisc::stringToBool(data()->ReadOnly) ? "-r " : " ");
-	
-	if(!data()->Device.isEmpty() && !data()->MountPoint.isEmpty()) //When we give 'mount' both it'll end up in an error (only root bla)
-	{
-
-	}
-	
 	shell_call += QString(data()->FSType.isEmpty() ? " " : ("-t "+data()->FSType+" "));
 	shell_call += data()->Device + " ";
 	shell_call += data()->MountPoint + " ";
 	shell_call += " 2>&1";
+	
+	if((!data()->Device.isEmpty() && !data()->MountPoint.isEmpty()) || !data()->FSType.isEmpty()) //When we give 'mount' both it'll end up in an error (only root bla) //fixme: this can just be seen as workaround
+	{
+		QProcess proc_gosu;
+		
+		proc_gosu.addArgument("gosu");
+		proc_gosu.addArgument("root");
+		proc_gosu.addArgument("--color");
+		proc_gosu.addArgument(qApp->palette().color(QPalette::Active,QColorGroup::Background).name());
+		proc_gosu.addArgument("-l");
+		proc_gosu.addArgument("-c");
+		proc_gosu.addArgument(shell_call);
+		proc_gosu.start();
+		return;
+	}
+	
+
 	QString tmp = GofunMisc::shell_call(shell_call);
 	if(!isMounted())
 		QMessageBox::warning(0,tr("Mount error"),tr("Mounting failed:\n")+tmp);

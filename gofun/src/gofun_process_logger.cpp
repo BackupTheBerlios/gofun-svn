@@ -54,13 +54,13 @@ void GofunProcessLogger::readProcStderrToBuffer()
 {
 	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
 	while(proc->canReadLineStderr())
-		*buffer += proc->readLineStderr();
+		*buffer += proc->readLineStderr() + "\n";
 }
 
 void GofunProcessLogger::readProcStdoutToBuffer()
 {
 	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
 	while(proc->canReadLineStdout())
-		*buffer += proc->readLineStdout();
+		*buffer += proc->readLineStdout() + "\n";
 }
 

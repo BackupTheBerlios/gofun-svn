@@ -106,7 +106,10 @@ bool GofunApplicationEntryData::parseLine(const QString& line)
 		}
 		else if(line.find("X-GoFun-Parameter-Comment") == 0)
 		{
-			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Comment-").length()).toInt()].Comment = GofunDataLoader::getValue(line);
+			QString num = GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Comment-").length());
+			if(num.find("[") != -1)
+				num.truncate(num.find("["));
+			X_GoFun_Parameter[num.toInt()].Comment = GofunDataLoader::getValue(line);
 		}
 		else if(line.find("X-GoFun-Parameter-Type") == 0)
 		{

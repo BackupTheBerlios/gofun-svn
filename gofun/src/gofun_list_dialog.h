@@ -44,7 +44,10 @@ public slots:
 	void updateValue(const QString&);
 	void updateEdit();
 	void setValidator(const QValidator*);
-	
+
+signals:
+	void listChanged();
+
 private:
 	QListView* list;
 	QLineEdit* edit;

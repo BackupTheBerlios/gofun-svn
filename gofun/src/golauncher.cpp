@@ -26,6 +26,7 @@
 
 #include "gofun_misc.h"
 #include "gofun_process_logger.h"
+#include "gofun_process_problem_feedback.h"
 #include "golauncher.h"
 
 Golauncher::Golauncher()
@@ -80,16 +81,6 @@ void Golauncher::launch()
 	QString proc_output;
 	GofunProcessLogger::get()->connectProcToBuffer(proc,&proc_output);
 	proc->start();
-	if(!proc->isRunning())
-		if(!proc->normalExit() || proc->exitStatus() != 0)
-		{
-			if(QMessageBox::critical(0,QObject::tr("Start failed"),QObject::tr("Failure information:\nNormal exit: " + GofunMisc::boolToString(proc->normalExit()) + "\nExit status: "+ QString::number(proc->exitStatus()) + "\nOutput: "+proc_output),QObject::tr("Try again"),QObject::tr("Give up")) == 0)
-			{
-				launch();
-			}
-		}
-	//We _could_ get the processes started by the process with processIdentifier using 'ps --ppid'
-	//the first number in the line is alway a pidi
 	
 	if(xmode)
 	{	
@@ -101,7 +92,23 @@ void Golauncher::launch()
 		wid.show();
 		//Finally we start the application!
 		qApp->exec();
-	}	
+	}
+	
+	if(!proc->isRunning() || (sleep(1) && !proc->isRunning()))
+		if(!proc->normalExit() || proc->exitStatus() != 0)
+		{
+			GofunProcessProblemFeedback pp_feedback;
+			pp_feedback.setExitStatus(proc->exitStatus());
+			pp_feedback.setNormalExit(proc->normalExit());
+			pp_feedback.setOutput(proc_output);
+			if(pp_feedback.exec() == QDialog::Accepted)
+			{
+				launch();
+			}
+		}
+		
+	//We _could_ get the processes started by the process with processIdentifier using 'ps --ppid'
+	//the first number in the line is alway a pidi	
 }
 
 void Golauncher::setXMode(bool b)

@@ -55,12 +55,18 @@ GofunDesktopEntrySettingsWidget::GofunDesktopEntrySettingsWidget(QWidget* parent
 void GofunDesktopEntrySettingsWidget::showMoreSettings()
 {
 	GofunDesktopEntrySettingsMore more_dlg(this);
+	more_dlg.generic_name->setText(generic_name);
 	more_dlg.exec();
+	generic_name = more_dlg.generic_name->text();
 }
 
 GofunDesktopEntrySettingsMore::GofunDesktopEntrySettingsMore(QWidget* parent) : QDialog(parent)
 {
+	setCaption(tr("More settings"));
+
 	QGridLayout* grid = new QGridLayout(this);
+	grid->layout()->setMargin(5);
+	grid->layout()->setSpacing(3);
 	
 	QPushButton* ok_button = new QPushButton(tr("Ok"),this);
 	QPushButton* cancel_button = new QPushButton(tr("Cancel"),this);
