@@ -242,13 +242,13 @@ void GofunWidget::addCategory()
 //Evaluate popup that is shown, when the user did right-clicks on empty space in a left IconView
 void GofunWidget::popupMenuSpace(int id)
 {
+	GofunItemWizard* wizard = new GofunItemWizard();
 	switch(id)
 	{
 		case PID_Add:
 			addEntry();
 			break;
 		case PID_Add_Wizard:
-			GofunItemWizard* wizard = new GofunItemWizard();
 			wizard->exec();
 			break;
 	}
