@@ -67,6 +67,12 @@ void GofunItem::deleteEntry()
 	if(!(QMessageBox::warning(qApp->mainWidget(),tr("Delete entry"),tr("Do you really want to delete this entry, sir?"), tr("Ok"), tr("Cancel")) == 0))
 		return;
 	
+	deleteEntryFile();
+	delete this;
+}
+
+void GofunItem::deleteEntryFile()
+{
 	QProcess proc;
 	proc.addArgument("rm");
 	proc.addArgument("-f");
@@ -75,7 +81,6 @@ void GofunItem::deleteEntry()
 	while(proc.isRunning())
 	{
 	}
-	delete this;
 }
 
 void GofunItem::setData(GofunDesktopEntryData* d)
@@ -158,8 +163,9 @@ void GofunItem::popupActivated(int id)
 		case PID_Edit:
 			editEntry(); break;
 		case PID_Delete: 
+			QIconView* my_icon_view = iconView();
 			deleteEntry();
-			//dynamic_cast<QIconView*>(view_ws->visibleWidget())->arrangeItemsInGrid();break; //FIXME
+			my_icon_view->arrangeItemsInGrid(); break;
 	}
 }
 

@@ -136,8 +136,12 @@ void GofunFSDeviceItemSettings::apply()
 		
 	GofunItemSettings::apply();
 	
+	data()->Device = device->currentText();
+	data()->MountPoint = mount_point->currentText();
+	
 	data()->UnmountIcon = unmount_icon->text();
 	data()->ReadOnly = GofunMisc::boolToString(readonly_chk->isChecked());
+	data()->FSType = type->currentText();
 }
 
 bool GofunFSDeviceItemSettings::inputValid()

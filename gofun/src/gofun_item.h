@@ -53,6 +53,7 @@ public:
 	virtual void setData(GofunDesktopEntryData*);
 	virtual void save();
 	void deleteEntry();
+	void deleteEntryFile();
 	virtual void loadIcon();
 	virtual void editEntry() {};
 	virtual QPopupMenu* rightClickPopup(const QPoint&);

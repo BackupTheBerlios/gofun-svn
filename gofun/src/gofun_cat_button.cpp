@@ -241,21 +241,40 @@ void GofunCatButton::dropEvent(QDropEvent* event)
 void GofunCatButton::popupItemDnD(int id)
 {
 	//Wise man prepare ...
-	GofunItem* gi = new GofunItem(iconview, current_item->text());
-	GofunDesktopEntryData* _data = new GofunDesktopEntryData(*current_item->data());
+	GofunItem* gi;
+	GofunDesktopEntryData* _data;
 	
 	switch(id)
 	{
-		case PID_COPY_ITEM: //Make a deep copy //FIXME: - There is an up-conversion between GofunXItem and GofunItem
+		case PID_COPY_ITEM: //Make a deep copy //FIXME: This is ugly-ladder-style anti-C++ code
+			if(current_item->data()->Type == "Application")
+			{
+				gi = new GofunApplicationItem(iconview, current_item->text());
+				_data = new GofunApplicationEntryData(*dynamic_cast<GofunApplicationItem*>(current_item)->data());
+			}
+			else if(current_item->data()->Type == "Link")
+			{
+				gi = new GofunLinkItem(iconview, current_item->text());
+				_data = new GofunLinkEntryData(*dynamic_cast<GofunLinkItem*>(current_item)->data());
+			}
+			else if(current_item->data()->Type == "FSDevice")
+			{
+				gi = new GofunFSDeviceItem(iconview, current_item->text());
+				_data = new GofunFSDeviceEntryData(*dynamic_cast<GofunFSDeviceItem*>(current_item)->data());	
+			}
+			else
+				return;
+			
 			gi->setData(_data);
 			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
 			gi->save();
 			break;
-		case PID_MOVE_ITEM: //Make a deep copy and remove the original //FIXME: - Shouldn't warn user about deleting - doesn't work "between" GofunItem types.
-			gi->setData(_data);
-			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
-			gi->save();
-			current_item->deleteEntry();
+		case PID_MOVE_ITEM: //Move the item into its new iconview. Save the new and delete the old Desktop Entry file.
+			current_item->deleteEntryFile();
+			current_item->iconView()->takeItem(current_item);
+			iconview->insertItem(current_item);
+			current_item->data()->File = data()->Catdir + current_item->data()->Name + ".desktop";
+			current_item->save();
 			break;
 	}
 }
