@@ -68,6 +68,8 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 	
 	connect(mount_point_button,SIGNAL(clicked()),this,SLOT(mountPointDirectoryDialog()));
 	connect(device_button,SIGNAL(clicked()),this,SLOT(deviceDialog()));
+	connect(device,SIGNAL(activated(const QString&)),this,SLOT(selectedDevice(const QString&)));
+	connect(device,SIGNAL(textChanged(const QString&)),this,SLOT(selectedDevice(const QString& )));
 	
 	QWidget* widget_advanced = new QWidget(this);
 	QGridLayout* grid_adv = new QGridLayout(widget_advanced,3,3);
@@ -77,6 +79,7 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 	type = new QComboBox(widget_advanced);
 	QStringList filesystems = QStringList::split('\n',GofunMisc::shell_call("cat /proc/filesystems | sed -e 's/nodev//' | sed -e 's/\\t//'"));
 	filesystems.sort();
+	type->insertItem("auto");
 	type->insertStringList(filesystems);
 	unmount_icon = new QLineEdit(widget_advanced);
 	unmount_icon_button = new QToolButton(widget_advanced);
@@ -182,8 +185,40 @@ void GofunFSDeviceItemSettings::unmountIconDialog()
 	if(id->exec() == QDialog::Accepted)
 	{
 		unmount_icon->setText(id->selected());
-		unmount_icon_button->setPixmap(QPixmap(id->selected()));
+		unmount_icon_button->setPixmap(GofunMisc::get_icon(id->selected()));
 	}
 	delete id;
+}
+
+void GofunFSDeviceItemSettings::iconDialog()
+{
+	GofunItemSettings::iconDialog();
+	
+	QString unfile =  desw->icon;
+	unfile.replace("mount","unmount");
+	if(GofunMisc::get_icon(unfile).isNull())
+		unfile = QDir(desw->icon).path() + "/un" + QFileInfo(desw->icon).fileName();
+	if(GofunMisc::get_icon(unfile).isNull())
+		unfile.replace("mount","unmount");
+	if(!GofunMisc::get_icon(unfile).isNull())	
+	{
+		unmount_icon->setText(unfile);
+		unmount_icon_button->setPixmap(GofunMisc::get_icon(unfile));
+	}	
+}
+
+void GofunFSDeviceItemSettings::selectedDevice(const QString& device)
+{
+	FILE* fp = setmntent("/etc/fstab","r");
+	struct mntent* me;
+	while((me = getmntent(fp)) != NULL)
+	{
+		if(me->mnt_fsname == device)
+		{
+			mount_point->setCurrentText(me->mnt_dir);
+			break;
+		}
+	}
+	endmntent(fp);
 }
 

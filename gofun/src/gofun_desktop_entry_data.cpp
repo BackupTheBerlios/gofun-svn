@@ -47,3 +47,10 @@ bool GofunDesktopEntryData::parseLine(const QString& line)
 	return false;
 }
 
+GofunDesktopEntryData * GofunDesktopEntryData::makeCopy( )
+{
+	GofunDesktopEntryData* copy = new GofunDesktopEntryData;
+	*copy = *this;
+	return copy;
+}
+

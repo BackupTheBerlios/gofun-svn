@@ -77,7 +77,6 @@ void GofunItem::deleteEntryFile()
 
 void GofunItem::setData(GofunDesktopEntryData* d)
 {
-	delete m_data;
 	m_data = d;
 	
 	implementData();

@@ -267,7 +267,7 @@ void GofunWidget::loadData()
 		//Now we iterate through the actual item-data to create new GofunItems
 		for(std::vector<GofunDesktopEntryData*>::iterator sit = (*it).ItemData->begin(); sit != (*it).ItemData->end(); ++sit)
 		{
-			if((*sit)->Hidden == "true")
+			if(GofunMisc::stringToBool((*sit)->Hidden))
 			{
 				continue;
 			}

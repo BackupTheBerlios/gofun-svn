@@ -39,6 +39,7 @@ struct GofunCatEntryData : public GofunDesktopEntryData
 	bool parseLine(const QString&);
 		
 	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
+	virtual GofunCatEntryData* makeCopy();
 };
 
 

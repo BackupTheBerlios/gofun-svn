@@ -34,10 +34,12 @@ public:
 	void load(GofunFSDeviceItem*);
 	
 private slots:
+	void iconDialog();
 	void dirDialog();
 	void deviceDialog();
 	void mountPointDirectoryDialog();
 	void unmountIconDialog();
+	void selectedDevice(const QString&);
 private:
 	void save();
 	void apply();

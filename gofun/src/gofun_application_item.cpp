@@ -79,13 +79,18 @@ void GofunApplicationItem::save()
 		{
 			for(std::map<int,GofunParameterData>::iterator it = data()->X_GoFun_Parameter.begin(); it != data()->X_GoFun_Parameter.end(); ++it)
 			{
-				stream << "X-GoFun-Parameter-Flag-" << (*it).first << "=" << (*it).second.Flag << "\n";
-				stream << "X-GoFun-Parameter-Values-" << (*it).first << "=" << (*it).second.Values.join(";") << "\n";
-				stream << "X-GoFun-Parameter-Default-" << (*it).first << "=" << (*it).second.Default_Value << "\n";
 				stream << "X-GoFun-Parameter-Prompt-" << (*it).first << "=" << (*it).second.Prompt << "\n";
+				if(!(*it).second.Flag.isEmpty())
+					stream << "X-GoFun-Parameter-Flag-" << (*it).first << "=" << (*it).second.Flag << "\n";
+				if(!(*it).second.Values.join(";").isEmpty())
+					stream << "X-GoFun-Parameter-Values-" << (*it).first << "=" << (*it).second.Values.join(";") << "\n";
+				if(!(*it).second.Default_Value.isEmpty())
+					stream << "X-GoFun-Parameter-Default-" << (*it).first << "=" << (*it).second.Default_Value << "\n";
 				stream << "X-GoFun-Parameter-Type-" << (*it).first << "=" << (*it).second.Type << "\n";
-				stream << "X-GoFun-Parameter-Minimum-" << (*it).first << "=" << (*it).second.Minimum << "\n";
-				stream << "X-GoFun-Parameter-Maximum-" << (*it).first << "=" << (*it).second.Maximum << "\n";	
+				if(!(*it).second.Minimum.isEmpty())
+					stream << "X-GoFun-Parameter-Minimum-" << (*it).first << "=" << (*it).second.Minimum << "\n";
+				if(!(*it).second.Maximum.isEmpty())
+					stream << "X-GoFun-Parameter-Maximum-" << (*it).first << "=" << (*it).second.Maximum << "\n";	
 				(*it).second.Comment.desktopEntryPrint("X-GoFun-Parameter-Comment-" + QString::number((*it).first),stream);
 			}
 		}
@@ -96,7 +101,6 @@ void GofunApplicationItem::save()
 
 void GofunApplicationItem::setData(GofunDesktopEntryData* d)
 {
-	delete m_data;
 	m_data = dynamic_cast<GofunApplicationEntryData*>(d);
 	
 	implementData();

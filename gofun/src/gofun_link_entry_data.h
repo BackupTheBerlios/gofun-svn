@@ -33,6 +33,7 @@ struct GofunLinkEntryData : public GofunDesktopEntryData
 	void open();
 	
 	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
+	virtual GofunLinkEntryData* makeCopy();
 };
 
 #endif

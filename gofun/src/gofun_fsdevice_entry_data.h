@@ -36,6 +36,7 @@ struct GofunFSDeviceEntryData : public GofunDesktopEntryData
 	bool parseLine(const QString&);
 	
 	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
+	virtual GofunFSDeviceEntryData* makeCopy();
 };
 
 #endif

@@ -40,3 +40,10 @@ bool GofunCatEntryData::parseLine(const QString& line)
 	return false;
 }
 
+GofunCatEntryData* GofunCatEntryData::makeCopy()
+{
+	GofunCatEntryData* copy = new GofunCatEntryData;
+	*copy = *this;
+	return copy;
+}
+

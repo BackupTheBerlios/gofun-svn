@@ -67,3 +67,10 @@ void GofunLinkEntryData::open()
 		std::cout<<QObject::tr("Execution of directory viewer failed. :(\n");
 	}
 }
+
+GofunLinkEntryData* GofunLinkEntryData::makeCopy()
+{
+	GofunLinkEntryData* copy = new GofunLinkEntryData;
+	*copy = *this;
+	return copy;
+}

@@ -175,7 +175,7 @@ bool GofunMisc::makeDir(const QString& path)
 
 bool GofunMisc::stringToBool(const QString& str)
 {
-	return (str == "true");
+	return (str == "true") || (str == "1"); //(str == "1") is neccessary to support booleans in non-standard compliant Desktop Entries and old (pre 0.9.4) Desktop Entries
 }
 
 QString GofunMisc::boolToString(bool b)

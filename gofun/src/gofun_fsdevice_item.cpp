@@ -46,7 +46,6 @@ void GofunFSDeviceItem::editEntry()
 
 void GofunFSDeviceItem::setData(GofunDesktopEntryData* d)
 {
-	delete m_data;
 	m_data = dynamic_cast<GofunFSDeviceEntryData*>(d);
 	implementData();
 }
@@ -111,8 +110,9 @@ void GofunFSDeviceItem::save()
 			stream << "FSType=" << data()->FSType << "\n";
 		if(!data()->MountPoint.isEmpty())
 			stream << "MountPoint=" << data()->MountPoint << "\n";
+		if(!data()->UnmountIcon.isEmpty())
+			stream << "UnmountIcon=" << data()->UnmountIcon << "\n";
 		stream << "ReadOnly=" << data()->ReadOnly << "\n";
-		stream << "UnmountIcon=" << data()->UnmountIcon << "\n";
 		stream << data()->Unknownkeys.join("\n") << "\n";
 		file.close();
 	}
@@ -162,30 +162,80 @@ void GofunFSDeviceItem::mount()
 	QString shell_call;
 	shell_call += "mount ";
 	shell_call += QString(GofunMisc::stringToBool(data()->ReadOnly) ? "-r " : " ");
-	shell_call += QString(data()->FSType.isEmpty() ? " " : ("-t "+data()->FSType+" "));
-	shell_call += data()->Device + " ";
-	shell_call += data()->MountPoint + " ";
-	shell_call += " 2>&1";
 	
 	if((!data()->Device.isEmpty() && !data()->MountPoint.isEmpty()) || !data()->FSType.isEmpty()) //When we give 'mount' both it'll end up in an error (only root bla) //fixme: this can just be seen as workaround
 	{
-		QProcess proc_gosu;
+		bool solved = false;
+		bool cmd_cmplt = false;
+		FILE* fp = setmntent("/etc/fstab","r");
+		struct mntent* me;
+		while((me = getmntent(fp)) != NULL)
+		{
+			if((me->mnt_dir == data()->MountPoint && me->mnt_fsname == data()->Device)
+			|| (me->mnt_dir == data()->MountPoint && !data()->FSType.isEmpty())
+			|| (me->mnt_fsname == data()->Device && !data()->FSType.isEmpty()))
+			{
+				solved = true;
+				if(me->mnt_type != data()->FSType && !data()->FSType.isEmpty())
+				{
+					shell_call += QString(data()->FSType.isEmpty() ? " " : ("-t "+data()->FSType+" "));
+					if(data()->Device.isEmpty())
+						shell_call += QString(me->mnt_fsname) + " ";
+					else
+						shell_call += data()->Device + " ";
+					if(data()->MountPoint.isEmpty())
+						shell_call += QString(me->mnt_dir) + " ";
+					else
+						shell_call += data()->MountPoint + " ";
+					solved = false;
+					cmd_cmplt = true;
+					break;
+				}
+				if(!data()->Device.isEmpty())
+					shell_call += data()->Device + " ";
+				else
+					shell_call += data()->MountPoint;
+				cmd_cmplt  = true;
+				break;
+			}
+		}
+		endmntent(fp);
 		
-		proc_gosu.addArgument("gosu");
-		proc_gosu.addArgument("root");
-		proc_gosu.addArgument("--color");
-		proc_gosu.addArgument(qApp->palette().color(QPalette::Active,QColorGroup::Background).name());
-		proc_gosu.addArgument("-l");
-		proc_gosu.addArgument("-c");
-		proc_gosu.addArgument(shell_call);
-		proc_gosu.start();
-		return;
+		if(!solved)
+		{
+			if(!cmd_cmplt)
+			{
+				shell_call += QString(data()->FSType.isEmpty() ? " " : ("-t "+data()->FSType+" "));
+				shell_call += data()->Device + " ";
+				shell_call += data()->MountPoint + " ";
+			}
+			
+			qDebug(shell_call);
+		
+			QProcess proc_gosu;
+		
+			proc_gosu.addArgument("gosu");
+			proc_gosu.addArgument("root");
+			proc_gosu.addArgument("--color");
+			proc_gosu.addArgument(qApp->palette().color(QPalette::Active,QColorGroup::Background).name());
+			proc_gosu.addArgument("-l");
+			proc_gosu.addArgument("-c");
+			proc_gosu.addArgument(shell_call);
+			proc_gosu.start();
+			return;
+		}
+	}
+	else
+	{
+		shell_call += data()->Device + " ";
+		shell_call += data()->MountPoint + " ";
 	}
 	
+	shell_call += " 2>&1";
 
 	QString tmp = GofunMisc::shell_call(shell_call);
 	if(!isMounted())
-		QMessageBox::warning(0,tr("Mount error"),tr("Mounting failed:\n")+tmp);
+		QMessageBox::warning(0,tr("Mount error"),tr("Mount failed:\n")+tmp);
 	else
 		loadIcon();
 }

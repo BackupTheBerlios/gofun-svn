@@ -53,7 +53,7 @@ void GofunItemSettings::iconDialog()
 	if(id->exec() == QDialog::Accepted)
 	{
 		desw->icon = id->selected();
-		desw->icon_button->setPixmap(QPixmap(id->selected()));
+		desw->icon_button->setPixmap(GofunMisc::get_icon(id->selected()));
 	}
 	delete id;
 }

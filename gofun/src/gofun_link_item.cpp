@@ -44,7 +44,6 @@ void GofunLinkItem::editEntry()
 
 void GofunLinkItem::setData(GofunDesktopEntryData* d)
 {
-	delete m_data;
 	m_data = dynamic_cast<GofunLinkEntryData*>(d);
 	
 	implementData();

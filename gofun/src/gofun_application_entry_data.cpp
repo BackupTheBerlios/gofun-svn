@@ -69,7 +69,7 @@ void GofunApplicationEntryData::execute()
 			exec = "export " + vk_pair[0] + "='" + QString((*it)).remove(0,vk_pair[0].length()+1) + "';" + exec;
 		}
 	}
-	if(Terminal == "true")
+	if(GofunMisc::stringToBool(Terminal))
 	{ 
 		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
 		if(exec[exec.length()-1] == ';')
@@ -116,7 +116,7 @@ void GofunApplicationEntryData::execute()
 		proc.addArgument("golauncher");
 		proc.addArgument("-datafile");
 		proc.addArgument(QDir::homeDirPath() + "/.gofun/tmp_proc_exec");
-		if(X_GoFun_NewX == "true")
+		if(GofunMisc::stringToBool(X_GoFun_NewX))
 			proc.addArgument("-xstart");
 		proc.start();
 	}
@@ -204,4 +204,11 @@ bool GofunApplicationEntryData::parseLine(const QString& line)
 	else
 			return false;
 	return true;
+}
+
+GofunApplicationEntryData* GofunApplicationEntryData::makeCopy()
+{
+	GofunApplicationEntryData* copy = new GofunApplicationEntryData;
+	*copy = *this;
+	return copy;
 }

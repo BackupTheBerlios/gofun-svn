@@ -57,6 +57,7 @@ struct GofunApplicationEntryData : public GofunDesktopEntryData
 	void execute();
 	
 	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
+	virtual GofunApplicationEntryData* makeCopy();
 	
 	private:
 	void addSplittedProcArgument(QProcess*,const QString&);

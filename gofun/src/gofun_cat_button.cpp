@@ -155,7 +155,8 @@ void GofunCatButton::save()
 	{
 		QTextStream stream( &file );
 		stream << "Type=Directory\n";
-		stream << "X-GoFun-Background=" << data()->X_GoFun_Background << "\n";
+		if(!data()->X_GoFun_Background.isEmpty())
+			stream << "X-GoFun-Background=" << data()->X_GoFun_Background << "\n";
 		file.close();
 	}
 }
@@ -187,7 +188,6 @@ void GofunCatButton::catSettings()
 //Too obvious for a comment, oh ...
 void GofunCatButton::setData(GofunCatEntryData* d)
 {
-	delete m_data;
 	m_data = d;
 	
 	if(!data()->Catdir.isEmpty() && !QFileInfo(data()->Catdir).isWritable())
@@ -265,25 +265,10 @@ void GofunCatButton::popupItemDnD(int id)
 	{
 		case PID_COPY_ITEM: //Make a deep copy //FIXME: This is ugly-ladder-style anti-C++ code
 			//FIXME:this needs thoughtful fixing
-			/*gi = /*dynamic_cast<GofunItem*>(* /current_item->data()->GofunDesktopObjectFactory(this)/*)* /;
-			if(current_item->data()->Type == "Application")
-			{
-				_data = new GofunApplicationEntryData(*dynamic_cast<GofunApplicationItem*>(current_item)->data());
-			}
-			else if(current_item->data()->Type == "Link")
-			{
-				_data = new GofunLinkEntryData(*dynamic_cast<GofunLinkItem*>(current_item)->data());
-			}
-			else if(current_item->data()->Type == "FSDevice")
-			{
-				_data = new GofunFSDeviceEntryData(*dynamic_cast<GofunFSDeviceItem*>(current_item)->data());	
-			}
-			else
-				return;
-			
-			gi->setData(_data);
+			gi = dynamic_cast<GofunItem*>(current_item->data()->GofunDesktopObjectFactory(iconview));
+			gi->setData(current_item->data()->makeCopy());			
 			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
-			gi->save();*/
+			gi->save();
 			break;
 		case PID_MOVE_ITEM: //Move the item into its new iconview. Save the new and delete the old Desktop Entry file.
 			current_item->deleteEntryFile();

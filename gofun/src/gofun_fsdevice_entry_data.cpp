@@ -44,3 +44,10 @@ bool GofunFSDeviceEntryData::parseLine(const QString& line)
 	return false;
 }
 
+GofunFSDeviceEntryData * GofunFSDeviceEntryData::makeCopy( )
+{
+	GofunFSDeviceEntryData* copy = new GofunFSDeviceEntryData;
+	*copy = *this;
+	return copy;
+}
+
