@@ -27,31 +27,14 @@
 #include "gofun_misc.h"
 #include "golauncher.h"
 
-GolauncherWidget::GolauncherWidget()
+Golauncher::Golauncher()
 {
-	quit = new QPushButton(tr("Quit"),this);
-	connect(quit,SIGNAL(clicked()),qApp,SLOT(quit()));
+	xmode = false;
+	xstart = false;
 }
 
-int main(int argc, char *argv[])
+void Golauncher::launch()
 {
-	QApplication app(argc,argv);
-	QString bin_dir = GofunMisc::bin_dir();
-	QString datafile;
-	bool xmode = false;
-	bool xstart = false;
-		
-	for ( int i = 0; i < app.argc(); i++ )
-	{
-		if((QString(app.argv()[i]) == "-datafile") && (i+1 < app.argc()))
-			datafile = app.argv()[i+1];
-		else if((QString(app.argv()[i])) == "-xmode")
-			xmode = true;	
-		else if((QString(app.argv()[i])) == "-xstart")
-			xstart = true;
-	}
-	
-	
 	QProcess* proc = new QProcess;
 	if(xstart)
 	{
@@ -61,14 +44,13 @@ int main(int argc, char *argv[])
 		proc->addArgument("-datafile");
 		proc->addArgument(datafile);
 		proc->addArgument("--");
-		QString xservnum = GofunMisc::shell_call("ps -Ac | grep X | wc -l");
-		xservnum = xservnum.simplifyWhiteSpace();
+		QString xservnum = GofunMisc::shell_call("ps -Ac | grep X | wc -l").simplifyWhiteSpace();
 		proc->addArgument(":"+xservnum);
 		proc->start();
 		
 		sleep(2000);
 			
-		return 0;
+		return;
 	}
 	
 	QStringList arguments;
@@ -95,17 +77,64 @@ int main(int argc, char *argv[])
 	}
 	proc->setArguments(arguments);
 	proc->start();
-	
+	if(!proc->isRunning())
+		if(!proc->normalExit() || proc->exitStatus() != 0)
+		{
+			if(QMessageBox::critical(0,QObject::tr("Start failed"),QObject::tr("Failure information:\nNormal exit: " + GofunMisc::boolToString(proc->normalExit()) + "\nExit status: "+ QString::number(proc->exitStatus())),QObject::tr("Try again"),QObject::tr("Give up")) == 0)
+			{
+				launch();
+			}
+		}
+		
 	if(xmode)
 	{
 	GolauncherWidget wid;
 	
 	  //Declare gofun_widget to the official mainWidget
-  	app.setMainWidget(&wid);
+  	qApp->setMainWidget(&wid);
   	//Paint it on the screen
   	wid.show();
   	//Finally we start the application!
-  	app.exec();
+  	qApp->exec();
 	}	
+}
+
+void Golauncher::setXMode(bool b)
+{
+	xmode = b;
+}
+
+void Golauncher::setXStart(bool b)
+{
+	xstart = b;
+}
+
+void Golauncher::setDatafile(const QString& s)
+{
+	datafile = s;
+}
+
+GolauncherWidget::GolauncherWidget()
+{
+	quit = new QPushButton(tr("Quit"),this);
+	connect(quit,SIGNAL(clicked()),qApp,SLOT(quit()));
+}
+
+int main(int argc, char *argv[])
+{
+	QApplication app(argc,argv);
+	Golauncher golauncher;
+		
+	for ( int i = 0; i < app.argc(); i++ )
+	{
+		if((QString(app.argv()[i]) == "-datafile") && (i+1 < app.argc()))
+			golauncher.setDatafile(app.argv()[i+1]);
+		else if((QString(app.argv()[i])) == "-xmode")
+			golauncher.setXMode(true);
+		else if((QString(app.argv()[i])) == "-xstart")
+			golauncher.setXStart(true);
+	}
+	
+	golauncher.launch();
 }
 

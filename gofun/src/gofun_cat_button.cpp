@@ -247,19 +247,17 @@ void GofunCatButton::popupItemDnD(int id)
 	switch(id)
 	{
 		case PID_COPY_ITEM: //Make a deep copy //FIXME: This is ugly-ladder-style anti-C++ code
+			gi = dynamic_cast<GofunItem*>(gi->data()->GofunDesktopObjectFactory(this));
 			if(current_item->data()->Type == "Application")
 			{
-				gi = new GofunApplicationItem(iconview, current_item->text());
 				_data = new GofunApplicationEntryData(*dynamic_cast<GofunApplicationItem*>(current_item)->data());
 			}
 			else if(current_item->data()->Type == "Link")
 			{
-				gi = new GofunLinkItem(iconview, current_item->text());
 				_data = new GofunLinkEntryData(*dynamic_cast<GofunLinkItem*>(current_item)->data());
 			}
 			else if(current_item->data()->Type == "FSDevice")
 			{
-				gi = new GofunFSDeviceItem(iconview, current_item->text());
 				_data = new GofunFSDeviceEntryData(*dynamic_cast<GofunFSDeviceItem*>(current_item)->data());	
 			}
 			else

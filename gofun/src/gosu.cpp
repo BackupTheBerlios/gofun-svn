@@ -202,7 +202,8 @@ correct_password (const struct passwd *pw)
   correct = pw->pw_passwd;
   if (getuid () == 0 || correct == 0 || correct[0] == '\0')
     return 1;
-   QString unenqt = QInputDialog::getText("Password dialog","Password",QLineEdit::Password);
+   QString unenqt = QInputDialog::getText(QObject::tr("Password dialog"),QObject::tr("Password"),QLineEdit::Password);
+   
     unencrypted = (char*) malloc(strlen(unenqt.ascii()));
     strcpy(unencrypted,unenqt.ascii());
 size_t h = 100;

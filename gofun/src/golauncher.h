@@ -23,7 +23,23 @@
  
 #ifndef GOLAUNCHER_WIDGET
 #define GOLAUNCHER_WIDGET
- 
+
+class Golauncher
+{
+	public:
+	Golauncher();
+	void launch();
+
+	void setXMode(bool);
+	void setXStart(bool);
+	void setDatafile(const QString&);
+	
+	private:
+	bool xmode;
+	bool xstart;
+	QString datafile;
+};
+
 class GolauncherWidget : public QWidget
 {
 	public:

@@ -186,7 +186,7 @@ void GofunItem::implementData()
 	if(!data()->Comment.isEmpty())
 		setToolTipText(data()->Comment);
 		
-	if(GofunMisc::shell_call("[ -w '"+data()->File+"' ] && echo true").simplifyWhiteSpace() != "true")
+	if(!data()->File.isEmpty() && QFile::exists(data()->File)  && GofunMisc::shell_call("[ -w '"+data()->File+"' ] && echo true").simplifyWhiteSpace() != "true")
 		readonly = true;
 	else
 		readonly = false;
