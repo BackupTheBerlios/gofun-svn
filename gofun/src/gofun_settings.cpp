@@ -38,6 +38,9 @@ GofunSettingsContainer::GofunSettingsContainer()
 	terminal_cmd = m_settings->readEntry("terminal");
 	filemanager_cmd = m_settings->readEntry("filemanager");
 	m_settings->endGroup();
+	
+	if(terminal_cmd.isEmpty())
+		terminal_cmd = "xterm";
 }
 
 GofunSettingsContainer::~GofunSettingsContainer()
