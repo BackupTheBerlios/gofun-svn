@@ -54,6 +54,19 @@ void GofunIconView::arrangeItemsInGrid(bool update)
 	QIconView::arrangeItemsInGrid(update);
 }
 
+void GofunIconView::setTopMode()
+{
+	setItemTextPos(QIconView::Bottom);
+	setWordWrapIconText(true);
+}
+
+void GofunIconView::setLeftMode()
+{
+	setItemTextPos(QIconView::Right);
+	setWordWrapIconText(false);
+}
+
+
 
 
 

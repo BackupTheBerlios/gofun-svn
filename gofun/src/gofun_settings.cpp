@@ -188,7 +188,7 @@ void GofunSettings::load()
 
 void GofunSettings::costumColorDialog()
 {
-	costum_col_bt->setPaletteBackgroundColor(QColorDialog::getColor());
+	costum_col_bt->setPaletteBackgroundColor(QColorDialog::getColor(GSC::get()->costum_color));
 }
 
 

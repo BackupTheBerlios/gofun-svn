@@ -28,6 +28,8 @@ class GofunIconView : public QIconView
 {
 	public:
 	GofunIconView();
+	void setTopMode();
+	void setLeftMode();
 	
 	public slots:
 	virtual void arrangeItemsInGrid(bool = TRUE);

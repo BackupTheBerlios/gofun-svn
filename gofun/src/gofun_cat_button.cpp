@@ -42,7 +42,8 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 
 	//Create the appendix of this button
 	conf_button = new QToolButton(this);
-	conf_button->setPalette(QPalette(QColor(int(rand()%256),int(rand()%256),int(rand()%256))));
+	int _grey = int((dynamic_cast<GofunWidget*>(widget->parent())->cats_bg->count()*20)%256);
+	conf_button->setPalette(QPalette(QColor(_grey,_grey,_grey)));
 
 	//connect(conf_button, SIGNAL(clicked()),this, SLOT(catSettings()));
 	connect(conf_button, SIGNAL(clicked()),this, SLOT(popupConfButton()));
@@ -58,6 +59,8 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 		
 	//Make sure it's being initialized from the start
 	m_data = new GofunCatData();
+	
+	loadIcon();
 	
 	if(dynamic_cast<GofunWidget*>(qApp->mainWidget()))
 		dynamic_cast<GofunWidget*>(qApp->mainWidget())->insertCategory(this);
