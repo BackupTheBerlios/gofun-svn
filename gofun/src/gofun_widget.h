@@ -40,7 +40,7 @@ class GofunItem;
 class GofunCatButton;
 class GofunSettings;
 class GofunItemSettings;
-struct GofunCatData;
+struct GofunCatEntryData;
 
 #ifndef GOFUN_WIDGET
 #define GOFUN_WIDGET

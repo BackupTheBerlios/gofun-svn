@@ -56,7 +56,7 @@ class GofunVButtonGroup : public QVButtonGroup
 	void wheelEvent(QWheelEvent* e)
 	{
 		QButton* button;
-		if(selectedId() == -1)
+		if(id(selected()) == -1) //selectedId() isn't used because of backwards compatibility to Qt3.1
 		{
 			if(count() > 1)
 				button = find(1);
@@ -70,7 +70,7 @@ class GofunVButtonGroup : public QVButtonGroup
 		}
 		else
 		{
-			if(selectedId() == 1)
+			if(id(selected()) == 1)
 				button = find(count()-1);
 			else if(button = find(selectedId()-1))
 				;
@@ -237,11 +237,11 @@ void GofunWidget::unloadData()
 void GofunWidget::loadData()
 {
 	//We get the data sorted nicely
-	std::vector<GofunCatData>* GfCatData = GofunDataLoader::getData();
+	std::vector<GofunCatEntryData>* GfCatData = GofunDataLoader::getData();
 	
 	//Now we iterate to the category data
 	int i = 0;
-	for(std::vector<GofunCatData>::iterator it = GfCatData->begin(); it != GfCatData->end(); ++it, ++i)
+	for(std::vector<GofunCatEntryData>::iterator it = GfCatData->begin(); it != GfCatData->end(); ++it, ++i)
 	{
 		//We create a fresh category button, fill it with data and insert it
 		//into the category-button-group
@@ -265,7 +265,7 @@ void GofunWidget::loadData()
 		cat->setData(&(*it));
 			
 		//Now we iterate through the actual item-data to create new GofunItems
-		for(std::vector<GofunItemData*>::iterator sit = (*it).ItemData->begin(); sit != (*it).ItemData->end(); ++sit)
+		for(std::vector<GofunDesktopEntryData*>::iterator sit = (*it).ItemData->begin(); sit != (*it).ItemData->end(); ++sit)
 		{
 			if((*sit)->Hidden == "true")
 			{
@@ -281,8 +281,8 @@ void GofunWidget::loadData()
 
 void GofunWidget::changeToTools()
 {
-	if(cats_bg->selectedId() != -1)
-		dynamic_cast<QPushButton*>(cats_bg->find(cats_bg->selectedId()))->setOn(false);
+	if(cats_bg->id(cats_bg->selected()) != -1)
+		dynamic_cast<QPushButton*>(cats_bg->find(cats_bg->id(cats_bg->selected())))->setOn(false);
 	tools_cat->setOn(true);
 	view_ws->raiseWidget(1001);
 }

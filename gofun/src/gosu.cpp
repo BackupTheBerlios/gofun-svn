@@ -267,7 +267,7 @@ change_identity (const struct passwd *pw)
 //#ifdef HAVE_INITGROUPS
   errno = 0;
   if (initgroups (pw->pw_name, pw->pw_gid) == -1)
-    error (EXIT_FAIL, errno, _("cannot set groups"));
+    error (EXIT_FAIL, errno, "cannot set groups");
   endgrent ();
 //#endif
   if (setgid (pw->pw_gid))

@@ -100,16 +100,6 @@ GofunIconDialog::~GofunIconDialog()
 
 void GofunIconDialog::browseForIcon()
 {
-	QString start_dir;
-	/*if(!icon->text().isEmpty())
-	{
-		start_dir = icon->text();
-	}
-	else if(!directory->text().isEmpty())
-	{
-		start_dir = GofunMisc::ext_filestring(directory->text());
-	}*/
-
 	QString file = GofunMisc::fileDialogGetImage(start_dir,tr("Pick an icon"),tr("Icons"));
 	if(!file.isEmpty())
 	{
@@ -208,6 +198,17 @@ GofunAdjustAbleIconView::GofunAdjustAbleIconView(QWidget* parent) : QIconView(pa
 void GofunAdjustAbleIconView::adjustMe()
 {
 	adjustItems();
+}
+
+void GofunIconDialog::setStartDir( const QString & _start_dir)
+{
+	start_dir = _start_dir;
+}
+
+void GofunIconDialog::setStartIcon( const QString& _icon)
+{
+		icon_file->setText(_icon);
+		icon_preview->setPixmap(GofunMisc::get_icon(_icon));
 }
 
 

@@ -25,6 +25,7 @@
 #include "gofun_link_item.h"
 #include "gofun_cat_button.h"
 #include "gofun_desktop_entry_settings_widget.h"
+#include "gofun_url_composer.h"
 
 GofunLinkItemSettings::GofunLinkItemSettings()
 {	
@@ -42,8 +43,17 @@ GofunLinkItemSettings::GofunLinkItemSettings()
 	grid->addWidget(url_button,1,2);
 	
 	connect(desw->icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
+	connect(url_button,SIGNAL(clicked()),this, SLOT(urlComposer()));
 	
 	item = 0;
+}
+
+void GofunLinkItemSettings::urlComposer()
+{
+	GofunURLComposer* url_composer = new GofunURLComposer;
+	url_composer->setStartURL(url->text());
+	if(url_composer->exec() == QDialog::Accepted)
+		url->setText(url_composer->getURL());
 }
 
 void GofunLinkItemSettings::load(GofunLinkItem* _item)
@@ -80,11 +90,7 @@ bool GofunLinkItemSettings::inputValid()
 		return true;
 }
 
-void GofunLinkItemSettings::iconDialog()
-{
-}
-
-GofunLinkItemData* GofunLinkItemSettings::data()
+GofunLinkEntryData* GofunLinkItemSettings::data()
 {
 	return dynamic_cast<GofunLinkItem*>(item)->data();
 }

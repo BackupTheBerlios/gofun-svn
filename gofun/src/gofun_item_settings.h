@@ -47,7 +47,7 @@ public:
 public slots:
 	virtual void iconDialog();
 private:
-	virtual GofunItemData* data();
+	virtual GofunDesktopEntryData* data();
 	
 protected:
 	virtual void apply();

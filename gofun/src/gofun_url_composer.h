@@ -18,50 +18,23 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "gofun_item.h"
-#include "gofun_data.h"
+#include <qurl.h>
+#include <qdialog.h>
+ 
+#ifndef GOFUN_URL_COMPOSER
+#define GOFUN_URL_COMPOSER
 
-#ifndef GOFUN_APPLICATION_ITEM
-#define GOFUN_APPLICATION_ITEM
-
-enum
-{
-  PID_Execute = PID_Delete + 1,
-  PID_Execute_in_terminal,
-  PID_Execute_with_xinit,
-  PID_Open_directory,
-  PID_Costumized_start
-};
-
-class GofunApplicationItem : public GofunItem
+class GofunURLComposer : public QDialog
 {
 	Q_OBJECT
 	
 	public:
-	GofunApplicationItem(GofunIconView*, const QString& = 0);
-	//virtual ~GofunApplicationItem();
-
-	void setData(GofunDesktopEntryData*);
-	void save();
-	void costumizedStart();
-	void openDirectory();
-	void executeCommand(ExecuteOption* = NULL);
-	QPopupMenu* rightClickPopup(const QPoint&);
-	void editEntry();
-	void performDefaultAction() { execute(); };
-	static void createNewItem(GofunCatButton*);
+	GofunURLComposer();
+	void setStartURL(const QUrl&);
+	QUrl getURL();
 	
-	GofunApplicationEntryData* data() { return m_data; }
-	
-	public slots:
-	void popupActivated(int);
 	private:
-	QString saveProcArguments(QProcess*);
-	void interpretExecString(QString&);
-	void addSplittedProcArgument(QProcess*,const QString&);
-	void execute(const QString& = QString::null);
-	
-	GofunApplicationEntryData* m_data;
+	QUrl url;	
 };
 
 #endif

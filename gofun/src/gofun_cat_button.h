@@ -25,7 +25,7 @@
 #include "gofun_desktop_object.h"
 
 class GofunItem;
-class GofunCatData;
+class GofunCatEntryData;
 class GofunIconView;
 class GofunDesktopEntrySettingsWidget;
 
@@ -54,14 +54,14 @@ public:
 	GofunCatButton(const QString&, QWidget*);
 	~GofunCatButton();
 	void setIconView(GofunIconView*);
-	void setData(GofunCatData*);
+	void setData(GofunCatEntryData*);
 	virtual void dragEnterEvent(QDragEnterEvent* event);
 	virtual void dropEvent(QDropEvent* event);
 	virtual void mouseReleaseEvent(QMouseEvent* event);
 	void save();
 	void loadIcon();
 	void refreshBackground();
-	virtual GofunCatData* data() { return m_data; }
+	virtual GofunCatEntryData* data() { return m_data; }
 	const QPixmap* confButtonPixmap() { return conf_button->pixmap(); }
 	void setupToolTip();
 	void runNewItemWizard();
@@ -69,7 +69,7 @@ public:
 	GofunIconView* iconview;
 	
 private:
-	GofunCatData* m_data;
+	GofunCatEntryData* m_data;
 	GofunItem* current_item;
 	QString directory;
 	QToolButton* conf_button;

@@ -50,7 +50,9 @@ class GofunIconDialog : public QDialog
 	GofunIconDialog();
 	~GofunIconDialog();
 	QString selected();
-	
+	void setStartIcon(const QString&);
+	void setStartDir(const QString&);
+		
 	private slots:
 	void setSelectedIcon(QIconViewItem*);
 	void browseForIcon();
@@ -60,6 +62,7 @@ class GofunIconDialog : public QDialog
 	void loadIcons();
 	void customEvent(QCustomEvent*);
 	
+	QString start_dir;
 	QLabel* icon_preview;
 	QLabel* icon_file;
 	GofunAdjustAbleIconView* filter_view;

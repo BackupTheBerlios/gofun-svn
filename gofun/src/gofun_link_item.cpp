@@ -29,7 +29,7 @@
 
 GofunLinkItem::GofunLinkItem(GofunIconView* iconview, const QString& string) : GofunItem(iconview,string)
 {
-	m_data = new GofunLinkItemData();
+	m_data = new GofunLinkEntryData();
 }
 
 //Open dialog for editing a Desktop Entry.
@@ -42,10 +42,10 @@ void GofunLinkItem::editEntry()
 	settings_dlg->exec();
 }
 
-void GofunLinkItem::setData(GofunItemData* d)
+void GofunLinkItem::setData(GofunDesktopEntryData* d)
 {
 	delete m_data;
-	m_data = dynamic_cast<GofunLinkItemData*>(d);
+	m_data = dynamic_cast<GofunLinkEntryData*>(d);
 	loadIcon();
 	if(!data()->Comment.isEmpty())
 		setToolTipText(data()->Comment);

@@ -35,7 +35,7 @@ class GofunLinkItem : public GofunItem
 	public:
 	GofunLinkItem(GofunIconView*, const QString& = 0);
 	
-	void setData(GofunItemData*);
+	void setData(GofunDesktopEntryData*);
 	void save();
 	QPopupMenu* rightClickPopup(const QPoint&);
 	virtual void editEntry();
@@ -44,13 +44,13 @@ class GofunLinkItem : public GofunItem
 	
 	static void createNewItem(GofunCatButton*);
 	
-	GofunLinkItemData* data() { return m_data; }
+	GofunLinkEntryData* data() { return m_data; }
 	
 	public slots:
 	void popupActivated(int);
 	
 	private:
-	GofunLinkItemData* m_data;
+	GofunLinkEntryData* m_data;
 };
 
 #endif

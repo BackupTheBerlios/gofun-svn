@@ -39,7 +39,7 @@ GofunItem* GofunIconViewToolTip::last_active = 0;
  
 GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconViewItem(iconview,string)
 {
-	m_data = new GofunItemData();
+	m_data = new GofunDesktopEntryData();
 	toolTip = NULL;
 }
 
@@ -78,7 +78,7 @@ void GofunItem::deleteEntry()
 	delete this;
 }
 
-void GofunItem::setData(GofunItemData* d)
+void GofunItem::setData(GofunDesktopEntryData* d)
 {
 	delete m_data;
 	m_data = d;

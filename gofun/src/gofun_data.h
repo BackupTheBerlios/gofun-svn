@@ -46,7 +46,9 @@ struct GofunDesktopEntryData
 	QStringList Unknownkeys;
 	QString Hidden;
 	
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent) = 0;
+	virtual bool parseLine(const QString&);
+	
+	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 };
 
 ///Data-type describing parameters in a Desktop Entry
@@ -59,13 +61,7 @@ struct GofunParameterData
 	GofunLocaleString Comment;
 };
 
-///Data-type for Desktop Entries, that can be executed
-struct GofunItemData : public GofunDesktopEntryData
-{
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
-};
-
-struct GofunApplicationItemData : public GofunItemData
+struct GofunApplicationEntryData : public GofunDesktopEntryData
 {
 
 	QString Exec;
@@ -76,11 +72,12 @@ struct GofunApplicationItemData : public GofunItemData
 	QString X_GoFun_NewX;
 	std::map<int,GofunParameterData> X_GoFun_Parameter;
 	
+	bool parseLine(const QString&);
 	
 	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 };
 
-struct GofunFSDeviceItemData : public GofunItemData
+struct GofunFSDeviceEntryData : public GofunDesktopEntryData
 {
 	QString Device;
 	QString FSType;
@@ -88,32 +85,38 @@ struct GofunFSDeviceItemData : public GofunItemData
 	QString ReadOnly;
 	QString UnmountIcon;
 	
+	bool parseLine(const QString&);
+	
 	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 };
 
-struct GofunLinkItemData : public GofunItemData
+struct GofunLinkEntryData : public GofunDesktopEntryData
 {
 	QString URL;
+	
+	bool parseLine(const QString&);
 	
 	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 };
 
 ///Data-type for Desktop Entries, that represent a category
-/** Contains a std::vector with the GofunItemData, that is present
+/** Contains a std::vector with the GofunDesktopEntryData, that is present
     in this category. **/
-struct GofunCatData : public GofunDesktopEntryData
+struct GofunCatEntryData : public GofunDesktopEntryData
 {
 	QString Catdir;
 	QString Background;
 	QString X_GoFun_Background;
 	QString X_GoFun_Color;
-	std::vector<GofunItemData*>* ItemData;
+	std::vector<GofunDesktopEntryData*>* ItemData;
 	
+	bool parseLine(const QString&);
+		
 	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 };
 
 ///Data-type that can contain special start-options
-struct ExecuteOption : public GofunItemData
+struct ExecuteOption : public GofunDesktopEntryData
 {
 	QString Exec;
 	QString terminal;
@@ -123,22 +126,19 @@ struct ExecuteOption : public GofunItemData
 ///Loads Desktop-Entry data
 struct GofunDataLoader
 {
-	static std::vector<GofunCatData>* getData();
+	static std::vector<GofunCatEntryData>* getData();
+public:
+	static bool parseLine(const QString&,const QString&,QString&);
+	static bool parseLine(const QString&,const QString&,std::vector<QString>&);
+	static bool parseLine(const QString&,const QString&,GofunLocaleString&);
+	static QString getValue(QString line);
+	static QString getKey(QString line);
 private:
-	static std::vector<GofunItemData*>* parse_catdir(const QString& catdir);
-	static bool parse_desktop_file_line(GofunDesktopEntryData*, const QString&);
-	static bool parse_application_file_line(GofunApplicationItemData*, const QString&);
-	static bool parse_link_file_line(GofunLinkItemData*, const QString&);
-	static bool parse_fsdevice_file_line(GofunFSDeviceItemData*, const QString&);
-	static GofunItemData* parse_gofun_file(const QString& file);
-	static GofunCatData* parse_cat_info(const QString& file);
-	static QStringList load_file_data(const QString& _file);
-	static QString get_value(QString line);
-	static QString get_key(QString line);
-	static QString get_locale(const QString& locale);
-	static bool parse_line(const QString&,const QString&,QString&);
-	static bool parse_line(const QString&,const QString&,std::vector<QString>&);
-	static bool parse_line(const QString&,const QString&,GofunLocaleString&);
+	static std::vector<GofunDesktopEntryData*>* parseCatdir(const QString& catdir);
+	static GofunDesktopEntryData* parseGofunFile(const QString& file);
+	static GofunCatEntryData* parseCatInfo(const QString& file);
+	static QStringList loadFileData(const QString& _file);
+	static QString getLocale(const QString& locale);
 };
 
 struct GofunSettingsData

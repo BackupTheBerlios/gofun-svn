@@ -18,51 +18,32 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "gofun_item.h"
-#include "gofun_data.h"
+#include <qbuttongroup.h>
+#include <qlayout.h>
+#include <qpushbutton.h>
+ 
+#include "gofun_url_composer.h"
 
-#ifndef GOFUN_APPLICATION_ITEM
-#define GOFUN_APPLICATION_ITEM
-
-enum
+GofunURLComposer::GofunURLComposer()
 {
-  PID_Execute = PID_Delete + 1,
-  PID_Execute_in_terminal,
-  PID_Execute_with_xinit,
-  PID_Open_directory,
-  PID_Costumized_start
+	setCaption(tr("Url Composer"));
+	
+	QGridLayout* grid = new QGridLayout(this);
+	
+	QButtonGroup* scheme = new QButtonGroup(this);
+	scheme->insert(new QPushButton("http",this));
+	
+	grid->addWidget(scheme,0,0);
 };
 
-class GofunApplicationItem : public GofunItem
+void GofunURLComposer::setStartURL( const QUrl& _url)
 {
-	Q_OBJECT
-	
-	public:
-	GofunApplicationItem(GofunIconView*, const QString& = 0);
-	//virtual ~GofunApplicationItem();
+	url = _url;
+}
 
-	void setData(GofunDesktopEntryData*);
-	void save();
-	void costumizedStart();
-	void openDirectory();
-	void executeCommand(ExecuteOption* = NULL);
-	QPopupMenu* rightClickPopup(const QPoint&);
-	void editEntry();
-	void performDefaultAction() { execute(); };
-	static void createNewItem(GofunCatButton*);
-	
-	GofunApplicationEntryData* data() { return m_data; }
-	
-	public slots:
-	void popupActivated(int);
-	private:
-	QString saveProcArguments(QProcess*);
-	void interpretExecString(QString&);
-	void addSplittedProcArgument(QProcess*,const QString&);
-	void execute(const QString& = QString::null);
-	
-	GofunApplicationEntryData* m_data;
-};
+QUrl GofunURLComposer::getURL( )
+{
+	return url;
+}
 
-#endif
 

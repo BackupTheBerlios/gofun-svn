@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <qstringlist.h>
 #include <qlayout.h>
  
 #include "gofun_list_dialog.h"

@@ -25,7 +25,7 @@
 
 #include "gofun_desktop_object.h"
 
-class GofunItemData;
+class GofunDesktopEntryData;
 class ExecuteOption;
 class GofunIconView;
 class GofunIconViewToolTip;
@@ -50,7 +50,7 @@ public:
 	GofunItem(GofunIconView*, const QString& = 0);
 	virtual ~GofunItem();
 
-	virtual void setData(GofunItemData*);
+	virtual void setData(GofunDesktopEntryData*);
 	virtual void save();
 	void deleteEntry();
 	virtual void loadIcon();
@@ -62,7 +62,7 @@ public:
 	void setToolTipText(const QString);
 	const QString getToolTipText(void) const { return(toolTipText); }
 	
-	virtual GofunItemData* data() { return m_data; }
+	virtual GofunDesktopEntryData* data() { return m_data; }
 	virtual void performDefaultAction() {};
 public slots:
 	virtual void popupActivated(int);
@@ -71,7 +71,7 @@ private:
 	void interpretExecString(QString&);
 	void addSplittedProcArgument(QProcess*,const QString&);
 	
-	GofunItemData* m_data;
+	GofunDesktopEntryData* m_data;
 	
 	QString toolTipText;
 	GofunIconViewToolTip* toolTip;

@@ -134,7 +134,7 @@ GofunSettings::GofunSettings()
 	directory = new QLineEdit(widget_general);
 	filemanager = new QLineEdit(widget_general);
 	browser = new QLineEdit(widget_general);
-	grid_general->addWidget(new QLabel(tr("Terminal command"),widget_general),0,0);
+	grid_general->addWidget(new QLabel(tr("Terminal"),widget_general),0,0);
 	grid_general->addWidget(terminal,0,1);
 	grid_general->addWidget(new QLabel(tr("Directory"),widget_general),1,0);
 	grid_general->addWidget(directory,1,1);
@@ -193,7 +193,12 @@ void GofunSettings::apply()
 	GSC::get()->terminal_cmd = terminal->text();
 	GSC::get()->filemanager_cmd = filemanager->text();
 	GSC::get()->browser_cmd = browser->text();
-	GSC::get()->gofun_dir = directory->text();
+	
+	if(GSC::get()->gofun_dir != directory->text())
+	{
+		GSC::get()->gofun_dir = directory->text();
+		dynamic_cast<GofunWidget*>(qApp->mainWidget())->reloadData();
+	}
 	
 	if(GSC::get()->style != styles->currentText())
 	{
@@ -212,8 +217,6 @@ void GofunSettings::apply()
 	
 	GofunWidget::applyStyleSettings();
 	GofunWidget::applyColorSettings();
-		
-	dynamic_cast<GofunWidget*>(qApp->mainWidget())->reloadData();
 }
 
 void GofunSettings::load()

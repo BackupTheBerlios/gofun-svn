@@ -17,7 +17,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
+ 
+#include <mntent.h>
+ 
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
@@ -31,28 +33,48 @@
 GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 {	
 	QWidget* widget_main = new QWidget(this);	
-	QGridLayout* grid = new QGridLayout(widget_main,5,3);
+	QGridLayout* grid = new QGridLayout(widget_main,3,3);
 	
 	tabwidget->addTab(widget_main,tr("Main"));
 		
 	desw = new GofunDesktopEntrySettingsWidget(widget_main);
-	unmount_icon = new QLineEdit(widget_main);
-	unmount_icon_button = new QToolButton(widget_main);
 	device = new QComboBox(true,widget_main);
+	mount_point = new QComboBox(true,widget_main);
+	
+	FILE* fp = setmntent("/etc/fstab","r");
+	struct mntent* me;
+	while((me = getmntent(fp)) != NULL)
+	{
+		if(QString(me->mnt_fsname) != "none")
+			device->insertItem(me->mnt_fsname);
+		if(QString(me->mnt_dir).find("/dev") != 0 && QString(me->mnt_dir) != "/proc")
+			mount_point->insertItem(me->mnt_dir);
+	}
+	endmntent(fp);
+	
 	grid->addMultiCellWidget(desw,0,0,0,2);
 	grid->addWidget(new QLabel(tr("Device"),widget_main),1,0);
 	grid->addWidget(device,1,1);
-	grid->addWidget(new QLabel(tr("UnmountIcon"),widget_main),3,0);
-	grid->addWidget(unmount_icon,3,1);
-	grid->addWidget(unmount_icon_button,3,2);
+	grid->addWidget(new QLabel(tr("MountPoint"),widget_main),2,0);
+	grid->addWidget(mount_point,2,1);
 	
 	QWidget* widget_advanced = new QWidget(this);
 	QGridLayout* grid_adv = new QGridLayout(widget_advanced,3,3);
 	
 	tabwidget->addTab(widget_advanced,tr("Advanced"));
 	
+	type = new QComboBox(widget_advanced);
+	QStringList filesystems = QStringList::split('\n',GofunMisc::shell_call("cat /proc/filesystems | sed -e 's/nodev//' | sed -e 's/\\t//'"));
+	filesystems.sort();
+	type->insertStringList(filesystems);
+	unmount_icon = new QLineEdit(widget_advanced);
+	unmount_icon_button = new QToolButton(widget_advanced);
 	readonly_chk = new QCheckBox(tr("Use filesystem in ReadOnly mode"),widget_advanced);
-	grid_adv->addMultiCellWidget(readonly_chk,0,0,0,2);
+	grid_adv->addWidget(new QLabel(tr("UnmountIcon"),widget_advanced),0,0);
+	grid_adv->addWidget(unmount_icon,0,1);
+	grid_adv->addWidget(unmount_icon_button,0,2);
+	grid_adv->addMultiCellWidget(readonly_chk,1,1,0,2);
+	grid_adv->addWidget(type,2,0);
 	
 	connect(desw->icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	
@@ -97,11 +119,7 @@ bool GofunFSDeviceItemSettings::inputValid()
 		return true;
 }
 
-void GofunFSDeviceItemSettings::iconDialog()
-{
-}
-
-GofunFSDeviceItemData* GofunFSDeviceItemSettings::data()
+GofunFSDeviceEntryData* GofunFSDeviceItemSettings::data()
 {
 	return dynamic_cast<GofunFSDeviceItem*>(item)->data();
 }

@@ -30,6 +30,11 @@ class GofunItemWizard : public QWizard
 	public:
 	GofunItemWizard();
 	
+	private slots:
+	void appSelected();
+	void devSelected();
+	void linkSelected();
+	
 	private:
 	QLineEdit* command;
 };

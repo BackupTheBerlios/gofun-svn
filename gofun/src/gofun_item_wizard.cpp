@@ -20,8 +20,10 @@
 
 #include <qlayout.h>
 #include <qlabel.h>
+#include <qpushbutton.h>
  
 #include "gofun_item_wizard.h"
+#include "gofun_misc.h"
 
 GofunItemWizard::GofunItemWizard()
 {
@@ -30,11 +32,58 @@ GofunItemWizard::GofunItemWizard()
 	QWidget* widget_start = new QWidget(this);
 	addPage(widget_start,tr("Start"));
 	
-	QGridLayout* grid_start = new QGridLayout(widget_start,3,1);
 	
-	command = new QLineEdit(tr("Command"),widget_start);
-	grid_start->addWidget(new QLabel(tr("This wizard will guide you through the creation of a Gofun Desktop Entry"),widget_start),0,0);
 	
-	grid_start->addWidget(command,1,0);
+	QGridLayout* grid_start = new QGridLayout(widget_start,4,2);
+	
+	QPushButton* app_select = new QPushButton(tr("Application"),widget_start);
+	app_select->setPixmap(GofunMisc::get_icon("exec"));
+	app_select->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
+	
+	connect(app_select,SIGNAL(clicked()),this,SLOT(appSelected()));
+	
+	QPushButton* dev_select = new QPushButton(tr("Device"),widget_start);
+	dev_select->setPixmap(GofunMisc::get_icon("device"));
+	dev_select->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
+	
+	connect(dev_select,SIGNAL(clicked()),this,SLOT(devSelected()));
+	
+	QPushButton* link_select = new QPushButton(tr("Link"),widget_start);
+	link_select->setPixmap(GofunMisc::get_icon("link"));
+	link_select->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
+	
+	connect(link_select,SIGNAL(clicked()),this,SLOT(linkSelected()));
+	
+	grid_start->addMultiCellWidget(new QLabel(tr("Which kind of Desktop Entry do you want to create?"),widget_start),0,0,0,1);
+	grid_start->addWidget(app_select,1,0);
+	grid_start->addWidget(new QLabel(tr("Create an application entry."),widget_start),1,1);	grid_start->addWidget(dev_select,2,0);
+	grid_start->addWidget(new QLabel(tr("Create a device entry."),widget_start),2,1);
+	grid_start->addWidget(link_select,3,0);
+	grid_start->addWidget(new QLabel(tr("Create a link entry."),widget_start),3,1);
 }
+
+void GofunItemWizard::appSelected()
+{
+	QWidget* widget_command = new QWidget(this);
+	addPage(widget_command,tr("Command"));
+	setAppropriate(widget_command,true);
+	
+	QGridLayout* grid_command = new QGridLayout(widget_command);
+	
+	command = new QLineEdit(widget_command);
+	
+	grid_command->addWidget(new QLabel(tr("You can either enter the command for the application\nyou want to run or you can try to find it using the CommandBrowser"),widget_command),0,0);
+	grid_command->addWidget(command,1,0);
+	
+	next();
+}
+
+void GofunItemWizard::devSelected()
+{
+}
+
+void GofunItemWizard::linkSelected()
+{
+}
+
 

@@ -33,40 +33,132 @@
 #include "gofun_cat_button.h"
 #include "gofun_iconview.h"
 
-GofunDesktopObject* GofunItemData::GofunDesktopObjectFactory(QWidget* parent)
+GofunDesktopObject* GofunDesktopEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
 	return new GofunItem(dynamic_cast<GofunIconView*>(parent),Name);
 }
 
-GofunDesktopObject* GofunApplicationItemData::GofunDesktopObjectFactory(QWidget* parent)
+GofunDesktopObject* GofunApplicationEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
 	return new GofunApplicationItem(dynamic_cast<GofunIconView*>(parent),Name);
 }
 
-GofunDesktopObject* GofunFSDeviceItemData::GofunDesktopObjectFactory(QWidget* parent)
+GofunDesktopObject* GofunFSDeviceEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
 	return new GofunFSDeviceItem(dynamic_cast<GofunIconView*>(parent),Name);
 }
 
-GofunDesktopObject* GofunLinkItemData::GofunDesktopObjectFactory(QWidget* parent)
+GofunDesktopObject* GofunLinkEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
 	return new GofunLinkItem(dynamic_cast<GofunIconView*>(parent),Name);
 }
 
-GofunDesktopObject* GofunCatData::GofunDesktopObjectFactory(QWidget* parent)
+GofunDesktopObject* GofunCatEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
 	return new GofunCatButton(Name,parent);
 }
 
-QString GofunDataLoader::get_value(QString line)
+bool GofunDesktopEntryData::parseLine(const QString& line)
+{
+	if(GofunDataLoader::parseLine("Name",line,Name)
+	|| GofunDataLoader::parseLine("GenericName",line,GenericName)
+	|| GofunDataLoader::parseLine("Comment",line,Comment)
+	|| GofunDataLoader::parseLine("Icon",line,Icon)
+	|| GofunDataLoader::parseLine("Version",line,Version)
+	|| GofunDataLoader::parseLine("Type",line,Type)
+	|| GofunDataLoader::parseLine("Encoding",line,Encoding)
+	|| GofunDataLoader::parseLine("Hidden",line,Hidden)
+	|| line.find("[Desktop Entry]") == 0)
+		return true;
+	return false;
+}
+
+bool GofunApplicationEntryData::parseLine(const QString& line)
+{
+	if(GofunDesktopEntryData::parseLine(line))
+		return true;
+
+	if(GofunDataLoader::parseLine("Exec",line,Exec)
+	|| GofunDataLoader::parseLine("Path",line,Path)
+	|| GofunDataLoader::parseLine("Terminal",line,Terminal)
+	|| GofunDataLoader::parseLine("X-GoFun-NewX",line,X_GoFun_NewX)
+	|| GofunDataLoader::parseLine("X-GoFun-User",line,X_GoFun_User)
+	|| GofunDataLoader::parseLine("X-GoFun-Env",line,X_GoFun_Env))
+		0;
+	else if(line.find("X-GoFun-Parameter") == 0)
+	{
+		if(line.find("X-GoFun-Parameter-Flag") == 0)
+		{
+			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Flag-").length()).toInt()].Flag = GofunDataLoader::getValue(line);
+		}
+		else if(line.find("X-GoFun-Parameter-Values") == 0)
+		{
+			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Values-").length()).toInt()].Values = QStringList::split(';',GofunDataLoader::getValue(line));
+		}
+		else if(line.find("X-GoFun-Parameter-Default") == 0)
+		{
+			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Default-").length()).toInt()].Default_Value = GofunDataLoader::getValue(line);
+		}
+		else if(line.find("X-GoFun-Parameter-Prompt") == 0)
+		{
+			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Prompt-").length()).toInt()].Prompt = GofunDataLoader::getValue(line);
+		}
+		else if(line.find("X-GoFun-Parameter-Comment") == 0)
+		{
+			X_GoFun_Parameter[GofunDataLoader::getKey(line).remove(0,QString("X-GoFun-Parameter-Comment-").length()).toInt()].Comment = GofunDataLoader::getValue(line);
+		}
+		else
+			return false;
+	}
+	else
+			return false;
+	return true;
+}
+
+bool GofunLinkEntryData::parseLine(const QString& line)
+{
+	if(GofunDesktopEntryData::parseLine(line))
+		return true;
+		
+	if(GofunDataLoader::parseLine("URL",line,URL))
+		return true;
+	return false;
+}
+
+bool GofunFSDeviceEntryData::parseLine(const QString& line)
+{
+	if(GofunDesktopEntryData::parseLine(line))
+		return true;
+		
+	if(GofunDataLoader::parseLine("Dev",line,Device)
+	|| GofunDataLoader::parseLine("FSType",line,FSType)
+	|| GofunDataLoader::parseLine("MountPoint",line,MountPoint)
+	|| GofunDataLoader::parseLine("ReadOnly",line,ReadOnly)
+	|| GofunDataLoader::parseLine("UnmountIcon",line,UnmountIcon))
+		return true;
+	return false;
+}
+
+bool GofunCatEntryData::parseLine(const QString& line)
+{
+	if(GofunDesktopEntryData::parseLine(line))
+		return true;
+		
+	if(GofunDataLoader::parseLine("X-GoFun-Color",line,X_GoFun_Color)
+	|| GofunDataLoader::parseLine("X-GoFun-Background",line,X_GoFun_Background))
+		return true;
+	return false;
+}
+ 
+QString GofunDataLoader::getValue(QString line)
 {
 	line.remove(0,line.find("=")+1);
 	return line;
 }
 
-QString GofunDataLoader::get_locale(const QString& line)
+QString GofunDataLoader::getLocale(const QString& line)
 {
-	QString tmp = get_key(line);
+	QString tmp = getKey(line);
 	if(tmp.find("[") != -1)
 	{
 		tmp.remove(0,tmp.find("[")+1);
@@ -77,13 +169,13 @@ QString GofunDataLoader::get_locale(const QString& line)
 		return "";
 }
 
-QString GofunDataLoader::get_key(QString line)
+QString GofunDataLoader::getKey(QString line)
 {
 	line.remove(line.find("="),line.length());
 	return line;
 }
 
-QStringList GofunDataLoader::load_file_data(const QString& _file)
+QStringList GofunDataLoader::loadFileData(const QString& _file)
 {
 	QStringList lines;
 	QFile file( _file );
@@ -103,21 +195,21 @@ QStringList GofunDataLoader::load_file_data(const QString& _file)
 	return lines;
 }
 
-bool GofunDataLoader::parse_line(const QString& key, const QString& line, QString& target)
+bool GofunDataLoader::parseLine(const QString& key, const QString& line, QString& target)
 {
 	if(line.find(key) == 0)
 	{
-		target = get_value(line);
+		target = getValue(line);
 		return true;
 	}
 	return false;
 }
 
-bool GofunDataLoader::parse_line(const QString& key, const QString& line, std::vector<QString>& target)
+bool GofunDataLoader::parseLine(const QString& key, const QString& line, std::vector<QString>& target)
 {
 	if(line.find(key) == 0)
 	{
-		QStringList qsl = QStringList::split(QRegExp(";"),get_value(line));
+		QStringList qsl = QStringList::split(QRegExp(";"),getValue(line));
 		for(QStringList::Iterator it = qsl.begin(); it != qsl.end(); ++it)
 		{
 			target.push_back(QString((*it)).replace("\\;",";"));
@@ -127,29 +219,28 @@ bool GofunDataLoader::parse_line(const QString& key, const QString& line, std::v
 	return false;
 }
 
-bool GofunDataLoader::parse_line(const QString& key, const QString& line, GofunLocaleString& target)
+bool GofunDataLoader::parseLine(const QString& key, const QString& line, GofunLocaleString& target)
 {
 	if(line.find(key) == 0)
 	{
-		target.add(get_locale(line),get_value(line));
+		target.add(getLocale(line),getValue(line));
 		return true;
 	}
 	return false;
 }
 
-GofunCatData* GofunDataLoader::parse_cat_info(const QString& file)
+GofunCatEntryData* GofunDataLoader::parseCatInfo(const QString& file)
 {
-	QStringList catdata = load_file_data(file);
+	QStringList catdata = loadFileData(file);
 			
-	GofunCatData* cdata = new GofunCatData;
+	GofunCatEntryData* cdata = new GofunCatEntryData;
 	cdata->Catdir = QString(file).remove(QRegExp("\\.directory$"));
 			
 	for(QStringList::Iterator it = catdata.begin(); it != catdata.end(); ++it)
 	{
-		if(parse_desktop_file_line(cdata,(*it)))
+		if(cdata->parseLine((*it)))
 			0;
-		if(!(parse_line("X-GoFun-Color",(*it),cdata->X_GoFun_Color)
-		|| parse_line("X-GoFun-Background",(*it),cdata->X_GoFun_Background)))
+		else
 			cdata->Unknownkeys += (*it);
 	}
 		
@@ -158,146 +249,65 @@ GofunCatData* GofunDataLoader::parse_cat_info(const QString& file)
 	return cdata;	
 }
 
-//@TODO: implement general parser
-bool GofunDataLoader::parse_desktop_file_line(GofunDesktopEntryData* ddata, const QString& line)
+GofunDesktopEntryData* GofunDataLoader::parseGofunFile(const QString& file)
 {
-	if(parse_line("Name",line,ddata->Name)
-	|| parse_line("GenericName",line,ddata->GenericName)
-	|| parse_line("Comment",line,ddata->Comment)
-	|| parse_line("Icon",line,ddata->Icon)
-	|| parse_line("Version",line,ddata->Version)
-	|| parse_line("Type",line,ddata->Type)
-	|| parse_line("Encoding",line,ddata->Encoding)
-	|| parse_line("Hidden",line,ddata->Hidden)
-	|| line.find("[Desktop Entry]") == 0)
-		return true;
-	return false;
-}
+	QStringList gofundata = loadFileData(file);
 
-bool GofunDataLoader::parse_link_file_line(GofunLinkItemData* data, const QString& line)
-{
-	if(parse_line("URL",line,data->URL))
-		return true;
-	return false;
-}
-
-bool GofunDataLoader::parse_fsdevice_file_line(GofunFSDeviceItemData* data, const QString& line)
-{
-	if(parse_line("Dev",line,data->Device)
-	|| parse_line("FSType",line,data->FSType)
-	|| parse_line("MountPoint",line,data->MountPoint)
-	|| parse_line("ReadOnly",line,data->ReadOnly)
-	|| parse_line("UnmountIcon",line,data->UnmountIcon))
-		return true;
-	return false;
-}
-
-bool GofunDataLoader::parse_application_file_line(GofunApplicationItemData* data, const QString& line)
-{	
-	if(parse_line("Exec",line,data->Exec)
-	|| parse_line("Path",line,data->Path)
-	|| parse_line("Terminal",line,data->Terminal)
-	|| parse_line("X-GoFun-NewX",line,data->X_GoFun_NewX)
-	|| parse_line("X-GoFun-User",line,data->X_GoFun_User)
-	|| parse_line("X-GoFun-Env",line,data->X_GoFun_Env))
-		0;
-	else if(line.find("X-GoFun-Parameter") == 0)
-	{
-		if(line.find("X-GoFun-Parameter-Flag") == 0)
-		{
-			data->X_GoFun_Parameter[get_key(line).remove(0,QString("X-GoFun-Parameter-Flag-").length()).toInt()].Flag = get_value(line);
-		}
-		else if(line.find("X-GoFun-Parameter-Values") == 0)
-		{
-			data->X_GoFun_Parameter[get_key(line).remove(0,QString("X-GoFun-Parameter-Values-").length()).toInt()].Values = QStringList::split(';',get_value(line));
-		}
-		else if(line.find("X-GoFun-Parameter-Default") == 0)
-		{
-			data->X_GoFun_Parameter[get_key(line).remove(0,QString("X-GoFun-Parameter-Default-").length()).toInt()].Default_Value = get_value(line);
-		}
-		else if(line.find("X-GoFun-Parameter-Prompt") == 0)
-		{
-			data->X_GoFun_Parameter[get_key(line).remove(0,QString("X-GoFun-Parameter-Prompt-").length()).toInt()].Prompt = get_value(line);
-		}
-		else if(line.find("X-GoFun-Parameter-Comment") == 0)
-		{
-			data->X_GoFun_Parameter[get_key(line).remove(0,QString("X-GoFun-Parameter-Comment-").length()).toInt()].Comment = get_value(line);
-		}
-		else
-			return false;
-	}
-	else
-			return false;
-	return true;
-}
-
-GofunItemData* GofunDataLoader::parse_gofun_file(const QString& file)
-{
-	QStringList gofundata = load_file_data(file);
-
-	GofunItemData* idata = new GofunItemData;
+	GofunDesktopEntryData* idata = new GofunDesktopEntryData;
 	bool found_type = false;
+	QString section;
 
 	for(QStringList::Iterator it = gofundata.begin(); it != gofundata.end(); ++it)
 	{
-		/*if (parse_desktop_file_line(idata,(*it))
-		|| parse_application_file_line(static_cast<GofunApplicationItemData*>(idata),(*it))
-		|| parse_line("Hidden",(*it),idata->Hidden))
-			0;*/
-			
-		if(parse_desktop_file_line(idata,(*it)))
+		if((*it)[0] == '[')
+			section = (*it);
+		if(section != "[Desktop Entry]")
+			continue;
+		
+		if(idata->parseLine((*it)))
 		{
 			if(!(found_type == true || idata->Type.isEmpty()))
 			{
 			if(idata->Type == "Application")
 			{
-				GofunItemData* tmp = new GofunApplicationItemData;
+				GofunDesktopEntryData* tmp = new GofunApplicationEntryData;
 				*tmp = *idata;
 				delete idata;
 				idata = tmp;
 				found_type = true;
 				for(QStringList::Iterator sit = idata->Unknownkeys.begin(); sit != idata->Unknownkeys.end(); ++sit)
 				{
-					if(parse_application_file_line(static_cast<GofunApplicationItemData*>(idata),(*sit)))
+					if(idata->parseLine((*sit)))
 						remove((*sit));
 				}
 			}
 			else if(idata->Type == "Link")
 			{
-				GofunItemData* tmp = new GofunLinkItemData;
+				GofunDesktopEntryData* tmp = new GofunLinkEntryData;
 				*tmp = *idata;
 				delete idata;
 				idata = tmp;
 				found_type = true;
 				for(QStringList::Iterator sit = idata->Unknownkeys.begin(); sit != idata->Unknownkeys.end(); ++sit)
 				{
-					if(parse_link_file_line(static_cast<GofunLinkItemData*>(idata),(*sit)))
+					if(idata->parseLine((*sit)))
 						remove((*sit));
 				}
 			}
 			else if(idata->Type == "FSDevice")
 			{
-				GofunItemData* tmp = new GofunFSDeviceItemData;
+				GofunDesktopEntryData* tmp = new GofunFSDeviceEntryData;
 				*tmp = *idata;
 				delete idata;
 				idata = tmp;
 				found_type = true;
 				for(QStringList::Iterator sit = idata->Unknownkeys.begin(); sit != idata->Unknownkeys.end(); ++sit)
 				{
-					if(parse_fsdevice_file_line(static_cast<GofunFSDeviceItemData*>(idata),(*sit)))
+					if(idata->parseLine((*sit)))
 						remove((*sit));
 				}
 			}
 			}
-		}
-		else if(!idata->Type.isEmpty())
-		{
-			if(idata->Type == "Application")
-				parse_application_file_line(static_cast<GofunApplicationItemData*>(idata),(*it));
-			else if(idata->Type == "Link")
-				parse_link_file_line(static_cast<GofunLinkItemData*>(idata),(*it));
-			else if(idata->Type == "FSDevice")
-				parse_fsdevice_file_line(static_cast<GofunFSDeviceItemData*>(idata),(*it));
 		}
 		else
 		{
@@ -310,12 +320,12 @@ GofunItemData* GofunDataLoader::parse_gofun_file(const QString& file)
 	return idata;
 }
 
-std::vector<GofunItemData*>* GofunDataLoader::parse_catdir(const QString& catdir)
+std::vector<GofunDesktopEntryData*>* GofunDataLoader::parseCatdir(const QString& catdir)
 {
 	glob_t files;
 	glob((catdir + "*.desktop"),0,0,&files);
 	
-	std::vector<GofunItemData*>* VoID = new std::vector<GofunItemData*>;
+	std::vector<GofunDesktopEntryData*>* VoID = new std::vector<GofunDesktopEntryData*>;
 	
 	for(int i = 0; i <files.gl_pathc; ++i)
 	{
@@ -323,35 +333,35 @@ std::vector<GofunItemData*>* GofunDataLoader::parse_catdir(const QString& catdir
 		{
 			continue;
 		}
-		VoID->push_back(parse_gofun_file(files.gl_pathv[i]));
+		VoID->push_back(parseGofunFile(files.gl_pathv[i]));
 	}
 	globfree(&files);
 	
 	return VoID;
 }
 
-std::vector<GofunCatData>* GofunDataLoader::getData()
+std::vector<GofunCatEntryData>* GofunDataLoader::getData()
 {
 	glob_t categories; //default data dir 
 	glob((GSC::get()->gofun_dir + "/*/.directory").ascii(),0,0,&categories);
 
-	std::vector<GofunCatData>* VaCD = new std::vector<GofunCatData>;
+	std::vector<GofunCatEntryData>* VaCD = new std::vector<GofunCatEntryData>;
 	
-	GofunCatData* p_cdata = parse_cat_info("tools/.directory");
+	GofunCatEntryData* p_cdata = parseCatInfo("tools/.directory");
 	VaCD->push_back(*p_cdata);
 	delete p_cdata;
 	
 	for(int i = 0; i < categories.gl_pathc; ++i)
 	{
-		GofunCatData* p_cdata = parse_cat_info(categories.gl_pathv[i]);
+		GofunCatEntryData* p_cdata = parseCatInfo(categories.gl_pathv[i]);
 		VaCD->push_back(*p_cdata);
 		delete p_cdata;
 	}
 	globfree(&categories);
 	
-	for(std::vector<GofunCatData>::iterator it = VaCD->begin(); it != VaCD->end(); ++it)
+	for(std::vector<GofunCatEntryData>::iterator it = VaCD->begin(); it != VaCD->end(); ++it)
 	{
-		(*it).ItemData = parse_catdir((*it).Catdir);
+		(*it).ItemData = parseCatdir((*it).Catdir);
 	}
  
 	return VaCD;

@@ -105,14 +105,12 @@ void GofunLocaleString::desktopEntryPrint(const QString& key, QTextStream& strea
 		stream << key + "[" + (*it).first + "]=";
 		stream.writeRawBytes((*it).second.utf8(),(*it).second.utf8().length());
 		stream << '\n';
-		//tmp += key + "[" + (*it).first + "]=" + QString((*it).second.utf8()) + "\n";
 		}
 		else
 		{
 		stream << key + "=";
 		stream.writeRawBytes((*it).second.utf8(),(*it).second.utf8().length());
 		stream << '\n';
-		//tmp += key + "=" + QString((*it).second.utf8()) + "\n";
 		}
 	}
 }

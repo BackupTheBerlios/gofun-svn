@@ -182,7 +182,7 @@ void GofunApplicationItemSettings::commandEditor()
 void GofunApplicationItemSettings::addParRow()
 {
 	tb_par->insertRows(tb_par->numRows());
-	tb_par->setItem(tb_par->numRows()-1,0,new QTableItem(tb_par,QTableItem::WhenCurrent));
+	tb_par->setItem(tb_par->numRows()-1,0,new QTableItem(tb_par,QTableItem::WhenCurrent,""));
 	QPushButton* par_valedit_bt = new QPushButton(tr("Edit"),tb_par);
 	connect(par_valedit_bt,SIGNAL(clicked()),this,SLOT(parValEditDialog()));
 	
@@ -273,30 +273,24 @@ void GofunApplicationItemSettings::envItemEdit(QListViewItem* item,const QPoint&
 
 void GofunApplicationItemSettings::iconDialog()
 {
-	GofunIconDialog* id = new GofunIconDialog();	
+	GofunIconDialog* id = new GofunIconDialog();
+	QString start_dir;
+	if(!desw->icon.isEmpty())
+	{
+		start_dir = desw->icon;
+		id->setStartIcon(desw->icon);
+	}
+	else if(!directory->text().isEmpty())
+	{
+		start_dir = GofunMisc::ext_filestring(directory->text());
+	}
+	id->setStartDir(start_dir);
 	if(id->exec() == QDialog::Accepted)
 	{
 		desw->icon = id->selected();
 		desw->icon_button->setPixmap(QPixmap(id->selected()));
 	}
 	delete id;
-
-	/*QString start_dir;
-	if(!icon->text().isEmpty())
-	{
-		start_dir = icon->text();
-	}
-	else if(!directory->text().isEmpty())
-	{
-		start_dir = GofunMisc::ext_filestring(directory->text());
-	}
-
-	QString file = GofunMisc::fileDialogGetImage(start_dir,tr("Pick an icon"),tr("Icons"));
-	if(!file.isEmpty())
-	{
-		icon->setText(file);
-		icon_button->setPixmap(QPixmap(file));
-	}*/
 }
 
 void GofunApplicationItemSettings::dirDialog()
@@ -423,7 +417,7 @@ void GofunApplicationItemSettings::load(GofunApplicationItem* _item)
 }
 
 
-GofunApplicationItemData* GofunApplicationItemSettings::data()
+GofunApplicationEntryData* GofunApplicationItemSettings::data()
 {
 	return dynamic_cast<GofunApplicationItem*>(item)->data();
 }

@@ -38,7 +38,7 @@ class GofunFSDeviceItem : public GofunItem
 	public:
 	GofunFSDeviceItem(GofunIconView*, const QString& = 0);
 	
-	void setData(GofunItemData*);
+	void setData(GofunDesktopEntryData*);
 	void save();
 	QPopupMenu* rightClickPopup(const QPoint&);
 	void editEntry();
@@ -51,13 +51,13 @@ class GofunFSDeviceItem : public GofunItem
 	
 	static void createNewItem(GofunCatButton*);
 	
-	GofunFSDeviceItemData* data() { return m_data; }
+	GofunFSDeviceEntryData* data() { return m_data; }
 	
 	public slots:
 	void popupActivated(int);
 	
 	private:
-	GofunFSDeviceItemData* m_data;
+	GofunFSDeviceEntryData* m_data;
 };
 
 #endif

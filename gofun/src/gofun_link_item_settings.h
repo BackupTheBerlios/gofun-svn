@@ -34,14 +34,14 @@ public:
 	void load(GofunLinkItem*);
 	
 public slots:
-	void iconDialog();
 	void dirDialog();
+	void urlComposer();
 private:
 	void save();
 	void apply();
 	bool inputValid();
 
-	GofunLinkItemData* data();
+	GofunLinkEntryData* data();
 	
 	QLineEdit* url;
 	QToolButton* url_button;

@@ -784,9 +784,9 @@ enum
     break;
 
 #define HELP_OPTION_DESCRIPTION \
-  _("      --help     display this help and exit\n")
+  "      --help     display this help and exit\n"
 #define VERSION_OPTION_DESCRIPTION \
-  _("      --version  output version information and exit\n")
+  "      --version  output version information and exit\n"
 
 //#include "closeout.h"
 //#include "version-etc.h"

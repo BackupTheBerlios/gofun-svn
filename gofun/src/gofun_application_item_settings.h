@@ -66,7 +66,7 @@ private:
 	void apply();
 	bool inputValid();
 	
-	GofunApplicationItemData* data();
+	GofunApplicationEntryData* data();
 
 	QLineEdit* command;
 	QToolButton* command_button;

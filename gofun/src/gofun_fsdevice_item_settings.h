@@ -33,19 +33,20 @@ public:
 	void load(GofunFSDeviceItem*);
 	
 public slots:
-	void iconDialog();
 	void dirDialog();
 private:
 	void save();
 	void apply();
 	bool inputValid();
 
-	GofunFSDeviceItemData* data();
+	GofunFSDeviceEntryData* data();
 	
 	QLineEdit* unmount_icon;
 	QToolButton* unmount_icon_button;
 	QCheckBox* readonly_chk;
 	QComboBox* device;
+	QComboBox* mount_point;
+	QComboBox* type;
 };
 
 #endif

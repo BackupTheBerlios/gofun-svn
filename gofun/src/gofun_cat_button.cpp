@@ -60,7 +60,7 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 	iconview = new GofunIconView();
 		
 	//Make sure it's being initialized from the start
-	m_data = new GofunCatData();
+	m_data = new GofunCatEntryData();
 	
 	loadIcon();
 	
@@ -163,7 +163,7 @@ void GofunCatButton::catSettings()
 }
 
 //Too obvious for a comment, oh ...
-void GofunCatButton::setData(GofunCatData* d)
+void GofunCatButton::setData(GofunCatEntryData* d)
 {
 	delete m_data;
 	m_data = d;
@@ -233,7 +233,7 @@ void GofunCatButton::popupItemDnD(int id)
 {
 	//Wise man prepare ...
 	GofunItem* gi = new GofunItem(iconview, current_item->text());
-	GofunItemData* _data = new GofunItemData(*current_item->data());
+	GofunDesktopEntryData* _data = new GofunDesktopEntryData(*current_item->data());
 	
 	switch(id)
 	{

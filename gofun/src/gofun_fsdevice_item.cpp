@@ -31,7 +31,7 @@
 
 GofunFSDeviceItem::GofunFSDeviceItem(GofunIconView* iconview, const QString& string) : GofunItem(iconview, string)
 {
-	m_data = new GofunFSDeviceItemData();
+	m_data = new GofunFSDeviceEntryData();
 }
 
 //Open dialog for editing a Desktop Entry.
@@ -44,10 +44,10 @@ void GofunFSDeviceItem::editEntry()
 	settings_dlg->exec();
 }
 
-void GofunFSDeviceItem::setData(GofunItemData* d)
+void GofunFSDeviceItem::setData(GofunDesktopEntryData* d)
 {
 	delete m_data;
-	m_data = dynamic_cast<GofunFSDeviceItemData*>(d);
+	m_data = dynamic_cast<GofunFSDeviceEntryData*>(d);
 	loadIcon();
 	if(!data()->Comment.isEmpty())
 		setToolTipText(data()->Comment);
@@ -142,6 +142,11 @@ bool GofunFSDeviceItem::isMounted()
 
 void GofunFSDeviceItem::open() //@TODO resolve code duplication between this and GofunApplicationItem::openDirectory()
 {
+	if(!isMounted())
+		mount();
+	if(!isMounted())
+		return;
+
 	QProcess proc(GSC::get()->filemanager_cmd);
 	if(!data()->MountPoint.isEmpty())
 		proc.addArgument((GofunMisc::ext_filestring(data()->MountPoint)));
@@ -155,7 +160,7 @@ void GofunFSDeviceItem::open() //@TODO resolve code duplication between this and
 
 void GofunFSDeviceItem::mount()
 {
-	QString tmp = GofunMisc::shell_call("mount "+data()->MountPoint+" 2>&1");
+	QString tmp = GofunMisc::shell_call("mount " + QString(GofunMisc::stringToBool(data()->ReadOnly) ? "-r " : "") + data()->MountPoint+" 2>&1");
 	if(!isMounted())
 		QMessageBox::warning(0,tr("Mount error"),tr("Mounting failed:\n")+tmp);
 	else

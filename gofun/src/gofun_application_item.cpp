@@ -40,7 +40,7 @@
 
 GofunApplicationItem::GofunApplicationItem(GofunIconView* iconview, const QString& string) : GofunItem(iconview,string)
 {
-	m_data = new GofunApplicationItemData();
+	m_data = new GofunApplicationEntryData();
 }
 
 /*GofunItem::~GofunItem()
@@ -90,10 +90,10 @@ void GofunApplicationItem::save()
 	}
 }
 
-void GofunApplicationItem::setData(GofunItemData* d)
+void GofunApplicationItem::setData(GofunDesktopEntryData* d)
 {
 	delete m_data;
-	m_data = dynamic_cast<GofunApplicationItemData*>(d);
+	m_data = dynamic_cast<GofunApplicationEntryData*>(d);
 	loadIcon();
 	if(!data()->Comment.isEmpty())
 		setToolTipText(data()->Comment);
