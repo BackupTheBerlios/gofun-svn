@@ -80,6 +80,7 @@ private:
 	void deleteEntry(GofunItem*);
 	void openDirectoryItem(GofunItem*);
 	void loadData();
+	void unloadData();
 
 	QWidgetStack * view_ws;
 	GofunCatButton* current_cat;

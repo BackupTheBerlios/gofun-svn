@@ -44,6 +44,11 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 	data = new GofunCatData();
 }
 
+/*GofunCatButton::~GofunCatButton()
+{
+	delete data;
+}*/
+
 //Make sure the right-button is in the right place (!you got the word joke?)
 void GofunCatButton::resizeEvent(QResizeEvent* event)
 {
@@ -67,6 +72,7 @@ void GofunCatButton::catSettings()
 //Too obvious for a comment, oh ...
 void GofunCatButton::setData(GofunCatData* d)
 {
+	delete data;
 	data = d;
 }
 

@@ -34,6 +34,7 @@ class GofunItem : public QIconViewItem
 {
 public:
 	GofunItem(GofunIconView*, const QString& = 0);
+	//virtual ~GofunItem();
 
 	void loadIcon();
 	void setData(GofunItemData*);

@@ -44,6 +44,7 @@ public slots:
 	void resizeEvent(QResizeEvent*);
 public:
 	GofunCatButton(const QString&, QWidget*);
+	//~GofunCatButton();
 	void setIconView(GofunIconView*);
 	void setData(GofunCatData*);
 	virtual void dragEnterEvent(QDragEnterEvent* event);

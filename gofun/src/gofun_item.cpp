@@ -34,6 +34,11 @@ GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconView
 	data = new GofunItemData();
 }
 
+/*GofunItem::~GofunItem()
+{
+	delete data;
+}*/
+
 void GofunItem::save()
 {
 	QFile file( data->File );
@@ -68,7 +73,14 @@ void GofunItem::save()
 
 void GofunItem::deleteEntry()
 {
-	system(("rm "+data->File).ascii());
+	QProcess proc;
+	proc.addArgument("rm");
+	proc.addArgument("-f");
+	proc.addArgument(data->File);
+	proc.start();
+	while(proc.isRunning())
+	{
+	}
 	delete this;
 }
 
@@ -85,6 +97,7 @@ void GofunItem::loadIcon()
 
 void GofunItem::setData(GofunItemData* d)
 {
+	delete data;
 	data = d;
 	loadIcon();
 }

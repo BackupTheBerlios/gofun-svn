@@ -87,8 +87,7 @@ GofunWidget::GofunWidget()
 	
 	//Common it is ...
 	QToolButton* gficon = new QToolButton(this);
-	QPixmap* pixmap = new QPixmap("gofun.png");
-	gficon->setPixmap(*pixmap);
+	gficon->setPixmap(QPixmap("gofun.png"));
 	hboxlabel->addWidget(gficon);
 	
 	connect(gficon,SIGNAL(clicked()),this,SLOT(showAbout()));
