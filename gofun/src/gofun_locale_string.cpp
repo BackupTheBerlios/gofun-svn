@@ -17,13 +17,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
+ 
 #include <qstringlist.h>
  
 #include "gofun_locale_string.h"
 
 GofunLocale GofunLocaleString::system_locale(getenv("LC_MESSAGES"));
-GofunLocale GofunLocaleString::best_match_locale;
 
 GofunLocale::GofunLocale(const QString& locale)
 {
@@ -58,29 +57,29 @@ GofunLocale::operator const QString()
 
 GofunLocaleString::GofunLocaleString() : QString()
 {
-	best_match = 0;
+	found_match = false;
 }
 
 GofunLocaleString::GofunLocaleString(const QString& string) : QString(string)
 {
-	best_match = 0;
+	found_match = false;
 }
 
 void GofunLocaleString::add(const QString& locale, const QString& string)
 {
 	locale_strings[locale] = QString::fromUtf8(string);
 	
-	if(best_match == 0 || isBetterMatch(locale))
+	if(!found_match || isBetterMatch(locale))
 	{
-		best_match = locale_strings.find(locale);
+		found_match = true;
+		best_match = locale;
 		best_match_locale.setLocale(locale);
-		operator=((*best_match).second);
+		operator=(locale_strings[locale]);
 	}
 }
 
 bool GofunLocaleString::isBetterMatch(const GofunLocale& locale)
 {
-	//(*best_match).first == 
 	if(locale.lang != system_locale.lang)
 		return false;
 	if((best_match_locale.lang != system_locale.lang))
@@ -89,14 +88,13 @@ bool GofunLocaleString::isBetterMatch(const GofunLocale& locale)
 		return true;
 	if((best_match_locale.modifier != system_locale.modifier) && !locale.modifier.isEmpty() && (locale.modifier == system_locale.modifier))
 		return true;
-		
 }
 
 QString GofunLocaleString::desktopEntryPrint(const QString& key)
 {
 	QString tmp;
 	for(std::map<QString,QString>::iterator it = locale_strings.begin(); it != locale_strings.end(); ++it)
-	{
+	{		
 		if(!(*it).first.isEmpty())
 		tmp += key + "[" + (*it).first + "]=" + QString((*it).second.utf8()) + "\n";
 		else
@@ -107,6 +105,9 @@ QString GofunLocaleString::desktopEntryPrint(const QString& key)
 
 GofunLocaleString& GofunLocaleString::operator=( const QString& string)
 {
+	if(found_match)
+		(*locale_strings.find(best_match)).second = string;
+
 	QString::operator=(string);
 	return *this;
 }

@@ -207,7 +207,7 @@ void GofunApplicationItemSettings::parValEditDialog()
 
 void GofunApplicationItemSettings::remParRow()
 {
-
+	tb_par->removeRow(tb_par->currentRow());
 }
 
 void GofunApplicationItemSettings::userChkToggled(bool b)
@@ -233,6 +233,15 @@ void GofunApplicationItemSettings::remEnvVar()
 	}
 }
 
+GofunInterpretedLineEdit::GofunInterpretedLineEdit(const QString& text, QWidget* parent) : QLineEdit(text,parent)
+{
+}
+
+void GofunInterpretedLineEdit::setText(const QString& text)
+{
+	QLineEdit::setText(GofunMisc::shell_call("echo -n "+text));
+}
+
 void GofunApplicationItemSettings::envItemEdit(QListViewItem* item,const QPoint& pos,int i)
 {
 	if(!item)
@@ -248,12 +257,12 @@ void GofunApplicationItemSettings::envItemEdit(QListViewItem* item,const QPoint&
 	QLineEdit* value_le = new QLineEdit(item->text(1),edit_dlg);
 	grid->addWidget(value_le,1,1);
 	grid->addWidget(new QLabel(tr("Interpreted"),edit_dlg),2,0);
-	QLineEdit* interpreted_le = new QLineEdit(item->text(2),edit_dlg);
+	GofunInterpretedLineEdit* interpreted_le = new GofunInterpretedLineEdit(item->text(2),edit_dlg);
 	interpreted_le->setReadOnly(true);
 	interpreted_le->setEnabled(false);
 	grid->addWidget(interpreted_le,2,1);
 	QPushButton* apply = new QPushButton(tr("Apply"),edit_dlg);
-	connect(value_le, SIGNAL(textChanged(const QString&)), interpreted_le, SLOT(setText(GofunMisc::shell_call("echo -n "+const QString&)))); //FIXME
+	connect(value_le, SIGNAL(textChanged(const QString&)), interpreted_le, SLOT(setText(const QString&)));
 	connect(apply, SIGNAL(clicked()),edit_dlg, SLOT(accept()));
 	QPushButton* cancel = new QPushButton(tr("Cancel"),edit_dlg);
 	connect(cancel, SIGNAL(clicked()),edit_dlg, SLOT(reject()));

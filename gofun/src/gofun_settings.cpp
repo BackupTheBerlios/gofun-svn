@@ -143,7 +143,7 @@ GofunSettings::GofunSettings()
 	QGridLayout* grid_laf = new QGridLayout(widget_laf,3,1);
 	tabwidget->addTab(widget_laf,tr("Look and feel"));
 	
-	QButtonGroup* col_group = new QButtonGroup(widget_laf, tr("Color"));
+	QButtonGroup* col_group = new QButtonGroup(tr("Color"),widget_laf);
 	col_group->setColumnLayout(0, Qt::Vertical );
 	col_group->setAlignment( int( QButtonGroup::AlignTop ) );
 	QGridLayout* grid_col = new QGridLayout(col_group->layout());
@@ -170,19 +170,6 @@ GofunSettings::GofunSettings()
 
 void GofunSettings::save()
 {
-	/*if(!item)
-	{
-		file = category->directory + "/" + caption->text();
-	}
-	
-	QFile file(my $fh = new FileHandle;
-	if($fh->open("> ".file)) {
-		print $fh "[Desktop Entry]\n";
-		print $fh "Name=".caption->text()."\n";
-		print $fh "Exec=".command->text()."\n";
-		print $fh "Path=".directory->text()."\n";
-		$fh->close;
-	}*/
 }
 
 bool GofunSettings::inputValid()
@@ -207,28 +194,10 @@ void GofunSettings::apply()
 	GofunWidget::applyColorSettings();
 		
 	dynamic_cast<GofunWidget*>(qApp->mainWidget())->reloadData();
-	
-	/*if(item)
-	{
-		item->setCommand(command->text());
-		item->setDirectory(directory->text());
-		item->setText(caption->text());
-	}
-	else
-	{
-		item = GofunItem(category->iconview);
-		applyToItem();
-		
-	}*/
 }
 
 void GofunSettings::load()
 {
-	/*item = shift;
-	caption->setText(item->text());
-	command->setText(item->data()->Exec);
-	directory->setText(item->data()->Path);
-	file = item->file;*/
 	terminal->setText(GSC::get()->terminal_cmd);
 	filemanager->setText(GSC::get()->filemanager_cmd);
 	browser->setText(GSC::get()->browser_cmd);
@@ -248,7 +217,9 @@ void GofunSettings::load()
 
 void GofunSettings::costumColorDialog()
 {
-	costum_col_bt->setPaletteBackgroundColor(QColorDialog::getColor(GSC::get()->costum_color));
+	QColor col;
+	if((col = QColorDialog::getColor(GSC::get()->costum_color)).isValid())
+		costum_col_bt->setPaletteBackgroundColor(col);
 }
 
 

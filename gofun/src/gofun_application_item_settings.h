@@ -18,12 +18,25 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <qlineedit.h>
+ 
 #include "gofun_item_settings.h"
 
 class GofunApplicationItem;
 
 #ifndef GOFUN_APPLICATION_ITEM_SETTINGS
 #define GOFUN_APPLICATION_ITEM_SETTINGS
+
+class GofunInterpretedLineEdit : public QLineEdit
+{
+	Q_OBJECT
+	
+	public:
+	GofunInterpretedLineEdit(const QString&, QWidget*);
+	
+	public slots:
+	void setText(const QString&);
+};
 
 ///Settings-dialog for items
 class GofunApplicationItemSettings : public GofunItemSettings

@@ -88,7 +88,7 @@ void GofunItem::setData(GofunItemData* d)
 
 void GofunItem::loadIcon()
 {
-	QPixmap px = GofunMisc::get_icon(data()->Icon,32,32);
+	QPixmap px = GofunMisc::get_icon(data()->Icon,32,32); //@todo: let the user choose the icon-size
 	if(!px.isNull())
 		setPixmap(px);
 }

@@ -60,7 +60,7 @@ class GofunVButtonGroup : public QVButtonGroup
 			else
 				button = 0;
 		}
-		else if(e->delta() > 0)
+		else if(e->delta() < 0)
 		{
 			if(!(button = find(selectedId()+1)))
 				button = find(1);

@@ -93,7 +93,7 @@ void GofunFSDeviceItemSettings::apply()
 		
 	GofunItemSettings::apply();
 	
-	
+	data()->UnmountIcon = unmount_icon->text();
 	data()->ReadOnly = GofunMisc::boolToString(readonly_chk->isChecked());
 }
 

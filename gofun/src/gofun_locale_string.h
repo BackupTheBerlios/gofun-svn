@@ -51,10 +51,12 @@ class GofunLocaleString : public QString
 	bool isBetterMatch(const GofunLocale&);
 	
 	std::map<QString,QString> locale_strings;
-	std::map<QString,QString>::iterator best_match;
+	//std::map<QString,QString>::iterator best_match;
+	QString best_match;
+	bool found_match;
+	GofunLocale best_match_locale;
 	
 	static GofunLocale system_locale;
-	static GofunLocale best_match_locale;
 };
 
 #endif
