@@ -54,7 +54,8 @@ enum
   PID_Edit,
   PID_Delete,
   PID_Costumized_start,
-  PID_Add
+  PID_Add,
+  PID_Add_Category
 };
 
 ///Is being the main window of GoFun
@@ -70,6 +71,8 @@ public slots:
 	void rightClickedItem(QIconViewItem*,const QPoint&);
 	void popupMenuItem(int);
 	void popupMenuSpace(int);
+	void popupCatAdd();
+	void popupCAActivated(int);
 	void openSettingsDlg();
 	void addCategory();
 	void showHelp();

@@ -73,7 +73,7 @@ GofunWidget::GofunWidget()
 	help->setPixmap(QPixmap("help.png"));
 	connect(help, SIGNAL(clicked()),this, SLOT(showHelp()));
 	
-	//Layout magig, basically we add the WidgetStack and a vertical box to the
+	//Layout magic, basically we add the WidgetStack and a vertical box to the
 	//top horizontal box
 	hbox->addWidget(view_ws);
 	hbox->addLayout(vbox);
@@ -100,12 +100,34 @@ GofunWidget::GofunWidget()
 	hboxr->addWidget(help);
 	
 	//This toolbutton shall be used to add categories
-    	QToolButton* cat_add = new QToolButton(Qt::DownArrow,cats_bg);
-	connect(cat_add, SIGNAL(clicked()),this, SLOT(addCategory()));
+    	QToolButton* cat_add = new QToolButton(Qt::DownArrow,cats_bg,"Testttt");
+	connect(cat_add, SIGNAL(clicked()),this, SLOT(popupCatAdd()));
 	cats_bg->insert(cat_add);   
 	
 	//Now load the whole GoFun-Data and care for its displaying
 	loadData();
+}
+
+void GofunWidget::popupCAActivated(int id)
+{
+	switch(id)
+	{
+		case PID_Add_Category:
+			addCategory();
+			break;
+	}
+}
+
+void GofunWidget::popupCatAdd()
+{
+	QPopupMenu* popup = new QPopupMenu(this);
+
+	connect(popup,SIGNAL(activated(int)),this,SLOT(popupCAActivated(int)));
+	popup->insertItem(tr("Add Category"),PID_Add_Category);
+	int x = pos().x()+cats_bg->pos().x()+cats_bg->find(0)->pos().x()+cats_bg->find(0)->width();
+	int y = pos().y()+cats_bg->pos().y()+cats_bg->find(0)->pos().y()+5*cats_bg->find(0)->height();
+	QPoint pos(x,y);
+	popup->popup(pos);
 }
 
 void GofunWidget::showAbout()
@@ -190,12 +212,7 @@ void GofunWidget::loadData()
 void GofunWidget::openSettingsDlg()
 {
 	GofunSettings* settings_dlg = new GofunSettings();
-	if((geometry().y()+geometry().height() + 150) < QApplication::desktop()->screen()->height())
-		settings_dlg->setGeometry(x(),geometry().y()+geometry().height(),width(),-1);
-	else if(y()-150-(geometry().y()-y()) > 0)
-		settings_dlg->setGeometry(x(),y()-150-(geometry().y()-y()),width(),150);
-	else
-		GofunMisc::center_window(settings_dlg,width(),150);
+	GofunMisc::attach_window(this,settings_dlg,D_Under,D_Above,365,150);
 	settings_dlg->load();
 	settings_dlg->exec();
 	delete settings_dlg;
@@ -207,7 +224,7 @@ void GofunWidget::addEntry()
 {
 	GofunItemSettings* settings_dlg = new GofunItemSettings();
 	int height = 200;
-	settings_dlg->setGeometry(this->x(),this->y()-height-(this->geometry().y()-this->y()),this->width(),height);
+	GofunMisc::attach_window(this,settings_dlg,D_Above,D_Under,365,200);
 	settings_dlg->setCaption(tr("Add entry"));
 	settings_dlg->setCategory(current_cat);
 	settings_dlg->exec();
@@ -218,8 +235,7 @@ void GofunWidget::addEntry()
 void GofunWidget::addCategory()
 {
 	GofunCatSettings* settings_dlg = new GofunCatSettings();
-	int width = 275;
-	settings_dlg->setGeometry(geometry().x()+this->width(),this->y(),width,this->height());
+	GofunMisc::attach_window(this,settings_dlg,D_Right,D_Left,275,200);
 	GofunCatButton* cat = new GofunCatButton("New category",cats_bg);
 	cats_bg->insert(cat,cats_bg->count()-1);
 	settings_dlg->load(cat);
@@ -243,8 +259,7 @@ void GofunWidget::popupMenuSpace(int id)
 void GofunWidget::editEntry(GofunItem* item)
 {
 	GofunItemSettings* settings_dlg = new GofunItemSettings();
-	int height = 200;
-	settings_dlg->setGeometry(this->x(),this->y()-height-(this->geometry().y()-this->y()),this->width(),height);
+	GofunMisc::attach_window(this,settings_dlg,D_Above,D_Under,375,200);
 	settings_dlg->setCaption(tr("Edit entry"));
 	settings_dlg->load(item);
 	settings_dlg->exec();
@@ -280,7 +295,7 @@ void GofunWidget::popupMenuItem(int id)
 void GofunWidget::costumizedStart(GofunItem* item)
 {
 	GofunCStart* cstart_widget = new GofunCStart();
-	cstart_widget->setGeometry(this->x()-this->width()-(geometry().x()-this->x()),this->y(),this->width(),this->height());
+	GofunMisc::attach_window(this,cstart_widget,D_Left,D_Right,375,200);
 	cstart_widget->load(item);
 	cstart_widget->show();
 }

@@ -93,6 +93,9 @@ QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height
 					break;
 			}
 		}
+		if(!QFile::exists(file))
+			return QPixmap();
+		
 		QImage image(file);
 		QPixmap pixmap;
 		pixmap.convertFromImage(image.scale(pref_width,pref_height));
@@ -126,6 +129,70 @@ const QPixmap * GofunFileIconProvider::pixmap ( const QFileInfo & info )
 	QPixmap* pixmap = new QPixmap;
 	pixmap->convertFromImage(image.scale(16,16));
 	return pixmap;
+}
+
+#include <iostream>
+
+void GofunMisc::attach_window( QWidget * base, QWidget * to_attach, Side pref, Side alt, int width, int height )
+{
+	if(width == -1)
+		width = base->width();
+	if(height == -1)
+		height = base->height();
+
+	bool alt_not_tried = true;
+	bool pref_not_tried = true;
+	bool success = false;
+	Side side = pref;
+	while(alt_not_tried)
+	{
+		if(!pref_not_tried && alt != D_None)
+		{
+			side = alt;
+			alt_not_tried = false;
+		}
+
+		if(side == D_Under)
+		{
+			if((base->geometry().y()+base->geometry().height() + height) < 	QApplication::desktop()->screen()->height())
+			{
+				to_attach->setGeometry(base->x(),base->geometry().y()+base->geometry().height(),base->width(),-1);
+				success = true;
+				break;
+			}
+		}
+		else if(side == D_Above)
+		{
+			if(base->y()-height-(base->geometry().y()-base->y()) > 0)
+			{
+				to_attach->setGeometry(base->x(),base->y()-height-(base->geometry().y()-base->y()),base->width(),height);
+				success = true;
+				break;
+			}
+		}
+		else if(side == D_Right)
+		{
+			if(base->geometry().x()+base->width()+width < QApplication::desktop()->screen()->width())
+			{
+				to_attach->setGeometry(base->geometry().x()+base->width(),base->y(),width,base->height());
+				success = true;
+				break;
+			}
+		}
+		else if(side == D_Left)
+		{
+			if((base->x()-base->width()-(base->geometry().x()-base->x())) > 0)
+			{
+				to_attach->setGeometry(base->x()-base->width()-(base->geometry().x()-base->x()),base->y(),base->width(),base->height());
+				success = true;
+				break;
+			}
+		}
+		pref_not_tried = false;
+	}
+	
+	if(!success)
+		GofunMisc::center_window(to_attach,width,height);
 }
 
 

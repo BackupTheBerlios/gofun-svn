@@ -26,6 +26,14 @@
 #ifndef GOFUN_MISC
 #define GOFUN_MISC
 
+enum Side {
+	D_Left,
+	D_Right,
+	D_Above,
+	D_Under,
+	D_None
+};
+
 ///Mixed methods needed in GoFun
 struct GofunMisc
 {
@@ -34,6 +42,7 @@ struct GofunMisc
 	static void center_window(QWidget*, int, int);
 	static QString fileDialogGetImage(const QString& start_dir,const QString& caption, const QString& filter_desc);
 	static QPixmap get_icon(const QString&,int = 32,int = 32);
+	static void attach_window(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
 };
 
 class GofunFileDialogPreview : public QLabel, public QFilePreview
