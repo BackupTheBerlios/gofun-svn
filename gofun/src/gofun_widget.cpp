@@ -175,7 +175,8 @@ void GofunWidget::loadData()
 		//We create a fresh category button, fill it with data and insert it
 		//into the category-button-group
 		GofunCatButton* cat = new GofunCatButton((*it).Name, cats_bg);
-		insertCategory(cat);
+		if(!dynamic_cast<GofunWidget*>(qApp->mainWidget()))
+			insertCategory(cat);
 		cat->setData(&(*it));
 			
 		//Now we iterate through the actual item-data to create new GofunItems
