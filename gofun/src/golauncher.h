@@ -30,23 +30,38 @@ class Golauncher
 	Golauncher();
 	void launch();
 
+	void loadLaunchData();
+	void cleanupLaunchDataOnFS();
 	void setXMode(bool);
 	void setXStart(bool);
-	void setDatafile(const QString&);
+	void setWait(bool);
+	void setDumpOutput(bool);
+	void setEnvVarsFile(const QString&);
+	void setArgumentsFile(const QString&);
+	void setDesktopEntryFile(const QString&);
+	void getStringListFromNullTerminatedStringListFile(const QString&,QStringList*);
+	void getArgumentsFromArgumentsFile(const QString&,QStringList*);
+	void getEnvVarsFromEnvVarsFile(const QString&,QStringList*);
+	void getArgumentsFromDesktopEntry(const QString&,QStringList*);
+	QStringList getOriginalEnvironmentVariables();
+	void launchWidget();
+	void problemFeedback(QProcess*);
+	int getNumberOfRunningXServers();
 	
 	private:
 	bool xmode;
 	bool xstart;
-	QString datafile;
-};
-
-class GolauncherWidget : public QWidget
-{
-	public:
-	GolauncherWidget();
-
-	private:
-	QPushButton* quit;
+	bool wait;
+	bool dumpoutput;
+	bool launch_data_loaded;
+	QString argumentsfile;
+	QString envvarsfile;
+	QString desktopentryfile;
+	QString proc_output;
+	
+	QStringList arguments;
+	QStringList* envvars;
 };
 
 #endif
+

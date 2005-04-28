@@ -18,16 +18,17 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <qfile.h>
+ 
 #include "gofun_cat_entry_data.h"
-#include "gofun_cat_button.h"
 #include "gofun_data.h"
 
-GofunDesktopObject* GofunCatEntryData::GofunDesktopObjectFactory(QWidget* parent)
+/*GofunDesktopObject* GofunCatEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
 	GofunCatButton* item = new GofunCatButton(Name,parent);
 	item->setData(this);
 	return item;
-}
+}*/
 
 bool GofunCatEntryData::parseLine(const QString& line)
 {
@@ -46,4 +47,21 @@ GofunCatEntryData* GofunCatEntryData::makeCopy()
 	*copy = *this;
 	return copy;
 }
+
+void GofunCatEntryData::save()
+{
+	GofunDesktopEntryData::save();
+
+	QFile file( File );
+	if ( file.open( IO_WriteOnly | IO_Append ) )
+	{
+		QTextStream stream( &file );
+		stream << "Type=Directory\n";
+		if(!X_GoFun_Background.isEmpty())
+			stream << "X-GoFun-Background=" << X_GoFun_Background << "\n";
+		file.close();
+	}
+}
+
+
 

@@ -58,7 +58,6 @@ public:
 	virtual void dragEnterEvent(QDragEnterEvent* event);
 	virtual void dropEvent(QDropEvent* event);
 	virtual void mouseReleaseEvent(QMouseEvent* event);
-	void save();
 	void loadIcon();
 	void refreshBackground();
 	virtual GofunCatEntryData* data() { return m_data; }

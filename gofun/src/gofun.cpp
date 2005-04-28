@@ -34,7 +34,7 @@
 
 #include "gofun_widget.h"
 #include "gofun_misc.h"
-#include "gofun_settings.h"
+#include "gofun_settings_container.h"
 
 using namespace std;
 
@@ -58,7 +58,15 @@ int main(int argc, char *argv[])
   //Random isn't random by default  
   srand (time (0));
   
-  GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps > $HOME/.gofun/icon_files");
+  QString icon_dir_string;
+  if(QFileInfo("/usr/share/icons").exists())
+  	icon_dir_string += "/usr/share/icons ";
+  if(QFileInfo("/usr/share/pixmaps").exists())
+  	icon_dir_string += "/usr/share/pixmaps";
+  if(!icon_dir_string.isEmpty())
+  	GofunMisc::shell_call("find "+icon_dir_string+" > $HOME/.gofun/icon_files");
+  else
+  	GofunMisc::shell_call("touch $HOME/.gofun/icon_files");
   
   //This is the app's core
   QApplication app(argc, argv);
@@ -74,7 +82,7 @@ int main(int argc, char *argv[])
   if((GSC::get()->main_x == "-1") && (GSC::get()->main_y == "-1"))
   {
   	//Move the widget to the middle of the screen
-  	GofunMisc::center_window(&gofun_widget,GSC::get()->main_width.toInt(),GSC::get()->main_height.toInt());
+  	GofunWindowOperations::center_window(&gofun_widget,GSC::get()->main_width.toInt(),GSC::get()->main_height.toInt());
   }
   else
   {

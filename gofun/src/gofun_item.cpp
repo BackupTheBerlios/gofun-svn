@@ -28,7 +28,6 @@
 
 #include "gofun_misc.h"
 #include "gofun_item.h"
-#include "gofun_data.h"
 #include "gofun_iconview.h"
 #include "gofun_settings.h"
 #include "gofun_item_settings.h"
@@ -46,18 +45,6 @@ GofunItem::~GofunItem()
 {
 	delete data();
 	delete toolTip;
-}
-
-void GofunItem::save()
-{
-	GofunDesktopObject::save();
-
-	QFile file( data()->File );
-	if ( file.open( IO_WriteOnly | IO_Append ) )
-	{
-		QTextStream stream( &file );
-		file.close();
-	}
 }
 
 void GofunItem::deleteEntry()
@@ -167,7 +154,7 @@ void GofunItem::createNewItem(GofunCatButton* cat)
 {
 	GofunItemSettings* settings_dlg = new GofunItemSettings();
 	int height = 200;
-	GofunMisc::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
+	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
 	settings_dlg->setCaption(tr("Add entry"));
 	settings_dlg->setCategory(cat);
 	settings_dlg->exec();

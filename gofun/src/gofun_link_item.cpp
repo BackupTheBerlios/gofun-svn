@@ -36,7 +36,7 @@ GofunLinkItem::GofunLinkItem(GofunIconView* iconview, const QString& string) : G
 void GofunLinkItem::editEntry()
 {
 	GofunLinkItemSettings* settings_dlg = new GofunLinkItemSettings();
-	GofunMisc::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
+	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
 	settings_dlg->setCaption(tr("Edit entry"));
 	settings_dlg->load(this);
 	settings_dlg->exec();
@@ -71,23 +71,6 @@ void GofunLinkItem::popupActivated(int id)
 	}
 }
 
-void GofunLinkItem::save()
-{
-	GofunDesktopObject::save();
-	GofunItem::save();
-
-	QFile file( data()->File );
-	if ( file.open( IO_WriteOnly | IO_Append ) )
-	{
-		QTextStream stream( &file );
-		stream << "Type=Link\n";
-		if(!data()->URL.isEmpty())
-			stream << "URL=" << data()->URL << "\n";
-		stream << data()->Unknownkeys.join("\n") << "\n";
-		file.close();
-	}
-}
-
 void GofunLinkItem::open()
 {
 	data()->open();
@@ -98,14 +81,14 @@ void GofunLinkItem::performDefaultAction()
 	open();
 }
 
-
 void GofunLinkItem::createNewItem(GofunCatButton* cat)
 {
 	GofunLinkItemSettings* settings_dlg = new GofunLinkItemSettings();
 	int height = 200;
-	GofunMisc::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
+	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
 	settings_dlg->setCaption(tr("Add entry"));
 	settings_dlg->setCategory(cat);
+	settings_dlg->setDefaults();
 	settings_dlg->exec();
 	delete settings_dlg;
 }

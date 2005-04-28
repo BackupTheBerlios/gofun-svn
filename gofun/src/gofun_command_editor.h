@@ -26,7 +26,9 @@
 #define GOFUN_COMMAND_EDITOR
 
 class GofunApplicationItemSettings;
+class GofunListPopup;
 
+///Command editor
 class GofunCommandEditor : public QDialog
 {
 	Q_OBJECT
@@ -37,16 +39,21 @@ class GofunCommandEditor : public QDialog
 	void setSettingsWidget(GofunApplicationItemSettings*);
 	
 	private slots:
+	void optionsDialog();
 	void commandExpand();
 	void commandCompletion(QListViewItem*);
 	void test();
 	void browseForDirectory();
 	void browseForExecutable();
 	void browseForFile();
-	
+	void importFromScript();
+	void importFromEntry();
+	void expandListKey(const QString&);
+		
 	private:
 	QTextEdit* text;
 	QString cmd;
+	GofunListPopup* expand_list;
 	
 	GofunApplicationItemSettings* settings_widget;
 };

@@ -27,6 +27,9 @@ class QLineEdit;
 class QListView;
 class QListViewItem;
 
+///Browse executeables
+/** Presents as many executeables on the system as possible
+    and let's the user choose one. */
 class GofunExecutableBrowser : public QDialog
 {
 	Q_OBJECT
@@ -43,5 +46,5 @@ class GofunExecutableBrowser : public QDialog
 	QLineEdit* filter;	
 };
 
-
 #endif
+

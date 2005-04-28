@@ -344,7 +344,7 @@ run_shell (const char *shell, const char *command, char **additional_args)
     {
 	QProcess* proc = new QProcess;
 	proc->addArgument("golauncher");
-	proc->addArgument("-datafile");
+	proc->addArgument("-argumentsfile");
 	proc->addArgument(pre_home_dir + QString("/.gofun/tmp_proc_exec"));
 	proc->start();
     }

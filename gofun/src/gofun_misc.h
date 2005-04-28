@@ -19,6 +19,8 @@
  ***************************************************************************/
 
 #include <qstring.h>
+#include <qpixmap.h>
+#include <qwidget.h>
  
 #ifndef GOFUN_MISC
 #define GOFUN_MISC
@@ -43,13 +45,17 @@ struct GofunMisc
 	static QString shell_call(const QString&);
 	static QString ext_filestring(const QString&);
 	static QString bin_dir();
-	static void center_window(QWidget*, int, int);
 	static QPixmap get_icon(const QString&,int = 32,int = 32);
-	static void attach_window(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
 	static bool makeDir(const QString&);
 	static QString shellify_path(const QString&);
 	static bool stringToBool(const QString&);
 	static QString boolToString(bool);
+};
+
+struct GofunWindowOperations
+{
+	static void center_window(QWidget*, int, int);
+	static void attach_window(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
 };
 
 class GofunLineEdit : public QWidget

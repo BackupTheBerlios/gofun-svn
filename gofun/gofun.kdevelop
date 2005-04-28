@@ -10,24 +10,10 @@
       <keyword>C++</keyword>
       <keyword>Code</keyword>
     </keywords>
-    <ignoreparts>
-      <part>KDevBookmarks</part>
-      <part>KDevClearCase</part>
-      <part>KDevcopyto</part>
-      <part>KDevCTags</part>
-      <part>KDevCTags2</part>
-      <part>CvsService</part>
-      <part>KDevDebugger</part>
-      <part>KDevDoxygen</part>
-      <part>KDevFileGroups</part>
-      <part>KDevdistpart</part>
-      <part>KDevPerforce</part>
-      <part>KDevQuickOpen</part>
-      <part>KDevsubversion</part>
-    </ignoreparts>
+    <ignoreparts/>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description></description>
+    <description/>
     <secondaryLanguages/>
   </general>
   <kdevautoproject>
@@ -39,6 +25,11 @@
       <mainprogram>src/gofun</mainprogram>
       <terminal>true</terminal>
       <directoryradio>executable</directoryradio>
+      <runarguments>
+        <golauncher/>
+        <gofun/>
+        <gosu/>
+      </runarguments>
     </run>
     <configurations>
       <optimized>
@@ -120,6 +111,8 @@
     <groups>
       <group pattern="*.h" name="Header files" />
       <group pattern="*.cpp" name="Source files" />
+      <hidenonprojectfiles>false</hidenonprojectfiles>
+      <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
       <hidepatterns>*.o,*.lo,CVS</hidepatterns>
@@ -145,7 +138,6 @@
   </substmap>
   <kdevcppsupport>
     <references>
-      <pcs>Qt</pcs>
       <pcs>Gofun</pcs>
     </references>
     <codecompletion>
@@ -160,6 +152,14 @@
       <argumentsHintDelay>30</argumentsHintDelay>
       <headerCompletionDelay>250</headerCompletionDelay>
     </codecompletion>
+    <creategettersetter>
+      <prefixGet/>
+      <prefixSet>set</prefixSet>
+      <prefixVariable>m_,_</prefixVariable>
+      <parameterName>theValue</parameterName>
+      <inlineGet>true</inlineGet>
+      <inlineSet>true</inlineSet>
+    </creategettersetter>
   </kdevcppsupport>
   <cppsupportpart>
     <filetemplates>

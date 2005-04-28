@@ -25,13 +25,12 @@
  
 #include "gofun_custom_start.h"
 #include "gofun_application_item.h"
-#include "gofun_data.h"
 #include "gofun_misc.h"
 #include "gofun_application_item_settings.h"
 
-GofunCostumStart::GofunCostumStart()
+GofunCustomStart::GofunCustomStart()
 {
-	setCaption(tr("Costumized Start"));
+	setCaption(tr("Customized Start"));
 	
 	QGridLayout* grid = new QGridLayout(this,5,2);
 	
@@ -65,7 +64,7 @@ GofunCostumStart::GofunCostumStart()
 	item = 0;
 }
 
-void GofunCostumStart::start()
+void GofunCustomStart::start()
 {
 	GofunApplicationEntryData eo = *item->data();	
 	eo.Exec = command->text();
@@ -74,7 +73,7 @@ void GofunCostumStart::start()
 	eo.execute();
 }
 
-void GofunCostumStart::load(GofunApplicationItem* _item)
+void GofunCustomStart::load(GofunApplicationItem* _item)
 {
 	item = _item;
 	caption->setText(item->data()->Name);

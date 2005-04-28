@@ -36,6 +36,10 @@ GofunIconView::GofunIconView()
 	connect(this,SIGNAL(contentsMoving(int,int)),this,SLOT(contentsMove(int,int)));
 }
 
+GofunIconView::~GofunIconView()
+{
+}
+
 void GofunIconView::contentsMove(int x, int y)
 {
 	if(paletteBackgroundPixmap())
@@ -84,6 +88,19 @@ void GofunIconView::setLeftMode()
 {
 	setItemTextPos(QIconView::Right);
 	setWordWrapIconText(false);
+}
+
+void GofunIconView::setPalette(const QPalette& pal)
+{
+	QPixmap bg;
+	if(paletteBackgroundPixmap())
+		bg = *paletteBackgroundPixmap();	
+	
+	QIconView::setPalette(pal);
+	setItemTextBackground(QApplication::palette().brush(QPalette::Active,QColorGroup::Base));
+	
+	if(!bg.isNull())
+		setPaletteBackgroundPixmap(bg);
 }
 
 

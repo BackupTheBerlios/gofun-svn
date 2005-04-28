@@ -327,10 +327,8 @@ GofunDirectoryView::GofunDirectoryView( QWidget *parent, const char *name, bool 
 		fileNormal = new QPixmap( pix_file );
 	}
 
-	connect( this, SIGNAL( doubleClicked( QListViewItem * ) ),
-	         this, SLOT( slotFolderSelected( QListViewItem * ) ) );
-	connect( this, SIGNAL( returnPressed( QListViewItem * ) ),
-	         this, SLOT( slotFolderSelected( QListViewItem * ) ) );
+	connect( this, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT( slotFolderSelected( QListViewItem * ) ) ); //Note: was originally doubleClicked()
+	connect( this, SIGNAL( returnPressed( QListViewItem * ) ), this, SLOT( slotFolderSelected( QListViewItem * ) ) );
 
 	setAcceptDrops( TRUE );
 	viewport()->setAcceptDrops( TRUE );

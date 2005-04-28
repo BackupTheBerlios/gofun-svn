@@ -32,6 +32,7 @@ class GofunFSDeviceItemSettings : public GofunItemSettings
 public:
 	GofunFSDeviceItemSettings();
 	void load(GofunFSDeviceItem*);
+	void setDefaults();
 	
 private slots:
 	void iconDialog();

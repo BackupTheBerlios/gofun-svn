@@ -37,6 +37,7 @@ class GofunCatSettings : public GofunSettingsDlg
 public:
 	GofunCatSettings();
 	virtual void load(GofunCatButton*);
+	void setDefaults();
 
 public slots:
 	void iconDialog();

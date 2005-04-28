@@ -23,6 +23,7 @@
 #ifndef GOFUN_LIST_POPUP
 #define GOFUN_LIST_POPUP
 
+///Popup showing a list
 class GofunListPopup : public QListView
 {
 	Q_OBJECT
@@ -32,6 +33,10 @@ class GofunListPopup : public QListView
 	
 	void fill(const QStringList&);
 	void popup(const QPoint&);
+	
+	signals:
+	void keyPressed(const QString& key);
+	void charRemoved();
 	
 	private:
 	void fitSizeToContent();

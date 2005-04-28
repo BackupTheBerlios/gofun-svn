@@ -18,8 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <mntent.h>
-
 #include <qapplication.h>
 #include <qpopupmenu.h>
 #include <qmessagebox.h>
@@ -27,7 +25,7 @@
 #include "gofun_fsdevice_item.h"
 #include "gofun_fsdevice_item_settings.h"
 #include "gofun_misc.h"
-#include "gofun_settings.h"
+#include "gofun_settings_container.h"
 
 GofunFSDeviceItem::GofunFSDeviceItem(GofunIconView* iconview, const QString& string) : GofunItem(iconview, string)
 {
@@ -38,7 +36,7 @@ GofunFSDeviceItem::GofunFSDeviceItem(GofunIconView* iconview, const QString& str
 void GofunFSDeviceItem::editEntry()
 {
 	GofunFSDeviceItemSettings* settings_dlg = new GofunFSDeviceItemSettings();
-	GofunMisc::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
+	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
 	settings_dlg->setCaption(tr("Edit entry"));
 	settings_dlg->load(this);
 	settings_dlg->exec();
@@ -52,7 +50,7 @@ void GofunFSDeviceItem::setData(GofunDesktopEntryData* d)
 
 void GofunFSDeviceItem::loadIcon()
 {
-	if(isMounted())
+	if(data()->isMounted())
 		GofunItem::loadIcon();
 	else
 	{
@@ -69,7 +67,7 @@ QPopupMenu* GofunFSDeviceItem::rightClickPopup(const QPoint& pos)
 	
 	popup->insertItem(tr("Open"),PID_Open,0);
 	popup->insertSeparator(1);
-	if(isMounted())
+	if(data()->isMounted())
 	popup->insertItem(tr("Unmount"),PID_Unmount,2);
 	else
 	popup->insertItem(tr("Mount"),PID_Mount,2);
@@ -86,7 +84,7 @@ void GofunFSDeviceItem::popupActivated(int id)
 	switch(id)
 	{
 		case PID_Open:
-			open(); break;
+			data()->open(); break;
 		case PID_Mount:
 			mount(); break;
 		case PID_Unmount:
@@ -94,28 +92,16 @@ void GofunFSDeviceItem::popupActivated(int id)
 	}
 }
 
-void GofunFSDeviceItem::save()
+void GofunFSDeviceItem::mount()
 {
-	GofunDesktopObject::save();
-	GofunItem::save();
+	if(data()->mount())
+		loadIcon();
+}
 
-	QFile file( data()->File );
-	if ( file.open( IO_WriteOnly | IO_Append ) )
-	{
-		QTextStream stream( &file );
-		stream << "Type=FSDevice\n";
-		if(!data()->Device.isEmpty())
-			stream << "Dev=" << data()->Device << "\n";
-		if(!data()->FSType.isEmpty())
-			stream << "FSType=" << data()->FSType << "\n";
-		if(!data()->MountPoint.isEmpty())
-			stream << "MountPoint=" << data()->MountPoint << "\n";
-		if(!data()->UnmountIcon.isEmpty())
-			stream << "UnmountIcon=" << data()->UnmountIcon << "\n";
-		stream << "ReadOnly=" << data()->ReadOnly << "\n";
-		stream << data()->Unknownkeys.join("\n") << "\n";
-		file.close();
-	}
+void GofunFSDeviceItem::unMount()
+{
+	if(data()->unMount())
+		loadIcon();
 }
 
 void GofunFSDeviceItem::performDefaultAction()
@@ -123,140 +109,19 @@ void GofunFSDeviceItem::performDefaultAction()
 	open();
 }
 
-bool GofunFSDeviceItem::isMounted()
+void GofunFSDeviceItem::open()
 {
-	FILE* fp = setmntent("/etc/mtab","r");
-	struct mntent* me;
-	while((me = getmntent(fp)) != NULL)
-	{
-		if(me->mnt_dir == data()->MountPoint)
-		{
-			endmntent(fp);
-			return true;
-		}
-	}
-	endmntent(fp);
-	return false;
+	data()->open();
 }
-
-void GofunFSDeviceItem::open() //@TODO resolve code duplication between this and GofunApplicationItem::openDirectory()
-{
-	if(!isMounted())
-		mount();
-	if(!isMounted())
-		return;
-
-	QProcess proc(GSC::get()->filemanager_cmd);
-	if(!data()->MountPoint.isEmpty())
-		proc.addArgument((GofunMisc::ext_filestring(data()->MountPoint)));
-	else
-		proc.addArgument(QDir::homeDirPath());
-	if(!proc.start())
-	{
-		std::cout<<QObject::tr("Execution of directory viewer failed. :(\n");
-	}	
-}
-
-void GofunFSDeviceItem::mount()
-{
-	QString shell_call;
-	shell_call += "mount ";
-	shell_call += QString(GofunMisc::stringToBool(data()->ReadOnly) ? "-r " : " ");
-	
-	if((!data()->Device.isEmpty() && !data()->MountPoint.isEmpty()) || !data()->FSType.isEmpty()) //When we give 'mount' both it'll end up in an error (only root bla) //fixme: this can just be seen as workaround
-	{
-		bool solved = false;
-		bool cmd_cmplt = false;
-		FILE* fp = setmntent("/etc/fstab","r");
-		struct mntent* me;
-		while((me = getmntent(fp)) != NULL)
-		{
-			if((me->mnt_dir == data()->MountPoint && me->mnt_fsname == data()->Device)
-			|| (me->mnt_dir == data()->MountPoint && !data()->FSType.isEmpty())
-			|| (me->mnt_fsname == data()->Device && !data()->FSType.isEmpty()))
-			{
-				solved = true;
-				if(me->mnt_type != data()->FSType && !data()->FSType.isEmpty())
-				{
-					shell_call += QString(data()->FSType.isEmpty() ? " " : ("-t "+data()->FSType+" "));
-					if(data()->Device.isEmpty())
-						shell_call += QString(me->mnt_fsname) + " ";
-					else
-						shell_call += data()->Device + " ";
-					if(data()->MountPoint.isEmpty())
-						shell_call += QString(me->mnt_dir) + " ";
-					else
-						shell_call += data()->MountPoint + " ";
-					solved = false;
-					cmd_cmplt = true;
-					break;
-				}
-				if(!data()->Device.isEmpty())
-					shell_call += data()->Device + " ";
-				else
-					shell_call += data()->MountPoint;
-				cmd_cmplt  = true;
-				break;
-			}
-		}
-		endmntent(fp);
-		
-		if(!solved)
-		{
-			if(!cmd_cmplt)
-			{
-				shell_call += QString(data()->FSType.isEmpty() ? " " : ("-t "+data()->FSType+" "));
-				shell_call += data()->Device + " ";
-				shell_call += data()->MountPoint + " ";
-			}
-			
-			qDebug(shell_call);
-		
-			QProcess proc_gosu;
-		
-			proc_gosu.addArgument("gosu");
-			proc_gosu.addArgument("root");
-			proc_gosu.addArgument("--color");
-			proc_gosu.addArgument(qApp->palette().color(QPalette::Active,QColorGroup::Background).name());
-			proc_gosu.addArgument("-l");
-			proc_gosu.addArgument("-c");
-			proc_gosu.addArgument(shell_call);
-			proc_gosu.start();
-			return;
-		}
-	}
-	else
-	{
-		shell_call += data()->Device + " ";
-		shell_call += data()->MountPoint + " ";
-	}
-	
-	shell_call += " 2>&1";
-
-	QString tmp = GofunMisc::shell_call(shell_call);
-	if(!isMounted())
-		QMessageBox::warning(0,tr("Mount error"),tr("Mount failed:\n")+tmp);
-	else
-		loadIcon();
-}
-
-void GofunFSDeviceItem::unMount()
-{
-	QString tmp = GofunMisc::shell_call("umount "+data()->MountPoint+" 2>&1");
-	if(isMounted())
-		QMessageBox::warning(0,tr("Unmount error"),tr("Unmounting failed:\n")+tmp);
-	else
-		loadIcon();
-}
-
 
 void GofunFSDeviceItem::createNewItem(GofunCatButton* cat)
 {
 	GofunFSDeviceItemSettings* settings_dlg = new GofunFSDeviceItemSettings();
 	int height = 200;
-	GofunMisc::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
+	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
 	settings_dlg->setCaption(tr("Add entry"));
 	settings_dlg->setCategory(cat);
+	settings_dlg->setDefaults();
 	settings_dlg->exec();
 	delete settings_dlg;
 }

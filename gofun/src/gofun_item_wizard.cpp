@@ -37,19 +37,19 @@ GofunItemWizard::GofunItemWizard()
 	QGridLayout* grid_start = new QGridLayout(widget_start,4,2);
 	
 	QPushButton* app_select = new QPushButton(tr("Application"),widget_start);
-	app_select->setPixmap(GofunMisc::get_icon("exec"));
+	app_select->setPixmap(GofunMisc::get_icon("default_application.png"));
 	app_select->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
 	
 	connect(app_select,SIGNAL(clicked()),this,SLOT(appSelected()));
 	
 	QPushButton* dev_select = new QPushButton(tr("Device"),widget_start);
-	dev_select->setPixmap(GofunMisc::get_icon("device"));
+	dev_select->setPixmap(GofunMisc::get_icon("default_device.png"));
 	dev_select->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
 	
 	connect(dev_select,SIGNAL(clicked()),this,SLOT(devSelected()));
 	
 	QPushButton* link_select = new QPushButton(tr("Link"),widget_start);
-	link_select->setPixmap(GofunMisc::get_icon("link"));
+	link_select->setPixmap(GofunMisc::get_icon("default_link.png"));
 	link_select->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
 	
 	connect(link_select,SIGNAL(clicked()),this,SLOT(linkSelected()));

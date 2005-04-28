@@ -33,11 +33,23 @@
 #include "gofun_application_item.h"
 #include "gofun_application_item_settings.h"
 #include "gofun_executable_browser.h"
+#include "gofun_settings_container.h"
+#include "gofun_data.h"
+#include "gofun_command_editor_options.h"
+#include "gofun_settings_container.h"
 
 GofunCommandEditor::GofunCommandEditor()
 {
 	setCaption(tr("Command Editor"));
-
+	
+	expand_list = new GofunListPopup;
+	expand_list->addColumn("files");
+	expand_list->header()->hide();
+	
+	connect(expand_list,SIGNAL(keyPressed(const QString& )),this,SLOT(expandListKey(const QString&)));		connect(expand_list,SIGNAL(clicked(QListViewItem*)),this,SLOT(commandCompletion(QListViewItem*)));
+	connect(expand_list,SIGNAL(returnPressed(QListViewItem*)),this,SLOT(commandCompletion(QListViewItem*)));
+	connect(expand_list,SIGNAL(spacePressed(QListViewItem*)),this,SLOT(commandCompletion(QListViewItem*)));
+		
 	text = new QTextEdit(this);
 	text->setTextFormat(Qt::PlainText);
 	text->setWordWrap(QTextEdit::NoWrap);
@@ -50,6 +62,10 @@ GofunCommandEditor::GofunCommandEditor()
 	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
 	connect(test,SIGNAL(clicked()),this,SLOT(test()));
 	
+	QPushButton* options = new QPushButton(tr("Options"),this);
+	
+	connect(options,SIGNAL(clicked()),this,SLOT(optionsDialog()));
+	
 	QVButtonGroup* browse_for = new QVButtonGroup(tr("Browse for"),this);
 	QPushButton* browse_for_executable = new QPushButton(tr("Executable"),browse_for);
 	QPushButton* browse_for_directory = new QPushButton(tr("Directory"),browse_for);
@@ -59,32 +75,49 @@ GofunCommandEditor::GofunCommandEditor()
 	connect(browse_for_directory,SIGNAL(clicked()),this,SLOT(browseForDirectory()));
 	connect(browse_for_file,SIGNAL(clicked()),this,SLOT(browseForFile()));
 	
-	QGridLayout* grid = new QGridLayout(this,3,4);
-	grid->addMultiCellWidget(text,0,1,0,2);
-	grid->addWidget(apply,2,0);
-	grid->addWidget(cancel,2,1);
+	QVButtonGroup* import = new QVButtonGroup(tr("Import from"),this);
+	QPushButton* import_from_script = new QPushButton(tr("Script"),import);
+	QPushButton* import_from_entry = new QPushButton(tr("Desktop Entry"),import);
+	
+	connect(import_from_script,SIGNAL(clicked()),this,SLOT(importFromScript()));
+	connect(import_from_entry,SIGNAL(clicked()),this,SLOT(importFromEntry()));
+	
+	QGridLayout* grid = new QGridLayout(this,4,4);
+	grid->addMultiCellWidget(text,0,2,0,2);
+	grid->addWidget(apply,3,0);
+	grid->addWidget(cancel,3,1);
 	QSpacerItem* spacer = new QSpacerItem(40,20,QSizePolicy::Expanding,QSizePolicy::Minimum);
-	grid->addItem(spacer,2,2);
-	grid->addWidget(test,2,3);
-	grid->addWidget(browse_for,0,3);
+	grid->addItem(spacer,3,2);
+	grid->addWidget(test,3,3);
+	grid->addWidget(options,0,3);
+	grid->addWidget(browse_for,1,3);
+	grid->addWidget(import,2,3);
 	
 	settings_widget = 0;
 }
 
 void GofunCommandEditor::commandExpand()
 {
+	if(!GofunMisc::stringToBool(GSC::get()->ce_completion_popup))
+		return;
+
+	{
+		
 	if( (text->text()[text->text().length()-1] == '/' && text->text()[text->text().length()-2] == '.' )
 	|| (text->text()[text->text().length()-1] == '$'))
 	{
-		GofunListPopup* expand_list = new GofunListPopup;
-		expand_list->addColumn("files");
-		expand_list->header()->hide();
-		
 		//fill completition list
 		qDebug(text->text(text->paragraphs()-1));
 		qDebug("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1)+"\\*");
 		QStringList files = QStringList::split('\n',GofunMisc::shell_call("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1).stripWhiteSpace()+"\\*"));
 		expand_list->fill(files);
+		}
+		qDebug(text->text(text->paragraphs()-1));
+		QStringList echos = QStringList::split(' ',GofunMisc::shell_call("cd $HOME; echo "+text->text(text->paragraphs()-1).stripWhiteSpace()+"*"));
+		//if(echos.count() > 1)
+		
+		expand_list->clear();
+		expand_list->fill(echos);
 		
 		QFontMetrics metrics(text->font());
 		int x,y;
@@ -94,9 +127,7 @@ void GofunCommandEditor::commandExpand()
 		int yp = metrics.lineSpacing() * (y+1);
 		expand_list->popup(text->mapToGlobal(QPoint(xp,yp)));
 		
-		connect(expand_list,SIGNAL(clicked(QListViewItem*)),this,SLOT(commandCompletion(QListViewItem*)));
-		connect(expand_list,SIGNAL(returnPressed(QListViewItem*)),this,SLOT(commandCompletion(QListViewItem*)));
-		connect(expand_list,SIGNAL(spacePressed(QListViewItem*)),this,SLOT(commandCompletion(QListViewItem*)));
+
 	}
 }
 
@@ -152,8 +183,8 @@ void GofunCommandEditor::browseForFile()
                     "/home",
                     "*.*",
                     this,
-                    "Browse for file",
-                    "Choose a file" );
+                    tr("Browse for file"),
+                    tr("Choose a file"));
 	if(s.isNull())
 		return;
 		
@@ -164,6 +195,58 @@ void GofunCommandEditor::setSettingsWidget(GofunApplicationItemSettings *_settin
 {
 	settings_widget = _settings_widget;
 }
+
+void GofunCommandEditor::expandListKey(const QString& key)
+{
+	if(!key.isEmpty())
+		text->insert(key);
+}
+
+void GofunCommandEditor::importFromScript()
+{
+	QString s = QFileDialog::getOpenFileName("/home","*",this,tr("Import from script"),tr("Choose a script"));
+	if(s.isNull())
+		return;
+	
+	QFile file(s);
+	if ( file.open( IO_ReadOnly ) )
+	{
+		QTextStream stream( &file );
+		QString line;
+		text->insert("\n");
+		while ( !stream.atEnd() )
+		{
+			line = stream.readLine(); // line of text excluding '\n'
+			text->insert(line+"\n");
+		}
+		file.close();
+	}
+}
+
+void GofunCommandEditor::importFromEntry()
+{
+	QString s = QFileDialog::getOpenFileName(GSC::get()->gofun_dir,"*.desktop",this,tr("Import from Desktop Entry"),tr("Choose a Desktop Entry"));
+	if(s.isNull())
+		return;
+	
+	GofunDesktopEntryData* ded = GofunDataLoader::parseGofunFile(s);
+	if(ded->Type == "Application")
+	{
+		text->insert("\n");
+		text->insert(dynamic_cast<GofunApplicationEntryData*>(ded)->Exec);
+	}
+	delete ded;
+}
+
+void GofunCommandEditor::optionsDialog()
+{
+	GofunCommandEditorOptions* options = new GofunCommandEditorOptions();
+	if(options->exec() == QDialog::Accepted)
+		options->apply();
+	delete options;
+}
+
+
 
 
 

@@ -59,7 +59,7 @@ QString GofunMisc::bin_dir()
 	return GofunMisc::shell_call("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").stripWhiteSpace();
 }
 
-void GofunMisc::center_window(QWidget* w, int width, int height)
+void GofunWindowOperations::center_window(QWidget* w, int width, int height)
 {
   w->setGeometry(QApplication::desktop()->screen()->width() / 2 - width/2, QApplication::desktop()->screen()->height() / 2 - height/2, width, height);
 }
@@ -104,7 +104,7 @@ QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height
 	return pixmap;
 }
 
-void GofunMisc::attach_window( QWidget * base, QWidget * to_attach, Side pref, Side alt, int width, int height )
+void GofunWindowOperations::attach_window( QWidget * base, QWidget * to_attach, Side pref, Side alt, int width, int height )
 {
 	if(width == -1)
 		width = base->width();
@@ -163,7 +163,7 @@ void GofunMisc::attach_window( QWidget * base, QWidget * to_attach, Side pref, S
 	}
 	
 	if(!success)
-		GofunMisc::center_window(to_attach,width,height);
+		GofunWindowOperations::center_window(to_attach,width,height);
 }
 
 bool GofunMisc::makeDir(const QString& path)

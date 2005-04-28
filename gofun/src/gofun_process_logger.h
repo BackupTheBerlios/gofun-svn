@@ -23,6 +23,9 @@
 #ifndef GOFUN_PROCESS_LOGGER
 #define GOFUN_PROCESS_LOGGER
 
+///Process logger
+/** Redirects output of processes to stdout
+    or a buffer. */
 class GofunProcessLogger : public QObject
 {
 	Q_OBJECT

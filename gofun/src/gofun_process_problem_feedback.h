@@ -25,7 +25,9 @@
 
 class QTextEdit;
 class QLabel;
+class QLineEdit;
 
+///Feedback-dialog for failing processes
 class GofunProcessProblemFeedback : public QDialog
 {
 	public:
@@ -33,9 +35,11 @@ class GofunProcessProblemFeedback : public QDialog
 	void setNormalExit(bool);
 	void setExitStatus(int);
 	void setOutput(const QString&);
+	void setCommand(const QString&);
 	
 	private:
 	QTextEdit* output;
+	QLineEdit* command;
 	QLabel* exit_status;
 	QLabel* normal_exit;
 };

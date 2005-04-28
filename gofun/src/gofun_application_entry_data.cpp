@@ -19,27 +19,26 @@
  ***************************************************************************/
 
 #include <qapplication.h>
+#include <qprocess.h>
  
 #include "gofun_application_entry_data.h"
-#include "gofun_application_item.h"
 #include "gofun_data.h"
-#include "gofun_settings.h"
+#include "gofun_settings_container.h"
 #include "gofun_parameter_prompt.h"
 #include "gofun_misc.h"
-#include "gofun_iconview.h"
 
-GofunDesktopObject* GofunApplicationEntryData::GofunDesktopObjectFactory(QWidget* parent)
+/*GofunDesktopObject* GofunApplicationEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
 	GofunApplicationItem* item = new GofunApplicationItem(dynamic_cast<GofunIconView*>(parent),Name);
 	item->setData(this);
 	return item;	
-}
+}*/
 
-void GofunApplicationEntryData::execute()
+void GofunApplicationEntryData::execute() //FIXME: 1. hackish, 2. maybe outsource code to golauncher 3. at least clean up and split 4. use golauncher to do stuff like opening in terminal
 {
 	QString poststring;
 	QProcess proc;
-	QString exec = Exec;
+	QString exec = Exec;	
 	
 	if(!X_GoFun_Parameter.empty())
 	{
@@ -59,41 +58,39 @@ void GofunApplicationEntryData::execute()
 	}
 	if(!X_GoFun_Env.empty())
 	{
+		QStringList envs;
 		for(std::vector<QString>::iterator it = X_GoFun_Env.begin(); it != X_GoFun_Env.end(); ++it)
 		{
 			if((*it).isEmpty())
-			{
 				continue;
-			}
 			QStringList vk_pair = QStringList::split('=',(*it));
-			exec = "export " + vk_pair[0] + "='" + QString((*it)).remove(0,vk_pair[0].length()+1) + "';" + exec;
+			//exec = "export " + vk_pair[0] + "=\"" + QString((*it)).remove(0,vk_pair[0].length()+1) + "\";" + exec;
+			envs += vk_pair[0] + "=" + GofunMisc::ext_filestring(vk_pair[1]);
 		}
+		saveStringListToFile(QDir::homeDirPath() + "/.gofun/tmp_proc_env",&envs);
 	}
 	if(GofunMisc::stringToBool(Terminal))
 	{ 
 		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
+		proc.addArgument("-e");
 		if(exec[exec.length()-1] == ';')
 			exec.setLength(exec.length()-1);
-		exec += ";echo -e \"\\E[${2:-44};${3:-7}m\n" + QObject::tr("End of execution has been reached. Press any key to remove this terminal\";");
-		exec += "read -n 1";
-		
+		exec += ";echo -e \"\\E[${2:-44};${3:-7}m\n" + QObject::tr("End of execution has been reached.\nPress any key to remove this terminal.\nPress -c- to continue operation in this terminal. \";");
+		exec += "read -n 1 EVAL; tput sgr0; if [ $EVAL == \"c\" ]; then /bin/sh; fi";
 	}
+	proc.addArgument("/bin/sh");
+	proc.addArgument("-c");
 	if(Path.isEmpty())
 	{
 		proc.setWorkingDirectory(QDir::homeDirPath());
-		proc.addArgument("/bin/sh");
-		proc.addArgument("-c");
 		exec = "cd " + GofunMisc::shellify_path(QDir::homeDirPath()) + ";" + exec;
-		proc.addArgument(exec);
 	}
 	else
 	{
 		proc.setWorkingDirectory(QDir(Path));
-		proc.addArgument("/bin/sh");
-		proc.addArgument("-c");
 		exec = "cd " + GofunMisc::shellify_path(Path) + ";" + exec;
-		proc.addArgument(exec);
 	}
+	proc.addArgument(exec);
 	if(!X_GoFun_User.isEmpty())
 	{		
 		QString spa_file = saveProcArguments(&proc);
@@ -114,8 +111,10 @@ void GofunApplicationEntryData::execute()
 		saveProcArguments(&proc);
 		proc.clearArguments();
 		proc.addArgument("golauncher");
-		proc.addArgument("-datafile");
+		proc.addArgument("-argumentsfile");
 		proc.addArgument(QDir::homeDirPath() + "/.gofun/tmp_proc_exec");
+		proc.addArgument("-envvarsfile");
+		proc.addArgument(QDir::homeDirPath() + "/.gofun/tmp_proc_env");
 		if(GofunMisc::stringToBool(X_GoFun_NewX))
 			proc.addArgument("-xstart");
 		proc.start();
@@ -131,21 +130,26 @@ void GofunApplicationEntryData::addSplittedProcArgument(QProcess* proc,const QSt
 	}
 }
 
-QString GofunApplicationEntryData::saveProcArguments(QProcess* proc)
+QString GofunApplicationEntryData::saveStringListToFile(const QString& _file,QStringList* stringlist)
 {
-	QStringList arguments = proc->arguments();
-	QString tmp = QString(getenv("HOME")) + QString("/.gofun/tmp_proc_exec"); //You'll probably wonder "wtf is this tmp needed"? The answer is "cause gcc is mucking around without this ugly code on some systems"
-	QFile file(tmp);
+	QFile file(_file);
 	if(file.open( IO_WriteOnly ))
 	{
 		QTextStream stream(&file);
-		for(QStringList::Iterator it = arguments.begin(); it != arguments.end(); ++it)
+		for(QStringList::Iterator it = stringlist->begin(); it != stringlist->end(); ++it)
 		{
 			stream << (*it) << '\0';
 		}
 		file.close();
 	}
 	return file.name();
+}
+
+QString GofunApplicationEntryData::saveProcArguments(QProcess* proc)
+{
+	QString tmp = QString(getenv("HOME")) + QString("/.gofun/tmp_proc_exec"); //You'll probably wonder "wtf is this tmp needed"? The answer is "cause gcc is mucking around without this ugly code on some systems"
+	QStringList arguments = proc->arguments();
+	return saveStringListToFile(tmp,&arguments);
 }
 
 bool GofunApplicationEntryData::parseLine(const QString& line)
@@ -212,3 +216,60 @@ GofunApplicationEntryData* GofunApplicationEntryData::makeCopy()
 	*copy = *this;
 	return copy;
 }
+
+void GofunApplicationEntryData::save()
+{
+	GofunDesktopEntryData::save();
+
+	QFile file( File );
+	if ( file.open( IO_WriteOnly | IO_Append ) )
+	{
+		QTextStream stream( &file );
+		stream << "Type=Application\n";
+		if(!Exec.isEmpty())
+			stream << "Exec=" << Exec << "\n";
+		if(!TryExec.isEmpty())
+			stream << "TryExec=" << TryExec << "\n";
+		if(!Path.isEmpty())
+			stream << "Path=" << Path << "\n";
+		stream << "Terminal=" << Terminal << "\n";
+		stream << "X-GoFun-NewX=" << X_GoFun_NewX << "\n";
+		if(!X_GoFun_Env.empty())
+		{
+			stream << "X-GoFun-Env=";
+			for(std::vector<QString>::iterator it = X_GoFun_Env.begin(); it != X_GoFun_Env.end(); ++it)
+			{
+				QString encoded = (*it);
+				encoded.replace(";","\\;");
+				stream << encoded << ";";
+			}
+			stream << "\n";
+		}
+		if(!X_GoFun_User.isEmpty())
+			stream << "X-GoFun-User=" << X_GoFun_User << "\n";
+		if(!X_GoFun_Parameter.empty())
+		{
+			for(std::map<int,GofunParameterData>::iterator it = X_GoFun_Parameter.begin(); it != X_GoFun_Parameter.end(); ++it)
+			{
+				stream << "X-GoFun-Parameter-Prompt-" << (*it).first << "=" << (*it).second.Prompt << "\n";
+				if(!(*it).second.Flag.isEmpty())
+					stream << "X-GoFun-Parameter-Flag-" << (*it).first << "=" << (*it).second.Flag << "\n";
+				if(!(*it).second.Values.join(";").isEmpty())
+					stream << "X-GoFun-Parameter-Values-" << (*it).first << "=" << (*it).second.Values.join(";") << "\n";
+				if(!(*it).second.Default_Value.isEmpty())
+					stream << "X-GoFun-Parameter-Default-" << (*it).first << "=" << (*it).second.Default_Value << "\n";
+				stream << "X-GoFun-Parameter-Type-" << (*it).first << "=" << (*it).second.Type << "\n";
+				if(!(*it).second.Minimum.isEmpty())
+					stream << "X-GoFun-Parameter-Minimum-" << (*it).first << "=" << (*it).second.Minimum << "\n";
+				if(!(*it).second.Maximum.isEmpty())
+					stream << "X-GoFun-Parameter-Maximum-" << (*it).first << "=" << (*it).second.Maximum << "\n";	
+				(*it).second.Comment.desktopEntryPrint("X-GoFun-Parameter-Comment-" + QString::number((*it).first),stream);
+			}
+		}
+		stream << Unknownkeys.join("\n") << "\n";
+		file.close();
+	}
+}
+
+
+

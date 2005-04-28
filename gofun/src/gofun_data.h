@@ -37,6 +37,7 @@ class QProcess;
 struct GofunDataLoader
 {
 	static std::vector<GofunCatEntryData>* getData();
+	static GofunDesktopEntryData* parseGofunFile(const QString& file);
 public:
 	static bool parseLine(const QString&,const QString&,QString&);
 	static bool parseLine(const QString&,const QString&,std::vector<QString>&);
@@ -45,7 +46,6 @@ public:
 	static QString getKey(QString line);
 private:
 	static std::vector<GofunDesktopEntryData*>* parseCatdir(const QString& catdir);
-	static GofunDesktopEntryData* parseGofunFile(const QString& file);
 	static GofunCatEntryData* parseCatInfo(const QString& file);
 	static QStringList loadFileData(const QString& _file);
 	static QString getLocale(const QString& locale);

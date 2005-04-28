@@ -22,7 +22,8 @@
 #include <qtextedit.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
- 
+#include <qlineedit.h>
+
 #include "gofun_process_problem_feedback.h"
 
 GofunProcessProblemFeedback::GofunProcessProblemFeedback(QWidget* parent) : QDialog(parent)
@@ -40,13 +41,18 @@ GofunProcessProblemFeedback::GofunProcessProblemFeedback(QWidget* parent) : QDia
 	output->setReadOnly(true);
 	exit_status = new QLabel(this);
 	normal_exit = new QLabel(this);
+	command = new QLineEdit(this);
+	command->setReadOnly(true);
+	command->setBackgroundMode(Qt::PaletteDark);
 	
-	grid_report->addWidget(new QLabel(tr("Normal exit:"),this),0,0);
-	grid_report->addWidget(normal_exit,0,1);
-	grid_report->addWidget(new QLabel(tr("Exit status:"),this),1,0);
-	grid_report->addWidget(exit_status,1,1);
-	grid_report->addMultiCellWidget(new QLabel(tr("Output"),this),2,2,0,1);
-	grid_report->addMultiCellWidget(output,3,3,0,1);
+	grid_report->addWidget(new QLabel(tr("Command"),this),0,0);
+	grid_report->addWidget(command,0,1);
+	grid_report->addWidget(new QLabel(tr("Normal exit:"),this),1,0);
+	grid_report->addWidget(normal_exit,1,1);
+	grid_report->addWidget(new QLabel(tr("Exit status:"),this),2,0);
+	grid_report->addWidget(exit_status,2,1);
+	grid_report->addMultiCellWidget(new QLabel(tr("Output"),this),3,3,0,1);
+	grid_report->addMultiCellWidget(output,4,4,0,1);
 	
 	QPushButton* try_again = new QPushButton(tr("Try again"),this);
 	QPushButton* give_up = new QPushButton(tr("Give up"),this);
@@ -57,6 +63,12 @@ GofunProcessProblemFeedback::GofunProcessProblemFeedback(QWidget* parent) : QDia
 	grid->addMultiCellLayout(grid_report,0,0,0,1);
 	grid->addWidget(try_again,1,0);
 	grid->addWidget(give_up,1,1);
+}
+
+void GofunProcessProblemFeedback::setCommand(const QString& _command)
+{
+	command->setText(_command);
+	command->setCursorPosition(0);
 }
 
 void GofunProcessProblemFeedback::setNormalExit(bool b)

@@ -17,11 +17,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-#include <qlineedit.h>
-#include <qradiobutton.h>
-#include <qcheckbox.h>
-#include <qtoolbutton.h>
  
 #include "gofun_settings_dlg.h"
 
@@ -29,36 +24,12 @@
 #define GOFUN_SETTINGS
 
 class QComboBox;
-class QSettings;
+class QLineEdit;
+class QCheckBox;
+class QRadioButton;
+class QToolButton;
 
-class GofunSettingsContainer
-{
-public:
-	~GofunSettingsContainer();
-	static GofunSettingsContainer* get() { _instance ? _instance : _instance = new GofunSettingsContainer(); return _instance; }
-	static void save() { delete _instance; _instance = 0; }
-	
-	QString terminal_cmd;
-	QString filemanager_cmd;
-	QString browser_cmd;
-	QString gofun_dir;
-	QString style;
-	QString color_source;
-	QString costum_color;
-	QString main_width;
-	QString main_height;
-	QString main_x;
-	QString main_y;
-	QString save_main_geom;
-private:
-	GofunSettingsContainer();
-	
-	QSettings* m_settings;
-	static GofunSettingsContainer* _instance;
-};
-
-typedef GofunSettingsContainer GSC;
-
+///Main settings dialog
 class GofunSettings : public GofunSettingsDlg
 {
 	Q_OBJECT
@@ -68,7 +39,7 @@ public:
 public slots:
 
 private slots:
-	void costumColorDialog();
+	void customColorDialog();
 	void directoryDialog();
 private:
 	virtual void save();
@@ -82,8 +53,8 @@ private:
 	QComboBox* styles;
 	QRadioButton* col_system;
 	QRadioButton* col_random;
-	QRadioButton* col_costum;
-	QToolButton* costum_col_bt;
+	QRadioButton* col_custom;
+	QToolButton* custom_col_bt;
 	QCheckBox* save_main_geom;
 	QString file;
 };

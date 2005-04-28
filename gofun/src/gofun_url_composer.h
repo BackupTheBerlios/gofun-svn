@@ -28,6 +28,9 @@
 class QComboBox;
 class GofunLinkItem;
 
+///Clipboard catching line-edit
+/** Automatically tries to catch URLs from the
+    clipboard. */
 class GofunClipboardLineEdit : public QLineEdit
 {
 	public:

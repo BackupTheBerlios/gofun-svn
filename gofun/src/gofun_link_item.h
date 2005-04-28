@@ -39,7 +39,6 @@ class GofunLinkItem : public GofunItem
 	GofunLinkItem(GofunIconView*, const QString& = 0);
 	
 	void setData(GofunDesktopEntryData*);
-	void save();
 	QPopupMenu* rightClickPopup(const QPoint&);
 	virtual void editEntry();
 	void performDefaultAction();

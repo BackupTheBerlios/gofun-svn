@@ -26,17 +26,23 @@
 class QLineEdit;
 class QLabel;
 
+///Password dialog
 class GofunPasswordDialog : public QDialog
 {
 	Q_OBJECT
 	
 	public:
 	GofunPasswordDialog(WFlags f = 0);
+	///Set username
 	void setUser(const QString&);
+	///Returns the password
 	QString getPassword();	
+	///Start delay
+	/** Used to prevent brute-force attacks. */
 	void delay();
 	
 	private slots:
+	///End delay
 	void delayEnd();
 	
 	private:

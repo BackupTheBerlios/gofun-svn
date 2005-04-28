@@ -61,6 +61,7 @@ class GofunWidget : public QWidget
 	Q_OBJECT
 public:
 	GofunWidget(WFlags f = 0);
+	virtual ~GofunWidget();
 	void reloadData();
 public slots:
 	void changeCategory(int);
@@ -84,7 +85,7 @@ public:
 	static QPalette system_palette;
 	static QString system_style;
 private:
-	void costumizedStart(GofunItem*);
+	void customizedStart(GofunItem*);
 	void editEntry(GofunItem*);
 	void deleteEntry(GofunItem*);
 	void loadData();

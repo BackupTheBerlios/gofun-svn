@@ -18,6 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <iostream>
+ 
 #include <qapplication.h>
 #include <qpopupmenu.h>
 #include <qcursor.h>
@@ -66,10 +68,7 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 
 GofunCatButton::~GofunCatButton()
 {
-	//delete data; //FIXME
-	//delete iconview; //FIXME Iconview doesn't get deleted on reload
-			   // potential problem. Uncommented because of segfault
-			   // when tools_cat is destroyed.
+	delete iconview;
 }
 
 void GofunCatButton::popupConfButton()
@@ -146,21 +145,6 @@ void GofunCatButton::runNewItemWizard()
 	wizard->exec();
 }
 
-void GofunCatButton::save()
-{
-	GofunDesktopObject::save();
-
-	QFile file( data()->File );
-	if ( file.open( IO_WriteOnly | IO_Append ) )
-	{
-		QTextStream stream( &file );
-		stream << "Type=Directory\n";
-		if(!data()->X_GoFun_Background.isEmpty())
-			stream << "X-GoFun-Background=" << data()->X_GoFun_Background << "\n";
-		file.close();
-	}
-}
-
 //Make sure the right-button is in the right place (!you got the word joke?)
 void GofunCatButton::resizeEvent(QResizeEvent* event)
 {
@@ -180,7 +164,7 @@ void GofunCatButton::catSettings()
 	GofunCatSettings* settings_dlg = new GofunCatSettings();
 	settings_dlg->load(this);
 	QWidget* p = qApp->mainWidget(); //dynamic_cast<QWidget*>(parent()->parent());
-	GofunMisc::attach_window(p,settings_dlg,D_Right,D_Left,275,200);
+	GofunWindowOperations::attach_window(p,settings_dlg,D_Right,D_Left,275,200);
 	settings_dlg->exec();
 	delete settings_dlg;
 }
@@ -265,17 +249,22 @@ void GofunCatButton::popupItemDnD(int id)
 	{
 		case PID_COPY_ITEM: //Make a deep copy //FIXME: This is ugly-ladder-style anti-C++ code
 			//FIXME:this needs thoughtful fixing
-			gi = dynamic_cast<GofunItem*>(current_item->data()->GofunDesktopObjectFactory(iconview));
+			if(current_item->data()->Type == "Application")
+				gi = new GofunApplicationItem(iconview,current_item->data()->Name);
+			else if(current_item->data()->Type == "FSDevice")
+				gi = new GofunFSDeviceItem(iconview,current_item->data()->Name);
+			else if(current_item->data()->Type == "Link")
+				gi = new GofunLinkItem(iconview,current_item->data()->Name);
 			gi->setData(current_item->data()->makeCopy());			
 			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
-			gi->save();
+			gi->data()->save();
 			break;
 		case PID_MOVE_ITEM: //Move the item into its new iconview. Save the new and delete the old Desktop Entry file.
 			current_item->deleteEntryFile();
 			current_item->iconView()->takeItem(current_item);
 			iconview->insertItem(current_item);
 			current_item->data()->File = data()->Catdir + current_item->data()->Name + ".desktop";
-			current_item->save();
+			current_item->data()->save();
 			break;
 	}
 }

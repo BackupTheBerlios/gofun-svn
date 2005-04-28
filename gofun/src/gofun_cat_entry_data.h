@@ -37,8 +37,8 @@ struct GofunCatEntryData : public GofunDesktopEntryData
 	std::vector<GofunDesktopEntryData*>* ItemData;
 	
 	bool parseLine(const QString&);
-		
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
+	void save();
+	
 	virtual GofunCatEntryData* makeCopy();
 };
 

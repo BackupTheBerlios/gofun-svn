@@ -29,7 +29,7 @@
 GofunPasswordDialog::GofunPasswordDialog(WFlags f) : QDialog(0,0,0,f)
 {
 	setCaption(tr("Password dialog"));
-	setModal(true);
+	/*setModal(true); qt31 compilation fix*/
 
 	QGridLayout* grid = new QGridLayout(this);
 	grid->layout()->setSpacing(5);

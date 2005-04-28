@@ -30,11 +30,11 @@ class GofunApplicationItemSettingsAdvanced;
 #define GOFUN_CSTART
 
 ///Dialog making a highly customized start possible
-class GofunCostumStart : public QDialog
+class GofunCustomStart : public QDialog
 {
 	Q_OBJECT
 public:
-	GofunCostumStart();
+	GofunCustomStart();
 public slots:
 	void start();
 	virtual void load(GofunApplicationItem*);

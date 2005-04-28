@@ -31,8 +31,8 @@ struct GofunLinkEntryData : public GofunDesktopEntryData
 	
 	bool parseLine(const QString&);
 	void open();
+	void save();
 	
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 	virtual GofunLinkEntryData* makeCopy();
 };
 

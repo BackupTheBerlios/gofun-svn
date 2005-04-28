@@ -23,6 +23,7 @@
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qheader.h>
+#include <qstringlist.h>
  
 #include "gofun_executable_browser.h"
 #include "gofun_misc.h"
@@ -79,13 +80,21 @@ QString GofunExecutableBrowser::getExecutable()
 	return filter->text();
 }
 
-void GofunExecutableBrowser::updateFilter(QListViewItem*)
+
+void GofunExecutableBrowser::updateFilter(QListViewItem* item)
 {
-	
+	filter->setText(item->text(0));
 }
 
-void GofunExecutableBrowser::updateList( const QString & )
+void GofunExecutableBrowser::updateList(const QString& text)
 {
-	
+	QListViewItem* found_item = cmd_list->findItem(text,0,Qt::BeginsWith);
+	if(!found_item)
+		found_item = cmd_list->findItem(text,0,Qt::Contains);
+	if(found_item)
+	{
+		cmd_list->setCurrentItem(found_item);
+		cmd_list->setContentsPos(0,found_item->itemPos());
+	}
 }
 

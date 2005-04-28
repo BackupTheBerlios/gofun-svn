@@ -25,10 +25,12 @@
 #include <qcursor.h>
 #include <qaccel.h>
 #include <qstyle.h>
+#include <qobjectlist.h>
  
 #include "gofun_iconview.h"
 #include "gofun_widget.h" 
 #include "gofun_settings.h"
+#include "gofun_settings_container.h"
 #include "gofun_misc.h"
 #include "gofun_data.h"
 #include "gofun_cat_button.h"
@@ -191,14 +193,14 @@ void GofunWidget::popupCatAdd()
 void GofunWidget::showAbout()
 {
 	GofunAbout* ga = new GofunAbout();
-	GofunMisc::center_window(ga,540,480);
+	GofunWindowOperations::center_window(ga,540,480);
 	ga->show();
 }
 
 void GofunWidget::showHelp()
 {
 	GofunHelp* gh = new GofunHelp(Qt::WDestructiveClose);
-	GofunMisc::center_window(gh,800,600);
+	GofunWindowOperations::center_window(gh,800,600);
 	gh->show();
 	
 }
@@ -217,7 +219,6 @@ void GofunWidget::unloadData()
 		GofunCatButton* cb = dynamic_cast<GofunCatButton*>(cats_bg->find(i));
 		if(cb)
 		{
-			
 			for(QIconViewItem* item = cb->iconview->firstItem(); item; 0)
 			{
 				QIconViewItem* next = item->nextItem();
@@ -225,9 +226,9 @@ void GofunWidget::unloadData()
 				item = next;
 			}
 			view_ws->removeWidget(cb->iconview);
+			cats_bg->remove(cb);
+			delete cb;
 		}
-		cats_bg->remove(cb);
-		delete cb;
 	}
 	
 	view_ws->raiseWidget(tools_cat->iconview);
@@ -271,7 +272,14 @@ void GofunWidget::loadData()
 			{
 				continue;
 			}
-			GofunItem* gi = dynamic_cast<GofunItem*>((*sit)->GofunDesktopObjectFactory(cat->iconview));
+			GofunItem* gi;
+			if((*sit)->Type == "Application")
+				gi = new GofunApplicationItem(cat->iconview,(*sit)->Name);
+			else if((*sit)->Type == "FSDevice")
+				gi = new GofunFSDeviceItem(cat->iconview,(*sit)->Name);
+			else if((*sit)->Type == "Link")
+				gi = new GofunLinkItem(cat->iconview,(*sit)->Name);
+			gi->setData((*sit));
 		}
 		delete (*it).ItemData;
 	}
@@ -315,7 +323,7 @@ void GofunWidget::performDefaultActionOnItem(QIconViewItem* item)
 void GofunWidget::openSettingsDlg()
 {
 	GofunSettings* settings_dlg = new GofunSettings();
-	GofunMisc::attach_window(this,settings_dlg,D_Under,D_Above,365,220);
+	GofunWindowOperations::attach_window(this,settings_dlg,D_Under,D_Above,365,220);
 	settings_dlg->load();
 	settings_dlg->exec();
 	delete settings_dlg;
@@ -326,7 +334,8 @@ void GofunWidget::openSettingsDlg()
 void GofunWidget::addCategory()
 {
 	GofunCatSettings* settings_dlg = new GofunCatSettings();
-	GofunMisc::attach_window(this,settings_dlg,D_Right,D_Left,275,200);
+	GofunWindowOperations::attach_window(this,settings_dlg,D_Right,D_Left,275,200);
+	settings_dlg->setDefaults();
 	settings_dlg->exec();
 	delete settings_dlg;
 }
@@ -372,6 +381,9 @@ void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 		add_popup->insertItem(tr("Application"),PID_Add_Application);
 		add_popup->insertItem(tr("Device"),PID_Add_Device);
 		add_popup->insertItem(tr("Link"),PID_Add_Link);
+		/*add_popup->insertItem(GofunMisc::get_icon("default_application.png",16,16),tr("Application"),PID_Add_Application);
+		add_popup->insertItem(GofunMisc::get_icon("default_device.png",16,16),tr("Device"),PID_Add_Device);
+		add_popup->insertItem(GofunMisc::get_icon("default_link.png",16,16),tr("Link"),PID_Add_Link);*/
 		popup->insertItem(tr("Add Entry"),add_popup);
 		popup->insertItem(tr("Add Entry Wizard"),PID_Add_Wizard);
 		popup->popup(pos);
@@ -400,12 +412,29 @@ void GofunWidget::changeCategory(int id)
 
 void GofunWidget::applyColorSettings()
 {
-  if(GSC::get()->color_source == "random")
-  	qApp->setPalette(QPalette(QColor(int(rand() % 256),int(rand() % 256),int(rand() % 256))),true);
-  else if(GSC::get()->color_source == "costum")
-  	qApp->setPalette(QPalette(QColor(GSC::get()->costum_color)),true);
-  else if(GSC::get()->color_source == "system")
-  	qApp->setPalette(system_palette,true);
+	QPalette pal;
+	if(GSC::get()->color_source == "random")
+		pal = QPalette(QColor(int(rand() % 256),int(rand() % 256),int(rand() % 256)));
+	else if(GSC::get()->color_source == "custom")
+		pal = QPalette(QColor(GSC::get()->custom_color),QColor(GSC::get()->custom_color));
+	else if(GSC::get()->color_source == "system")
+		pal = system_palette;
+		
+	qApp->setPalette(pal,true);
+	
+	GofunWidget* mw = dynamic_cast<GofunWidget*>(qApp->mainWidget());
+	if(mw)
+	{
+		mw->view_ws->setPalette(QPalette(QColor(GSC::get()->custom_color),QColor(GSC::get()->custom_color)));
+		const QObjectList* wl = mw->view_ws->queryList("GofunIconView");
+		;
+		for(QObjectListIt it(*wl); it.current(); ++it)
+		{
+		if(static_cast<GofunIconView*>(it.current()))
+			static_cast<GofunIconView*>(it.current())->setPalette(pal);
+		}
+		delete wl; 
+	}
 }
 
 void GofunWidget::toggleFullscreen( )
@@ -422,4 +451,9 @@ void GofunWidget::applyStyleSettings( )
 		qApp->setStyle(GSC::get()->style);
 	else if(system_style != qApp->style().name())
 		qApp->setStyle(system_style);
+}
+
+GofunWidget::~GofunWidget()
+{
+	delete tools_cat;
 }

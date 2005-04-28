@@ -25,6 +25,8 @@
 #ifndef GOFUN_FSDEVICE_ENTRY_DATA
 #define GOFUN_FSDEVICE_ENTRY_DATA
 
+class mntent;
+
 struct GofunFSDeviceEntryData : public GofunDesktopEntryData
 {
 	QString Device;
@@ -34,8 +36,17 @@ struct GofunFSDeviceEntryData : public GofunDesktopEntryData
 	QString UnmountIcon;
 	
 	bool parseLine(const QString&);
+	void save();
+	bool isMounted();
+	bool mount();
+	bool unMount();
+	bool open();
+	QString getMountPoint();
+	QString getDevice();
+	mntent* getMntEnt();	
+
+	QString noLinkGuarantuee(const QString&);
 	
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 	virtual GofunFSDeviceEntryData* makeCopy();
 };
 

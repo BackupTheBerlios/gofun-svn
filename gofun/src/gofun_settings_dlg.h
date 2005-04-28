@@ -44,6 +44,9 @@ protected:
 private:
 	virtual void save();
 	virtual void apply();
+	///Validate input
+	/** Reimplement this, if you want 
+	    to check user input. */
 	virtual bool inputValid();
 };
 

@@ -37,6 +37,7 @@
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_parameter_edit.h"
 #include "gofun_list_popup.h"
+#include "gofun_envvar_edit.h"
 
 GofunApplicationItemSettingsAdvanced::GofunApplicationItemSettingsAdvanced(QWidget* parent) : QWidget(parent)
 {
@@ -230,16 +231,18 @@ void GofunApplicationItemSettings::addParRow()
 void GofunApplicationItemSettings::parEditDialog()
 {
 	const QWidget* widget = dynamic_cast<const QWidget*>(sender());
-	int y = widget->y() + dynamic_cast<QWidget*>(widget->parent())->y();
+	int y = widget->y() + dynamic_cast<QWidget*>(widget->parent())->y() + tb_par->contentsY();
 	int row = tb_par->rowAt(y);
 	
 	GofunParameterEdit* par_edit = new GofunParameterEdit();
 	par_edit->setParameterData(par_data[row]);
+	QString tmp_prompt = par_data[row].Prompt;
 	if(par_edit->exec() == QDialog::Accepted)
 	{
 		par_data[row] = par_edit->getParameterData();
+		par_data[row].Prompt = tmp_prompt;
 		tb_par->item(row,0)->setText(par_data[row].Comment);
-		dynamic_cast<QCheckTableItem*>(tb_par->item(row,1))->setChecked(GofunMisc::stringToBool(par_data[row].Prompt));
+		//dynamic_cast<QCheckTableItem*>(tb_par->item(row,1))->setChecked(GofunMisc::stringToBool(par_data[row].Prompt));
 		tb_par->updateCell(row,0);
 		tb_par->updateCell(row,1);
 	}
@@ -276,48 +279,20 @@ void GofunApplicationItemSettings::remEnvVar()
 	}
 }
 
-GofunInterpretedLineEdit::GofunInterpretedLineEdit(const QString& text, QWidget* parent) : QLineEdit(text,parent)
-{
-}
-
-void GofunInterpretedLineEdit::setText(const QString& text)
-{
-	QLineEdit::setText(GofunMisc::shell_call("echo -n "+text));
-}
-
 void GofunApplicationItemSettings::envItemEdit(QListViewItem* item,const QPoint& pos,int i)
 {
 	if(!item)
 		return;
-	
-	QDialog* edit_dlg = new QDialog(this,0,1);
-	edit_dlg->setCaption(tr("Edit environment variable"));
-	QGridLayout* grid = new QGridLayout(edit_dlg,3,2);
-	grid->addWidget(new QLabel(tr("Name"),edit_dlg),0,0);
-	QLineEdit* name_le = new QLineEdit(item->text(0),edit_dlg);
-	grid->addWidget(name_le,0,1);
-	grid->addWidget(new QLabel(tr("Value"),edit_dlg),1,0);
-	QLineEdit* value_le = new QLineEdit(item->text(1),edit_dlg);
-	grid->addWidget(value_le,1,1);
-	grid->addWidget(new QLabel(tr("Interpreted"),edit_dlg),2,0);
-	GofunInterpretedLineEdit* interpreted_le = new GofunInterpretedLineEdit(item->text(2),edit_dlg);
-	interpreted_le->setReadOnly(true);
-	interpreted_le->setEnabled(false);
-	grid->addWidget(interpreted_le,2,1);
-	QPushButton* ok = new QPushButton(tr("Ok"),edit_dlg);
-	connect(value_le, SIGNAL(textChanged(const QString&)), interpreted_le, SLOT(setText(const QString&)));
-	connect(ok, SIGNAL(clicked()),edit_dlg, SLOT(accept()));
-	QPushButton* cancel = new QPushButton(tr("Cancel"),edit_dlg);
-	connect(cancel, SIGNAL(clicked()),edit_dlg, SLOT(reject()));
-	
-	grid->addWidget(ok,3,0);
-	grid->addWidget(cancel,3,1);
-	
+
+	GofunEnvVarEdit* edit_dlg = new GofunEnvVarEdit(this);
+	edit_dlg->setName(item->text(0));
+	edit_dlg->setValue(item->text(1));
+
 	if( edit_dlg->exec() == QDialog::Accepted)
 	{
-		item->setText(0,name_le->text());
-		item->setText(1,value_le->text());
-		item->setText(2,GofunMisc::shell_call("echo -n "+value_le->text()));
+		item->setText(0,edit_dlg->getName());
+		item->setText(1,edit_dlg->getValue());
+		item->setText(2,GofunMisc::shell_call("echo -n "+edit_dlg->getValue()));
 	}
 }
 
@@ -471,5 +446,13 @@ void GofunApplicationItemSettings::editableEnvVar()
 		envedit->setEnabled(true);
 	else
 		envedit->setEnabled(false);
+}
+
+void GofunApplicationItemSettings::setDefaults()
+{
+	GofunItemSettings::setDefaults();
+
+	desw->icon = "default_application.png";
+	desw->icon_button->setPixmap(QPixmap(desw->icon));
 }
 

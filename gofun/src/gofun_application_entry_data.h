@@ -41,9 +41,9 @@ struct GofunParameterData
 	GofunLocaleString Comment;
 };
 
+///Data-type for application Desktop Entries
 struct GofunApplicationEntryData : public GofunDesktopEntryData
 {
-
 	QString Exec;
 	QString TryExec;
 	QString Path;
@@ -53,15 +53,23 @@ struct GofunApplicationEntryData : public GofunDesktopEntryData
 	QString X_GoFun_NewX;
 	std::map<int,GofunParameterData> X_GoFun_Parameter;
 	
+	///Parse a line of the Desktop Entry.
 	bool parseLine(const QString&);
+	///Execute the application
 	void execute();
+	///Save the Desktop Entry
+	void save();
 	
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 	virtual GofunApplicationEntryData* makeCopy();
 	
 	private:
+	///Adds arguments to a process by splitting a string
 	void addSplittedProcArgument(QProcess*,const QString&);
+	///Saves process arguments
+	/** The filename is returned */
 	QString saveProcArguments(QProcess*);
+	///Saves a stringlist to a file
+	QString saveStringListToFile(const QString&,QStringList*);
 };
 
 #endif

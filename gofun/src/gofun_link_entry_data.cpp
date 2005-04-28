@@ -20,20 +20,19 @@
 
 #include <qwidget.h>
 #include <qurl.h>
+#include <qprocess.h>
 
 #include "gofun_link_entry_data.h"
-#include "gofun_link_item.h"
-#include "gofun_settings.h"
+#include "gofun_settings_container.h"
 #include "gofun_data.h"
-#include "gofun_iconview.h"
 #include "gofun_misc.h"
 
-GofunDesktopObject* GofunLinkEntryData::GofunDesktopObjectFactory(QWidget* parent)
+/*GofunDesktopObject* GofunLinkEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
 	GofunLinkItem* item = new GofunLinkItem(dynamic_cast<GofunIconView*>(parent),Name);
 	item->setData(this);
 	return item;
-}
+}*/
 
 
 bool GofunLinkEntryData::parseLine(const QString& line)
@@ -64,7 +63,7 @@ void GofunLinkEntryData::open()
 		proc.addArgument(QDir::homeDirPath());
 	if(!proc.start())
 	{
-		std::cout<<QObject::tr("Execution of directory viewer failed. :(\n");
+		qDebug(QObject::tr("Execution of directory viewer failed. :(\n"));
 	}
 }
 
@@ -74,3 +73,20 @@ GofunLinkEntryData* GofunLinkEntryData::makeCopy()
 	*copy = *this;
 	return copy;
 }
+
+void GofunLinkEntryData::save()
+{
+	GofunDesktopEntryData::save();
+
+	QFile file( File );
+	if ( file.open( IO_WriteOnly | IO_Append ) )
+	{
+		QTextStream stream( &file );
+		stream << "Type=Link\n";
+		if(!URL.isEmpty())
+			stream << "URL=" << URL << "\n";
+		stream << Unknownkeys.join("\n") << "\n";
+		file.close();
+	}
+}
+

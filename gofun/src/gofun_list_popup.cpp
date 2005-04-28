@@ -76,15 +76,25 @@ void GofunListPopup::closeEvent( QCloseEvent *e ){
 void GofunListPopup::mouseReleaseEvent(QMouseEvent * e)
 {
 	if(!(rect().contains(e->pos())))
-		close();
+		hide();
 }
 
 void GofunListPopup::keyPressEvent(QKeyEvent* e)
 {
 	switch (e->key())
 	{
+		case Qt::Key_Up:
+		case Qt::Key_Down:
+			break;
 		case Qt::Key_Escape:
 			close();
+			break;
+		case Qt::Key_Backspace:
+			emit charRemoved();
+			break;
+		default:
+			if(!e->text().isEmpty())
+				emit keyPressed(e->text());
 			break;
 	}
 	
@@ -96,4 +106,6 @@ void GofunListPopup::fill(const QStringList& string_list)
 	for(QStringList::ConstIterator it = string_list.begin(); it != string_list.end(); ++it)
 		new QListViewItem(this,(*it));
 }
+
+
 

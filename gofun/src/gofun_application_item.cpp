@@ -29,9 +29,9 @@
 #include "gofun_application_item.h"
 #include "gofun_misc.h"
 #include "gofun_iconview.h"
-#include "gofun_settings.h"
+#include "gofun_settings_container.h"
 #include "gofun_parameter_prompt.h"
-#include "gofun_costum_start.h"
+#include "gofun_custom_start.h"
 #include "gofun_application_item_settings.h"
 
 GofunApplicationItem::GofunApplicationItem(GofunIconView* iconview, const QString& string) : GofunItem(iconview,string)
@@ -44,61 +44,6 @@ GofunApplicationItem::GofunApplicationItem(GofunIconView* iconview, const QStrin
 	delete data;
 }*/
 
-void GofunApplicationItem::save()
-{
-	GofunDesktopObject::save();
-	GofunItem::save();
-
-	QFile file( data()->File );
-	if ( file.open( IO_WriteOnly | IO_Append ) )
-	{
-		QTextStream stream( &file );
-		stream << "Type=Application\n";
-		if(!data()->Exec.isEmpty())
-			stream << "Exec=" << data()->Exec << "\n";
-		if(!data()->TryExec.isEmpty())
-			stream << "TryExec=" << data()->TryExec << "\n";
-		if(!data()->Path.isEmpty())
-			stream << "Path=" << data()->Path << "\n";
-		stream << "Terminal=" << data()->Terminal << "\n";
-		stream << "X-GoFun-NewX=" << data()->X_GoFun_NewX << "\n";
-		if(!data()->X_GoFun_Env.empty())
-		{
-			stream << "X-GoFun-Env=";
-			for(std::vector<QString>::iterator it = data()->X_GoFun_Env.begin(); it != data()->X_GoFun_Env.end(); ++it)
-			{
-				QString encoded = (*it);
-				encoded.replace(";","\\;");
-				stream << encoded << ";";
-			}
-			stream << "\n";
-		}
-		if(!data()->X_GoFun_User.isEmpty())
-			stream << "X-GoFun-User=" << data()->X_GoFun_User << "\n";
-		if(!data()->X_GoFun_Parameter.empty())
-		{
-			for(std::map<int,GofunParameterData>::iterator it = data()->X_GoFun_Parameter.begin(); it != data()->X_GoFun_Parameter.end(); ++it)
-			{
-				stream << "X-GoFun-Parameter-Prompt-" << (*it).first << "=" << (*it).second.Prompt << "\n";
-				if(!(*it).second.Flag.isEmpty())
-					stream << "X-GoFun-Parameter-Flag-" << (*it).first << "=" << (*it).second.Flag << "\n";
-				if(!(*it).second.Values.join(";").isEmpty())
-					stream << "X-GoFun-Parameter-Values-" << (*it).first << "=" << (*it).second.Values.join(";") << "\n";
-				if(!(*it).second.Default_Value.isEmpty())
-					stream << "X-GoFun-Parameter-Default-" << (*it).first << "=" << (*it).second.Default_Value << "\n";
-				stream << "X-GoFun-Parameter-Type-" << (*it).first << "=" << (*it).second.Type << "\n";
-				if(!(*it).second.Minimum.isEmpty())
-					stream << "X-GoFun-Parameter-Minimum-" << (*it).first << "=" << (*it).second.Minimum << "\n";
-				if(!(*it).second.Maximum.isEmpty())
-					stream << "X-GoFun-Parameter-Maximum-" << (*it).first << "=" << (*it).second.Maximum << "\n";	
-				(*it).second.Comment.desktopEntryPrint("X-GoFun-Parameter-Comment-" + QString::number((*it).first),stream);
-			}
-		}
-		stream << data()->Unknownkeys.join("\n") << "\n";
-		file.close();
-	}
-}
-
 void GofunApplicationItem::setData(GofunDesktopEntryData* d)
 {
 	m_data = dynamic_cast<GofunApplicationEntryData*>(d);
@@ -106,23 +51,6 @@ void GofunApplicationItem::setData(GofunDesktopEntryData* d)
 	implementData();
 	if(!data()->TryExec.stripWhiteSpace().isEmpty() && !QFileInfo(data()->TryExec).isExecutable())
 		iconView()->takeItem(this);	
-}
-
-void GofunApplicationItem::interpretExecString(QString& exec)
-{
-	int off = -1;
-	while((off = exec.find("$GP",off+1)) != -1)
-	{
-		if(exec.find("$GPN") == off)
-		{
-			int i = QInputDialog::getInteger("Enter a number","Enter a number");
-			exec.remove(off,off+QString("$GPN").length());
-			exec.insert(off,QString::number(i));
-		}
-		else if(exec.find("$GPT") == off)
-		{
-		}
-	}
 }
 
 void GofunApplicationItem::executeCommand()
@@ -144,11 +72,11 @@ void GofunApplicationItem::openDirectory()
 	}	
 }
 
-//Show the costumized-start-dialog for the item
-void GofunApplicationItem::costumizedStart()
+//Show the customized-start-dialog for the item
+void GofunApplicationItem::customizedStart()
 {
-	GofunCostumStart* cstart_widget = new GofunCostumStart();
-	GofunMisc::attach_window(qApp->mainWidget(),cstart_widget,D_Left,D_Right,375,200);
+	GofunCustomStart* cstart_widget = new GofunCustomStart();
+	GofunWindowOperations::attach_window(qApp->mainWidget(),cstart_widget,D_Left,D_Right,375,200);
 	cstart_widget->load(this);
 	cstart_widget->show();
 }
@@ -161,7 +89,7 @@ QPopupMenu* GofunApplicationItem::rightClickPopup(const QPoint& pos)
 	popup->insertSeparator(1);
 	popup->insertItem(tr("\" in Terminal"),PID_Execute_in_terminal,2);
 	popup->insertItem(tr("\" in new XServer"),PID_Execute_with_xinit,3);
-	popup->insertItem(tr("Customized start"),PID_Costumized_start,4);
+	popup->insertItem(tr("Customized start"),PID_Customized_start,4);
 	if(!data()->Path.isEmpty())
 		popup->insertItem(tr("Open directory"),PID_Open_directory,5);
 
@@ -184,8 +112,8 @@ void GofunApplicationItem::popupActivated(int id)
 			openDirectory(); break;
 		case PID_Execute_with_xinit: 
 			execute("xinit"); break;
-		case PID_Costumized_start: 
-			costumizedStart(); break;
+		case PID_Customized_start: 
+			customizedStart(); break;
 	}
 }
 
@@ -193,7 +121,7 @@ void GofunApplicationItem::popupActivated(int id)
 void GofunApplicationItem::editEntry()
 {
 	GofunApplicationItemSettings* settings_dlg = new GofunApplicationItemSettings();
-	GofunMisc::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
+	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
 	settings_dlg->setCaption(tr("Edit entry"));
 	settings_dlg->load(this);
 	settings_dlg->exec();
@@ -222,9 +150,10 @@ void GofunApplicationItem::createNewItem(GofunCatButton* cat)
 {
 	GofunApplicationItemSettings* settings_dlg = new GofunApplicationItemSettings();
 	int height = 200;
-	GofunMisc::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
+	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
 	settings_dlg->setCaption(tr("Add entry"));
 	settings_dlg->setCategory(cat);
+	settings_dlg->setDefaults();
 	settings_dlg->exec();
 	delete settings_dlg;
 }

@@ -33,7 +33,7 @@
 
 #include "gofun_url_composer.h"
 #include "gofun_link_item.h"
-#include "gofun_settings.h"
+#include "gofun_settings_container.h"
 #include "gofun_directory_browser.h"
 
 GofunURLComposer::GofunURLComposer()

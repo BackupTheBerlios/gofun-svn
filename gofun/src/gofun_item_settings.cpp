@@ -62,9 +62,9 @@ void GofunItemSettings::save()
 {
 	if(data()->File.isEmpty())
 	{
-	 	data()->File = category->data()->Catdir + "/" + desw->caption->text() + ".desktop";
+	 	data()->File = category->data()->Catdir + "/" + desw->caption->text().replace('/','\\') + ".desktop"; //FIXME: redundant? implement general "filename correcter"
 	}
-	item->save();
+	data()->save();
 }
 
 void GofunItemSettings::apply()
@@ -79,9 +79,9 @@ void GofunItemSettings::apply()
 	data()->GenericName = desw->generic_name;
 	if(!data()->Comment.isEmpty())
 		item->setToolTipText(data()->Comment);
-	if(data()->File.isEmpty())
+	if(data()->File.isEmpty()) //FIXME: redundant? implement general "filename correcter"
 	{
-		data()->File = category->data()->Catdir + "/" + desw->caption->text() + ".desktop";
+		data()->File = category->data()->Catdir + "/" + desw->caption->text().replace('/','\\') + ".desktop";
 	}
 	item->loadIcon();
 }
@@ -121,5 +121,10 @@ void GofunItemSettings::load(GofunItem* _item)
 GofunDesktopEntryData* GofunItemSettings::data()
 {
 	return item->data();
+}
+
+void GofunItemSettings::setDefaults()
+{
+	desw->caption->setFocus();
 }
 

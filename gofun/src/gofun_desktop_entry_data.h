@@ -42,8 +42,8 @@ struct GofunDesktopEntryData
 	QString Hidden;
 	
 	virtual bool parseLine(const QString&);
+	virtual void save();
 	
-	virtual GofunDesktopObject* GofunDesktopObjectFactory(QWidget* parent);
 	virtual GofunDesktopEntryData* makeCopy();
 };
 

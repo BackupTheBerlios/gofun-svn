@@ -28,12 +28,15 @@ class QLineEdit;
 class QPushButton;
 class QListView;
 
+///List-widget with moveable items
 class GofunListWidget : public QWidget
 {
 	Q_OBJECT
 public:
 	GofunListWidget(QWidget*);
+	///Return the list as QStringList
 	QStringList returnList();
+	///Fill the list with the values of a stringlist
 	void fillList(const QStringList&);
 
 public slots:
@@ -57,6 +60,7 @@ private:
 	QPushButton* down_button;
 };
 
+///Dialog consisting of a GofunListWidget
 class GofunListDialog : public QDialog
 {
 	Q_OBJECT

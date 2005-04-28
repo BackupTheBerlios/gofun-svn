@@ -30,7 +30,6 @@ class GofunDesktopEntryData;
 class GofunDesktopObject
 {
 	public:
-	virtual void save();
 	virtual GofunDesktopEntryData* data() = 0;
 };
 

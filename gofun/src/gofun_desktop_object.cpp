@@ -23,22 +23,3 @@
 #include "gofun_desktop_object.h"
 #include "gofun_desktop_entry_data.h"
 
-void GofunDesktopObject::save()
-{
-	GofunDesktopEntryData* pdata = reinterpret_cast<GofunDesktopEntryData*>(data());
-	QFile file( pdata->File );
-	if ( file.open( IO_WriteOnly ) )
-	{
-		QTextStream stream( &file );
-		stream << "[Desktop Entry]\n";
-		stream << "Version=0.9.4\n";
-		stream << "Encoding=UTF-8\n";
-		if(!data()->Icon.isEmpty())
-			stream << "Icon=" << pdata->Icon << "\n";
-		pdata->Name.desktopEntryPrint("Name",stream);
-		pdata->GenericName.desktopEntryPrint("GenericName",stream);
-		pdata->Comment.desktopEntryPrint("Comment",stream);
-		file.close();
-	}
-}
-

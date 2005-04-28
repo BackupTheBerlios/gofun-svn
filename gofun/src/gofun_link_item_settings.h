@@ -32,6 +32,7 @@ class GofunLinkItemSettings : public GofunItemSettings
 public:
 	GofunLinkItemSettings();
 	void load(GofunLinkItem*);
+	void setDefaults();
 	
 public slots:
 	void dirDialog();

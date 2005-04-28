@@ -19,18 +19,17 @@
  ***************************************************************************/
 
 #include <qwidget.h>
+#include <qfile.h>
 
-#include "gofun_data.h" 
-#include "gofun_item.h"
-#include "gofun_iconview.h"
+#include "gofun_data.h"
 #include "gofun_desktop_entry_data.h"
 
-GofunDesktopObject* GofunDesktopEntryData::GofunDesktopObjectFactory(QWidget* parent)
+/*GofunDesktopObject* GofunDesktopEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
 	GofunItem* item = new GofunItem(dynamic_cast<GofunIconView*>(parent),Name);
 	item->setData(this);
 	return item;
-}
+}*/
 
 bool GofunDesktopEntryData::parseLine(const QString& line)
 {
@@ -52,5 +51,23 @@ GofunDesktopEntryData * GofunDesktopEntryData::makeCopy( )
 	GofunDesktopEntryData* copy = new GofunDesktopEntryData;
 	*copy = *this;
 	return copy;
+}
+
+void GofunDesktopEntryData::save( )
+{
+	QFile file( File );
+	if ( file.open( IO_WriteOnly ) )
+	{
+		QTextStream stream( &file );
+		stream << "[Desktop Entry]\n";
+		stream << "Version=0.9.4\n";
+		stream << "Encoding=UTF-8\n";
+		if(!Icon.isEmpty())
+			stream << "Icon=" << Icon << "\n";
+		Name.desktopEntryPrint("Name",stream);
+		GenericName.desktopEntryPrint("GenericName",stream);
+		Comment.desktopEntryPrint("Comment",stream);
+		file.close();
+	}
 }
 

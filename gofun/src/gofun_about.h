@@ -23,12 +23,18 @@
 #ifndef GOFUN_ABOUT
 #define GOFUN_ABOUT
 
+///About dialog
 class GofunAbout : public QDialog
 {
 	public:
 	GofunAbout();
 	
 	private:
+	/** Get text of a file
+	 * 
+	 * @param  filename
+	 * @return text
+	 */
 	QString getFileText(const QString&);
 };
 

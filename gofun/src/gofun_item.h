@@ -50,7 +50,6 @@ public:
 	virtual ~GofunItem();
 
 	virtual void setData(GofunDesktopEntryData*);
-	virtual void save();
 	void deleteEntry();
 	void deleteEntryFile();
 	virtual void loadIcon();

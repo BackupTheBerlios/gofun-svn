@@ -95,3 +95,12 @@ GofunLinkEntryData* GofunLinkItemSettings::data()
 {
 	return dynamic_cast<GofunLinkItem*>(item)->data();
 }
+
+void GofunLinkItemSettings::setDefaults()
+{
+	GofunItemSettings::setDefaults();
+	
+	desw->icon = "default_link.png";
+	desw->icon_button->setPixmap(QPixmap(desw->icon));
+}
+

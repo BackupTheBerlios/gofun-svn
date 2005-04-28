@@ -24,11 +24,10 @@
 
 #include "gofun_cat_settings.h"
 #include "gofun_cat_button.h"
-#include "gofun_data.h"
 #include "gofun_iconview.h"
 #include "gofun_misc.h"
 #include "gofun_widget.h"
-#include "gofun_settings.h"
+#include "gofun_settings_container.h"
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_icon_dialog.h"
 #include "gofun_file_dialog.h"
@@ -103,7 +102,7 @@ void GofunCatSettings::save()
 		if(item->data()->File.isEmpty())
 			item->data()->File = item->data()->Catdir + "/.directory";
 	}
-	item->save();
+	item->data()->save();
 }
 
 void GofunCatSettings::apply()
@@ -155,4 +154,12 @@ void GofunCatSettings::load(GofunCatButton* _item)
 	desw->icon_button->setPixmap(item->confButtonPixmap()?*item->confButtonPixmap():0);
 	if(item->isReadOnly())
 		apply_button->setEnabled(false);
+}
+
+void GofunCatSettings::setDefaults( )
+{
+	desw->caption->setFocus(); //FIXME: yet another example why GofunCatSettings must be merged with the GofunItemSettings hierarchy ...
+
+	desw->icon = "default_cat.png";
+	desw->icon_button->setPixmap(QPixmap(desw->icon));
 }

@@ -28,6 +28,9 @@
 
 #include "gofun_parameter_edit.h"
 #include "gofun_parameter_prompt.h"
+#include "gofun_parameter_string_prompt_widget.h"
+#include "gofun_parameter_integer_prompt_widget.h"
+#include "gofun_parameter_decimal_prompt_widget.h"
 
 GofunParameterPrompt::GofunParameterPrompt()
 {
@@ -93,95 +96,4 @@ QString GofunParameterPrompt::parameterString()
 	return parstr;
 }
 
-GofunParameterStringPromptWidget::GofunParameterStringPromptWidget(QWidget* parent) : GofunParameterPromptWidget(parent)
-{
-	QGridLayout* grid = new QGridLayout(this);
-	value = new QComboBox(this);
-	value->setEditable(true);
-	
-	grid->addWidget(value,0,0);
-}
-
-void GofunParameterStringPromptWidget::setParameterData(const GofunParameterData& _par_data)
-{
-	GofunParameterPromptWidget::setParameterData(_par_data);
-	
-	value->insertStringList(par_data.Values);
-	value->setCurrentText(par_data.Default_Value);
-}
-
-GofunParameterIntegerPromptWidget::GofunParameterIntegerPromptWidget(QWidget* parent) : GofunParameterPromptWidget(parent)
-{
-	QGridLayout* grid = new QGridLayout(this);
-	value_spin = new QSpinBox(this);
-	
-	grid->addWidget(value_spin,0,1);
-}
-
-GofunParameterDecimalPromptWidget::GofunParameterDecimalPromptWidget(QWidget* parent) : GofunParameterPromptWidget(parent)
-{
-	QGridLayout* grid = new QGridLayout(this);
-	value_spin = new GofunDecimalSpinBox(this);
-	
-	grid->addWidget(value_spin,0,1);
-}
-
-QString GofunParameterStringPromptWidget::returnParameter( )
-{
-	return par_data.Flag + " " + value->currentText();
-}
-
-void GofunParameterIntegerPromptWidget::setParameterData(const GofunParameterData& _par_data)
-{
-	GofunParameterPromptWidget::setParameterData(_par_data);
-	
-	if(!par_data.Minimum.isEmpty())	
-		value_spin->setMinValue(par_data.Minimum.toInt());
-	if(!par_data.Maximum.isEmpty())
-		value_spin->setMaxValue(par_data.Maximum.toInt());
-	if(!par_data.Minimum.isEmpty() && !par_data.Maximum.isEmpty())
-	{
-		value_slider = new QSlider(Qt::Horizontal,this);
-		value_slider->setMinValue(par_data.Minimum.toInt());
-		value_slider->setMaxValue(par_data.Maximum.toInt());
-		value_slider->setValue(par_data.Default_Value.toInt());
-		
-		connect(value_slider,SIGNAL(valueChanged(int)),value_spin,SLOT(setValue(int)));
-		connect(value_spin,SIGNAL(valueChanged(int)),value_slider,SLOT(setValue(int)));
-	}
-	
-	value_spin->setValue(_par_data.Default_Value.toInt());
-}
-
-QString GofunParameterIntegerPromptWidget::returnParameter( )
-{
-	return par_data.Flag + " " + QString::number(value_spin->value());
-}
-
-void GofunParameterDecimalPromptWidget::setParameterData(const GofunParameterData& _par_data)
-{
-	GofunParameterPromptWidget::setParameterData(_par_data);
-	
-	if(!par_data.Minimum.isEmpty())	
-		value_spin->setMinValue(par_data.Minimum.toInt());
-	if(!par_data.Maximum.isEmpty())
-		value_spin->setMaxValue(par_data.Maximum.toInt());
-	if(!par_data.Minimum.isEmpty() && !par_data.Maximum.isEmpty())
-	{
-		value_slider = new QSlider(Qt::Horizontal,this);
-		value_slider->setMinValue(par_data.Minimum.toInt());
-		value_slider->setMaxValue(par_data.Maximum.toInt());
-		value_slider->setValue(par_data.Default_Value.toInt());
-		
-		connect(value_slider,SIGNAL(valueChanged(int)),value_spin,SLOT(setValue(int)));
-		connect(value_spin,SIGNAL(valueChanged(int)),value_slider,SLOT(setValue(int)));
-	}
-	
-	value_spin->setValue(_par_data.Default_Value.toInt());
-}
-
-QString GofunParameterDecimalPromptWidget::returnParameter( )
-{
-	return par_data.Flag + " " + value_spin->mapValueToText(value_spin->value());
-}
 

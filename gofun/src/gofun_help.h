@@ -31,7 +31,9 @@ class QPushButton;
 class QHttp;
 class GofunMimeSourceFactory;
 
-///Specialised IconView for GoFun 
+///Gofun help dialog
+/** Help dialog, that is based
+    on HTML browsing. */
 class GofunHelp : public QDialog
 {
 	Q_OBJECT

@@ -30,7 +30,7 @@ enum
   PID_Execute_in_terminal,
   PID_Execute_with_xinit,
   PID_Open_directory,
-  PID_Costumized_start
+  PID_Customized_start
 };
 
 class GofunApplicationItem : public GofunItem
@@ -43,7 +43,7 @@ class GofunApplicationItem : public GofunItem
 
 	void setData(GofunDesktopEntryData*);
 	void save();
-	void costumizedStart();
+	void customizedStart();
 	void openDirectory();
 	void executeCommand();
 	QPopupMenu* rightClickPopup(const QPoint&);
@@ -56,7 +56,6 @@ class GofunApplicationItem : public GofunItem
 	public slots:
 	void popupActivated(int);
 	private:
-	void interpretExecString(QString&); //FIXME: Removal request
 	void execute(const QString& = QString::null);
 	
 	GofunApplicationEntryData* m_data;

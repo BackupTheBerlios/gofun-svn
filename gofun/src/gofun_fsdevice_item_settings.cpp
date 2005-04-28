@@ -222,3 +222,13 @@ void GofunFSDeviceItemSettings::selectedDevice(const QString& device)
 	endmntent(fp);
 }
 
+void GofunFSDeviceItemSettings::setDefaults()
+{
+	GofunItemSettings::setDefaults();
+
+	desw->icon = "default_device.png";
+	desw->icon_button->setPixmap(QPixmap(desw->icon));
+}
+
+
+

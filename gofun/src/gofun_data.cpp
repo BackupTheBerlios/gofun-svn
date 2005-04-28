@@ -27,7 +27,7 @@
 #include <qurl.h>
  
 #include "gofun_data.h"
-#include "gofun_settings.h"
+#include "gofun_settings_container.h"
 #include "gofun_item.h"
 #include "gofun_application_item.h"
 #include "gofun_fsdevice_item.h"
@@ -67,12 +67,9 @@ QStringList GofunDataLoader::loadFileData(const QString& _file)
 	{
 		QTextStream stream( &file );
 		stream.setEncoding(QTextStream::Latin1);
-        	QString line;
-        	int i = 1;
 		while ( !stream.atEnd() )
 		{
-			line = stream.readLine(); // line of text excluding '\n'
-			lines += line;
+			lines += stream.readLine(); // line of text excluding '\n'
         	}
         	file.close();
     	}

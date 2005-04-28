@@ -26,7 +26,7 @@
 #include <qtable.h>
  
 #include "gofun_settings_dlg.h"
-#include "gofun_data.h"
+#include "gofun_desktop_entry_data.h"
 
 class GofunCatButton;
 class GofunItem;
@@ -42,6 +42,7 @@ class GofunItemSettings : public GofunSettingsDlg
 public:
 	GofunItemSettings();
 	void setCategory(GofunCatButton*);
+	void setDefaults();
 	virtual void load(GofunItem*);
 	
 public slots:

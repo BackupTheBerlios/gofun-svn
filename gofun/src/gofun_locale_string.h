@@ -26,6 +26,11 @@
 #ifndef GOFUN_LOCALE_STRING
 #define GOFUN_LOCALE_STRING
 
+///Represents a locale
+/** A locale can consist of a language,
+    a country and a modifier. This class able
+    to automatically extract this parts of a
+    Desktop Entry locale. */
 struct GofunLocale
 {
 	GofunLocale();
@@ -38,6 +43,9 @@ struct GofunLocale
 	QString modifier;
 };
 
+///Desktop Entry locale string implementation
+/** Holds locale representations of a string
+    and can do locale matching among them. */
 class GofunLocaleString : public QString
 {
 	public:

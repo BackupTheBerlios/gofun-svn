@@ -1,4 +1,4 @@
-	/***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2004 by Tobias Glaesser                                 *
  *   tobi.web@gmx.de                                                       *
  *                                                                         *
@@ -29,54 +29,21 @@
 
 class QGridLayout;
 class QComboBox;
-class QSpinBox;
-class QSlider;
-class GofunDecimalSpinBox;
+class GofunParameterPromptWidget;
 
-struct GofunParameterPromptWidget : public QWidget
-{
-	GofunParameterPromptWidget(QWidget*parent) : QWidget(parent) {};
-	virtual void setParameterData(const GofunParameterData& _par_data) { par_data = _par_data; }
-	virtual QString returnParameter() { return par_data.Flag + " " + par_data.Default_Value; }
-	GofunParameterData par_data;
-};
-
-struct GofunParameterStringPromptWidget : public GofunParameterPromptWidget
-{
-	GofunParameterStringPromptWidget(QWidget*);
-	void setParameterData(const GofunParameterData&);
-	QString returnParameter();
-	
-	QComboBox* value;
-};
-
-struct GofunParameterIntegerPromptWidget : public GofunParameterPromptWidget
-{
-	GofunParameterIntegerPromptWidget(QWidget*);
-	void setParameterData(const GofunParameterData&);
-	QString returnParameter();
-	
-	QSpinBox* value_spin;
-	QSlider* value_slider;
-};
-
-struct GofunParameterDecimalPromptWidget : public GofunParameterPromptWidget
-{
-	GofunParameterDecimalPromptWidget(QWidget*);
-	void setParameterData(const GofunParameterData&);
-	QString returnParameter();
-	
-	GofunDecimalSpinBox* value_spin;
-	QSlider* value_slider;
-};
-
+///Parameter-prompt
+/** Prompt that can ask the user
+    for several parameter-values. */
 class GofunParameterPrompt : public QDialog
 {
 	Q_OBJECT
 	
 	public:
 	GofunParameterPrompt();	
+	///Add a parameter
+	/** Takes a GofunParameterData pointer. */
 	void addParameter(GofunParameterData*);
+	///Returns a combined parameter-string
 	QString parameterString();
 	
 	private:

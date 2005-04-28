@@ -39,14 +39,12 @@ class GofunFSDeviceItem : public GofunItem
 	GofunFSDeviceItem(GofunIconView*, const QString& = 0);
 	
 	void setData(GofunDesktopEntryData*);
-	void save();
 	QPopupMenu* rightClickPopup(const QPoint&);
 	void editEntry();
 	void performDefaultAction();
-	bool isMounted();
-	void mount();
-	void unMount();
 	void open();
+	void unMount();
+	void mount();
 	void loadIcon();
 	
 	static void createNewItem(GofunCatButton*);

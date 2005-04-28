@@ -28,17 +28,6 @@ class GofunApplicationItem;
 #ifndef GOFUN_APPLICATION_ITEM_SETTINGS
 #define GOFUN_APPLICATION_ITEM_SETTINGS
 
-class GofunInterpretedLineEdit : public QLineEdit
-{
-	Q_OBJECT
-	
-	public:
-	GofunInterpretedLineEdit(const QString&, QWidget*);
-	
-	public slots:
-	void setText(const QString&);
-};
-
 class GofunApplicationItemSettingsAdvanced : public QWidget
 {
 	Q_OBJECT
@@ -65,6 +54,7 @@ class GofunApplicationItemSettings : public GofunItemSettings
 public:
 	GofunApplicationItemSettings();
 	void load(GofunApplicationItem*);
+	void setDefaults();
 	
 public slots:
 	void iconDialog();

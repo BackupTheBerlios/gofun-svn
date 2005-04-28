@@ -26,102 +26,16 @@
 #include <qcolordialog.h>
 #include <qcombobox.h>
 #include <qstylefactory.h>
+#include <qlineedit.h>
+#include <qtoolbox.h>
+#include <qradiobutton.h>
+#include <qcheckbox.h>
 
-#include "gofun_settings.h" 
+#include "gofun_settings.h"
+#include "gofun_settings_container.h"
 #include "gofun_widget.h"
 #include "gofun_misc.h"
 #include "gofun_directory_browser.h"
-
-GofunSettingsContainer* GofunSettingsContainer::_instance = NULL;
-
-GofunSettingsContainer::GofunSettingsContainer()
-{
-	m_settings = new QSettings(QSettings::Native);
-	
-	m_settings->insertSearchPath( QSettings::Unix, QDir::homeDirPath() + "/.gofun/");
-	
-	m_settings->beginGroup("config");
-	
-	m_settings->beginGroup("general");
-	gofun_dir = m_settings->readEntry("datadir");
-	m_settings->endGroup();
-	
-	if(gofun_dir.isEmpty())
-		gofun_dir = QDir::homeDirPath() + "/.gofun/data";
-	QDir dir;
-	if(!dir.exists(gofun_dir))
-	{
-		GofunMisc::makeDir(gofun_dir);
-	}
-	
-	m_settings->beginGroup("commands");
-	terminal_cmd = m_settings->readEntry("terminal");
-	filemanager_cmd = m_settings->readEntry("filemanager");
-	browser_cmd = m_settings->readEntry("browser");
-	m_settings->endGroup();
-		
-	if(terminal_cmd.isEmpty())
-		terminal_cmd = "xterm";
-		
-	m_settings->beginGroup("lookandfeel");
-	style = m_settings->readEntry("style");
-	color_source = m_settings->readEntry("colorsource");
-	costum_color = m_settings->readEntry("costumcolor");
-	main_width = m_settings->readEntry("main_width");
-	main_height = m_settings->readEntry("main_height");
-	main_x = m_settings->readEntry("main_x");
-	main_y = m_settings->readEntry("main_y");
-	save_main_geom = m_settings->readEntry("save_main_geom");
-	m_settings->endGroup();
-	
-	if(color_source.isEmpty())
-		color_source = "system";
-		
-	if(main_width.isEmpty())
-		main_width = "365";
-	if(main_height.isEmpty())
-		main_height = "240";
-	if(main_x.isEmpty())
-		main_x = "-1";
-	if(main_y.isEmpty())
-		main_y = "-1";
-	if(save_main_geom.isEmpty())
-		save_main_geom = "true";		
-}
-
-GofunSettingsContainer::~GofunSettingsContainer()
-{
-	m_settings->writeEntry("/commands/terminal",terminal_cmd);
-	m_settings->writeEntry("/commands/filemanager",filemanager_cmd);
-	m_settings->writeEntry("/commands/browser",browser_cmd);
-	m_settings->writeEntry("/general/datadir",gofun_dir);
-	m_settings->writeEntry("/lookandfeel/style",style);
-	m_settings->writeEntry("/lookandfeel/colorsource",color_source);
-	m_settings->writeEntry("/lookandfeel/costumcolor",costum_color);
-	
-	if(save_main_geom == "true")
-	{
-		main_width = QString::number(qApp->mainWidget()->width());
-		main_height = QString::number(qApp->mainWidget()->height());
-		main_x = QString::number(qApp->mainWidget()->x());
-		main_y = QString::number(qApp->mainWidget()->y());
-	}
-	else
-	{
-		main_width = "";
-		main_height = "";
-		main_x = "";
-		main_y = "";
-	}
-	
-	m_settings->writeEntry("/lookandfeel/main_width",main_width);
-	m_settings->writeEntry("/lookandfeel/main_height",main_height);
-	m_settings->writeEntry("/lookandfeel/main_x",main_x);
-	m_settings->writeEntry("/lookandfeel/main_y",main_y);
-	m_settings->writeEntry("/lookandfeel/save_main_geom",save_main_geom);
-	m_settings->endGroup();
-	delete m_settings;
-}
 
 GofunSettings::GofunSettings()
 {
@@ -165,20 +79,20 @@ GofunSettings::GofunSettings()
 	QGridLayout* grid_col = new QGridLayout(col_group->layout());
 	col_system = new QRadioButton(tr("System"),col_group);
 	col_random = new QRadioButton(tr("Random"),col_group);
-	col_costum = new QRadioButton(tr("Costum"),col_group);
-	costum_col_bt = new QToolButton(col_group);
-	costum_col_bt->setMaximumWidth(30);
+	col_custom = new QRadioButton(tr("Custom"),col_group);
+	custom_col_bt = new QToolButton(col_group);
+	custom_col_bt->setMaximumWidth(30);
 	grid_col->addWidget(col_system,0,0);
-	grid_col->addMultiCellWidget(col_costum,0,0,1,2);
+	grid_col->addMultiCellWidget(col_custom,0,0,1,2);
 	grid_col->addWidget(col_random,0,3);
-	grid_col->addWidget(new QLabel(tr("Costum color"),col_group),1,0);
-	grid_col->addWidget(costum_col_bt,1,1);
+	grid_col->addWidget(new QLabel(tr("Custom color"),col_group),1,0);
+	grid_col->addWidget(custom_col_bt,1,1);
 	QSpacerItem* spacer = new QSpacerItem(40,20,QSizePolicy::Expanding, QSizePolicy::Minimum);
 	grid_col->addMultiCell(spacer,1,1,2,3);
 	
 	save_main_geom = new QCheckBox(tr("Save main window geometry"),widget_laf);
 	
-	connect(costum_col_bt,SIGNAL(clicked()),this,SLOT(costumColorDialog()));
+	connect(custom_col_bt,SIGNAL(clicked()),this,SLOT(customColorDialog()));
 		
 	grid_laf->addWidget(style_group,0,0);
 	grid_laf->addWidget(col_group,1,0);
@@ -225,12 +139,14 @@ void GofunSettings::apply()
 			GSC::get()->style = "";
 	}
 	
-	col_costum->isChecked() ? GSC::get()->color_source = "costum" : 0;
+	col_custom->isChecked() ? GSC::get()->color_source = "custom" : 0;
 	col_random->isChecked() ? GSC::get()->color_source = "random" : 0;
 	col_system->isChecked() ? GSC::get()->color_source = "system" : 0;
 	GSC::get()->save_main_geom = GofunMisc::boolToString(save_main_geom->isChecked());
 	
-	GSC::get()->costum_color = costum_col_bt->paletteBackgroundColor().name();
+	GSC::get()->custom_color = custom_col_bt->paletteBackgroundColor().name();
+	
+	GSC::get()->save();
 	
 	GofunWidget::applyStyleSettings();
 	GofunWidget::applyColorSettings();
@@ -249,19 +165,19 @@ void GofunSettings::load()
 		col_random->setChecked(true);
 	else if(GSC::get()->color_source == "system")
 		col_system->setChecked(true);
-	else if(GSC::get()->color_source == "costum")
-		col_costum->setChecked(true);
+	else if(GSC::get()->color_source == "custom")
+		col_custom->setChecked(true);
 		
-	costum_col_bt->setPaletteBackgroundColor(GSC::get()->costum_color);
+	custom_col_bt->setPaletteBackgroundColor(GSC::get()->custom_color);
 	
 	save_main_geom->setChecked(GofunMisc::stringToBool(GSC::get()->save_main_geom));
 }
 
-void GofunSettings::costumColorDialog()
+void GofunSettings::customColorDialog()
 {
 	QColor col;
-	if((col = QColorDialog::getColor(GSC::get()->costum_color)).isValid())
-		costum_col_bt->setPaletteBackgroundColor(col);
+	if((col = QColorDialog::getColor(GSC::get()->custom_color)).isValid())
+		custom_col_bt->setPaletteBackgroundColor(col);
 }
 
 

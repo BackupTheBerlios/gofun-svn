@@ -38,7 +38,7 @@ GofunIconLoad* GofunIconLoad::_instance = NULL;
 
 GofunIconDialog::GofunIconDialog()
 {
-	setCaption(tr("Selete an Icon"));
+	setCaption(tr("Select an Icon"));
 
 	grid = new QGridLayout(this,5);
 	grid->setMargin(3);
@@ -48,8 +48,8 @@ GofunIconDialog::GofunIconDialog()
 	gb_selected->layout()->setSpacing( 6 );
 	gb_selected->layout()->setMargin( 5 );
 	
-	icon_preview = new QLabel(gb_selected);
-	icon_file = new QLabel(tr("This is the currently selected icon"),gb_selected);
+	icon_preview = new QLabel(tr("Preview: No icon selected"),gb_selected);
+	icon_file = new QLabel(gb_selected);
 	
 	
 	QGroupBox* gb_icon_browse = new QGroupBox(this);
@@ -201,15 +201,6 @@ void GofunIconLoad::customEvent(QCustomEvent* event)
 	    
 	    if(initiator && initiator->load_progress)
 	    	initiator->load_progress->setProgress(initiator->load_progress->progress()+1);
-	    /*GofunIconItem* item = new GofunIconItem(filter_view,icon_event->data.text,icon_event->data.pixmap,icon_event->data.file);
-	    if(!(filter_edit->text().isEmpty() || item->text().contains(filter_edit->text(),false) != 0))
-	    {
-			filter_view->takeItem(item);
-			taken_icons.push_back(dynamic_cast<GofunIconItem*>(item));
-	    }
-	    
-	    if(load_progress)
-	    	load_progress->setProgress(load_progress->progress()+1);*/
         }
 	else if ( event->type() == static_cast<QEvent::Type>(IconTotalStepsEventID) )
 	{
@@ -264,7 +255,10 @@ void GofunAdjustAbleIconView::adjustMe()
 
 void GofunIconDialog::setStartDir( const QString & _start_dir)
 {
-	start_dir = _start_dir;
+	if(QFile::exists(_start_dir))
+		start_dir = _start_dir;
+	else
+		start_dir = "/usr/share/icons";
 }
 
 void GofunIconDialog::setStartIcon( const QString& _icon)

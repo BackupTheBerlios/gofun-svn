@@ -103,7 +103,7 @@ GofunAbout::GofunAbout()
 	grid_cl->addWidget(new QLabel(" tobi.web@gmx.de",gb_cl),1,1);
 }
 
-QString GofunAbout::getFileText( const QString & filename)
+QString GofunAbout::getFileText(const QString & filename)
 {
 	QFile file(filename);
 	QString text;

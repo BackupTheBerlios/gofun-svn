@@ -23,10 +23,15 @@
 #ifndef GOFUN_FILE_DIALOG
 #define GOFUN_FILE_DIALOG
 
+///File-dialog specialisations
 class GofunFileDialog
 {
 	public:
+	///Get filename of an image
+	/** Takes the start directory, a caption for
+	    the dialog and a description for the file-filter. */
 	static QString getOpenImageFileName(const QString& start_dir,const QString& caption, const QString& filter_desc);
 };
 
 #endif
+

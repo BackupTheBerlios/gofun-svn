@@ -18,6 +18,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <iostream>
+ 
+#include <qdatetime.h>
+ 
 #include "gofun_process_logger.h"
 
 GofunProcessLogger* GofunProcessLogger::_instance = 0;
@@ -41,6 +45,9 @@ void GofunProcessLogger::readProcStderrToStdout()
 	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
 	while(proc->canReadLineStderr())
 		qDebug(proc->readLineStderr());
+	QByteArray ba;
+	if((ba = proc->readStderr()).size())
+		std::cerr<<ba;
 }
 
 void GofunProcessLogger::readProcStdoutToStdout()
@@ -48,6 +55,9 @@ void GofunProcessLogger::readProcStdoutToStdout()
 	QProcess* proc = const_cast<QProcess*>(dynamic_cast<const QProcess*>(sender()));
 	while(proc->canReadLineStdout())
 		qDebug(proc->readLineStdout());
+	QByteArray ba;
+	if((ba = proc->readStdout()).size())
+		std::cout<<ba;
 }
 
 void GofunProcessLogger::readProcStderrToBuffer()
