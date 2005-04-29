@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Test
+Type=Application
+Terminal=true
+Exec=echo test works :)
