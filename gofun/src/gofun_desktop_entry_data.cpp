@@ -20,6 +20,7 @@
 
 #include <qwidget.h>
 #include <qfile.h>
+#include <qfileinfo.h>
 
 #include "gofun_data.h"
 #include "gofun_desktop_entry_data.h"
@@ -55,6 +56,9 @@ GofunDesktopEntryData * GofunDesktopEntryData::makeCopy( )
 
 void GofunDesktopEntryData::save( )
 {
+	if(File.isEmpty())
+		generateFileName();	
+
 	QFile file( File );
 	if ( file.open( IO_WriteOnly ) )
 	{
@@ -69,5 +73,18 @@ void GofunDesktopEntryData::save( )
 		Comment.desktopEntryPrint("Comment",stream);
 		file.close();
 	}
+}
+
+bool GofunDesktopEntryData::isReadOnly()
+{
+	if(!File.isEmpty() && QFile::exists(File)  && !QFileInfo(File).isWritable())
+		return true;
+	else
+		return false;
+}
+
+void GofunDesktopEntryData::generateFileName()
+{
+	File = Name + ".desktop";
 }
 

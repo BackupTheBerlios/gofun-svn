@@ -63,9 +63,8 @@ void GofunParameterPrompt::addParameter(GofunParameterData* pd)
 {
 	if(pd->Prompt != "true")
 	{
-		
-		//parameter.push_back(spd);
-		return;	
+		/*parameter.push_back(spd);*/
+		return;
 	}
 	
 	QGroupBox* gb = new QGroupBox(1,Qt::Horizontal,pd->Comment + " ( " + tr("Flag") + ": " + pd->Flag + " )",this);

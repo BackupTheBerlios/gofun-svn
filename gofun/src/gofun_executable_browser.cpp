@@ -52,7 +52,7 @@ GofunExecutableBrowser::GofunExecutableBrowser()
 	}
 
 	fill_cmd += " -N";
-	QStringList cmds = QStringList::split('\n',GofunMisc::shell_call(fill_cmd));
+	QStringList cmds = QStringList::split('\n',GofunMisc::shellCall(fill_cmd));
 	for(QStringList::Iterator it = cmds.begin(); it != cmds.end(); ++it)
 		new QListViewItem(cmd_list,(*it));
 		

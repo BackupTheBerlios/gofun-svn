@@ -18,40 +18,41 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <qlineedit.h> 
-#include <qtoolbutton.h>
-#include <qdir.h>
+#include "gofun_item_settings.h"
+#include "gofun_cat_entry_data.h"
 
 #ifndef GOFUN_CAT_SETTINGS
 #define GOFUN_CAT_SETTINGS
 
-#include "gofun_settings_dlg.h" 
+class QLineEdit;
+class QToolButton;
+class QRadioButton;
 
-class GofunCatButton;
-class GofunDesktopEntrySettingsWidget;
-
-///Settings-dialog for categories
-class GofunCatSettings : public GofunSettingsDlg
+///Settings-dialog for directory entries
+class GofunDirectoryEntrySettings : public GofunDesktopEntrySettings
 {
 	Q_OBJECT
 public:
-	GofunCatSettings();
-	virtual void load(GofunCatButton*);
+	GofunDirectoryEntrySettings();
+	void load(GofunDirectoryEntryData*);
 	void setDefaults();
 
 public slots:
-	void iconDialog();
 	void backgroundDialog();
+	void backgroundColorDialog();
 private:
-	virtual void save();
-	virtual void apply();
-	virtual bool inputValid();
+	void save();
+	void apply();
+	bool inputValid();
 
-	GofunDesktopEntrySettingsWidget* desw;
-	QLineEdit* background;
-	QToolButton* background_button;
-	QDir directory;
-	GofunCatButton* item;
+	GofunDirectoryEntryData* data();
+
+	QLineEdit* background_image;
+	QToolButton* background_image_button;
+	QToolButton* background_color_button;
+	QRadioButton* rb_bg_image;
+	QRadioButton* rb_bg_color;
+	QRadioButton* rb_bg_none;
 };
 
 #endif

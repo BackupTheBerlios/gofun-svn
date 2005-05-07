@@ -25,7 +25,7 @@
 
 GofunParameterStringPromptWidget::GofunParameterStringPromptWidget(QWidget* parent) : GofunParameterPromptWidget(parent)
 {
-	QGridLayout* grid = new QGridLayout(this);
+	grid = new QGridLayout(this);
 	value = new QComboBox(this);
 	value->setEditable(true);
 	

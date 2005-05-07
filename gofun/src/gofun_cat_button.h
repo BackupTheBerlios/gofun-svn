@@ -41,7 +41,7 @@ enum {
 	};
 
 ///Represents a directory and a category
-class GofunCatButton : public QPushButton , public GofunDesktopObject
+class GofunDirectoryButton : public QPushButton , public GofunDesktopObject
 {
 	Q_OBJECT
 public slots:
@@ -51,16 +51,16 @@ public slots:
 	void popupConfButton();
 	void popupCBActivated(int);
 public:
-	GofunCatButton(const QString&, QWidget*);
-	~GofunCatButton();
+	GofunDirectoryButton(const QString&, QWidget*);
+	~GofunDirectoryButton();
 	void setIconView(GofunIconView*);
-	void setData(GofunCatEntryData*);
+	void setData(GofunDirectoryEntryData*);
 	virtual void dragEnterEvent(QDragEnterEvent* event);
 	virtual void dropEvent(QDropEvent* event);
 	virtual void mouseReleaseEvent(QMouseEvent* event);
 	void loadIcon();
 	void refreshBackground();
-	virtual GofunCatEntryData* data() { return m_data; }
+	virtual GofunDirectoryEntryData* data() { return m_data; }
 	const QPixmap* confButtonPixmap() { return conf_button->pixmap(); }
 	void setupToolTip();
 	void runNewItemWizard();
@@ -68,11 +68,14 @@ public:
 	void deleteEntry();
 	void deleteEntryFile();
 	void makeCurrent();
+	void implementData();
+	static void createNewItem(QWidget*);
+	void editEntry();
 
 	GofunIconView* iconview;
 	
 private:
-	GofunCatEntryData* m_data;
+	GofunDirectoryEntryData* m_data;
 	GofunItem* current_item;
 	QString directory;
 	QToolButton* conf_button;

@@ -20,18 +20,17 @@
 
 #include "gofun_item_settings.h"
 #include "gofun_fsdevice_entry_data.h"
-
-class GofunFSDeviceItem;
  
 #ifndef GOFUN_FSDEVICE_ITEM_SETTINGS
 #define GOFUN_FSDEVICE_ITEM_SETTINGS
 
-class GofunFSDeviceItemSettings : public GofunItemSettings
+///Settings-dialog for fsdevice entries
+class GofunFSDeviceEntrySettings : public GofunDesktopEntrySettings
 {
 	Q_OBJECT
 public:
-	GofunFSDeviceItemSettings();
-	void load(GofunFSDeviceItem*);
+	GofunFSDeviceEntrySettings();
+	void load(GofunFSDeviceEntryData*);
 	void setDefaults();
 	
 private slots:

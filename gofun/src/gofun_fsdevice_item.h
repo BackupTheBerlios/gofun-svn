@@ -24,6 +24,8 @@
 #ifndef GOFUN_FSDEVICE_ITEM
 #define GOFUN_FSDEVICE_ITEM
 
+class QIconView;
+
 enum
 {
 	PID_Mount = PID_Delete + 1,
@@ -36,8 +38,9 @@ class GofunFSDeviceItem : public GofunItem
 	Q_OBJECT;
 
 	public:
-	GofunFSDeviceItem(GofunIconView*, const QString& = 0);
-	
+	GofunFSDeviceItem(QIconView*, const QString& = 0);
+	GofunFSDeviceItem(QIconView*, const QString&, GofunDesktopEntryData*);
+
 	void setData(GofunDesktopEntryData*);
 	QPopupMenu* rightClickPopup(const QPoint&);
 	void editEntry();
@@ -47,7 +50,7 @@ class GofunFSDeviceItem : public GofunItem
 	void mount();
 	void loadIcon();
 	
-	static void createNewItem(GofunCatButton*);
+	static void createNewItem(QIconView*);
 	
 	GofunFSDeviceEntryData* data() { return m_data; }
 	

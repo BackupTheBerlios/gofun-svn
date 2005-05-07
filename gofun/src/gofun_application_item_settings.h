@@ -23,55 +23,26 @@
 #include "gofun_item_settings.h"
 #include "gofun_application_entry_data.h"
 
-class GofunApplicationItem;
-
 #ifndef GOFUN_APPLICATION_ITEM_SETTINGS
 #define GOFUN_APPLICATION_ITEM_SETTINGS
 
-class GofunApplicationItemSettingsAdvanced : public QWidget
-{
-	Q_OBJECT
-	
-	public:
-	GofunApplicationItemSettingsAdvanced(QWidget*parent=0);
-	void apply(GofunApplicationEntryData*);
-	void load(GofunApplicationEntryData*);
-	
-	private slots:
-	void userChkToggled(bool);
-	
-	private:	
-	QCheckBox* terminal_chk;
-	QCheckBox* user_chk;
-	QComboBox* user_combo;
-	QCheckBox* newx_chk;
-};
+class GofunApplicationEntrySettingsParameter;
+class GofunApplicationEntrySettingsAdvanced;
+class GofunApplicationEntrySettingsEnvironment;
 
-///Settings-dialog for items
-class GofunApplicationItemSettings : public GofunItemSettings
+///Settings-dialog for application entries
+class GofunApplicationEntrySettings : public GofunDesktopEntrySettings
 {
 	Q_OBJECT
 public:
-	GofunApplicationItemSettings();
-	void load(GofunApplicationItem*);
+	GofunApplicationEntrySettings();
+	void load(GofunApplicationEntryData*);
 	void setDefaults();
 	
 public slots:
 	void iconDialog();
 	void dirDialog();
-	void addEnvVar();
-	void addEnvVar(const QString&, const QString&);
-	void remEnvVar();
-	void envItemEdit(QListViewItem*,const QPoint&,int);
-	void envItemEdit();
-	void envItemEditInterpreted(const QString&);
-	void envPredefinedPopup();
-	void envPredefinedPopupActivated(QListViewItem*);
-	void addParRow();
-	void remParRow();
-	void parEditDialog();
 	void commandEditor();
-	void editableEnvVar();
 private:
 	void save();
 	void apply();
@@ -80,20 +51,13 @@ private:
 	
 	GofunApplicationEntryData* data();
 
-	QValueList<GofunParameterData> par_data;
 	QLineEdit* command;
 	QToolButton* command_button;
 	QLineEdit* directory;
 	QToolButton* dir_button;
-	QListView* envvars;
-	QPushButton* envadd;
-	QPushButton* envrem;
-	QPushButton* envpre;
-	QPushButton* envedit;
-	QTable* tb_par;
-	QPushButton* paradd;
-	QPushButton* parrem;
-	GofunApplicationItemSettingsAdvanced* widget_adv;
+	GofunApplicationEntrySettingsAdvanced* widget_adv;
+	GofunApplicationEntrySettingsParameter* widget_par;
+	GofunApplicationEntrySettingsEnvironment* widget_env;
 
 friend class GofunCommandEditor;
 };

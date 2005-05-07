@@ -78,8 +78,8 @@ class GofunVButtonGroup : public QVButtonGroup
 		}
 		if(button)
 		{
-			(dynamic_cast<GofunCatButton*>(button))->setOn(true);
-			dynamic_cast<GofunWidget*>(qApp->mainWidget())->changeCategory(id(selected()));
+			(dynamic_cast<GofunDirectoryButton*>(button))->setOn(true);
+			dynamic_cast<GofunWidget*>(qApp->mainWidget())->changeDirectory(id(selected()));
 		}
 	}
 };
@@ -97,11 +97,11 @@ GofunWidget::GofunWidget(WFlags f) : QWidget(0,0,f)
 	QHBoxLayout* hboxr = new QHBoxLayout();
 	QHBoxLayout* hboxlabel = new QHBoxLayout();
     
-	//This button group contains the buttons for the different categories
+	//This button group contains the buttons for the different directories
 	cats_bg = new GofunVButtonGroup(this);
 	cats_bg->setExclusive(true);
 	cats_bg->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding,false);
-	connect(cats_bg, SIGNAL(clicked(int)),this, SLOT(changeCategory(int)));
+	connect(cats_bg, SIGNAL(clicked(int)),this, SLOT(changeDirectory(int)));
     
 	//We 'load' this WidgetStack with GofunIconViews later on
 	view_ws = new QWidgetStack(this);
@@ -148,7 +148,7 @@ GofunWidget::GofunWidget(WFlags f) : QWidget(0,0,f)
 	
 	//The last steps in our layout magic
 	vbox->addWidget(cats_bg);
-	tools_cat = new GofunCatButton("GoTools",this);
+	tools_cat = new GofunDirectoryButton("GoTools",this);
 	vbox->addWidget(tools_cat);
 	QWidget* wid = new QWidget(this);
 	wid->setMinimumHeight(5);
@@ -158,10 +158,10 @@ GofunWidget::GofunWidget(WFlags f) : QWidget(0,0,f)
 	hboxr->addWidget(config);
 	hboxr->addWidget(help);
 	
-	//This toolbutton shall be used to add categories
+	//This toolbutton shall be used to add directories
     	QToolButton* cat_add = new QToolButton(Qt::DownArrow,cats_bg);
-	connect(cat_add, SIGNAL(clicked()),this, SLOT(popupCatAdd()));
-	QToolTip::add(cat_add,tr("Click this button to operate on categories"));
+	connect(cat_add, SIGNAL(clicked()),this, SLOT(popupDirectoryAdd()));
+	QToolTip::add(cat_add,tr("Click this button to operate on directories"));
 	cats_bg->insert(cat_add);   
 	
 	//Now load the whole GoFun-Data and care for its displaying
@@ -172,18 +172,18 @@ void GofunWidget::popupCAActivated(int id)
 {
 	switch(id)
 	{
-		case PID_Add_Category:
-			addCategory();
+		case PID_Add_Directory:
+			addDirectory();
 			break;
 	}
 }
 
-void GofunWidget::popupCatAdd()
+void GofunWidget::popupDirectoryAdd()
 {
 	QPopupMenu* popup = new QPopupMenu(this);
 
 	connect(popup,SIGNAL(activated(int)),this,SLOT(popupCAActivated(int)));
-	popup->insertItem(tr("Add Category"),PID_Add_Category);
+	popup->insertItem(tr("Add Directory"),PID_Add_Directory);
 	int x = pos().x()+cats_bg->pos().x()+cats_bg->find(0)->pos().x()+cats_bg->find(0)->width();
 	int y = QCursor::pos().y();
 	QPoint pos(x,y);
@@ -193,14 +193,14 @@ void GofunWidget::popupCatAdd()
 void GofunWidget::showAbout()
 {
 	GofunAbout* ga = new GofunAbout();
-	GofunWindowOperations::center_window(ga,540,480);
+	GofunWindowOperations::centerWindow(ga,540,480);
 	ga->show();
 }
 
 void GofunWidget::showHelp()
 {
 	GofunHelp* gh = new GofunHelp(Qt::WDestructiveClose);
-	GofunWindowOperations::center_window(gh,800,600);
+	GofunWindowOperations::centerWindow(gh,800,600);
 	gh->show();
 	
 }
@@ -216,7 +216,7 @@ void GofunWidget::unloadData()
 	int cats_bg_count = cats_bg->count();
 	for(int i = 1; i < cats_bg_count+1 && cats_bg_count > 1; ++i)
 	{
-		GofunCatButton* cb = dynamic_cast<GofunCatButton*>(cats_bg->find(i));
+		GofunDirectoryButton* cb = dynamic_cast<GofunDirectoryButton*>(cats_bg->find(i));
 		if(cb)
 		{
 			for(QIconViewItem* item = cb->iconview->firstItem(); item; 0)
@@ -238,20 +238,20 @@ void GofunWidget::unloadData()
 void GofunWidget::loadData()
 {
 	//We get the data sorted nicely
-	std::vector<GofunCatEntryData>* GfCatData = GofunDataLoader::getData();
-	
+	std::vector<GofunDirectoryEntryData>* GfDirectoryData = GofunDataLoader::getData();
+
 	//Now we iterate to the category data
-	int i = 0;
-	for(std::vector<GofunCatEntryData>::iterator it = GfCatData->begin(); it != GfCatData->end(); ++it, ++i)
+	GofunDirectoryButton* cat;
+	GofunItem* gi;
+	for(std::vector<GofunDirectoryEntryData>::iterator it = GfDirectoryData->begin(); it != GfDirectoryData->end(); ++it)
 	{
 		//We create a fresh category button, fill it with data and insert it
 		//into the category-button-group
-		GofunCatButton* cat;
-		if(i != 0)
+		if(it != GfDirectoryData->begin())
 		{
-			cat = new GofunCatButton((*it).Name, cats_bg);
+			cat = new GofunDirectoryButton((*it).Name, cats_bg);
 			if(!dynamic_cast<GofunWidget*>(qApp->mainWidget()))
-				insertCategory(cat);
+				insertDirectory(cat);
 		}
 		else
 		{
@@ -259,7 +259,7 @@ void GofunWidget::loadData()
 				continue;
 			
 			cat = tools_cat;
-			connectCatIconview(cat);
+			connectDirectoryIconview(cat);
 			connect(cat,SIGNAL(clicked()),this,SLOT(changeToTools()));
 			view_ws->addWidget(cat->iconview, 1001);
 		}
@@ -272,14 +272,12 @@ void GofunWidget::loadData()
 			{
 				continue;
 			}
-			GofunItem* gi;
 			if((*sit)->Type == "Application")
-				gi = new GofunApplicationItem(cat->iconview,(*sit)->Name);
+				gi = new GofunApplicationItem(cat->iconview,(*sit)->Name,(*sit));
 			else if((*sit)->Type == "FSDevice")
-				gi = new GofunFSDeviceItem(cat->iconview,(*sit)->Name);
+				gi = new GofunFSDeviceItem(cat->iconview,(*sit)->Name,(*sit));
 			else if((*sit)->Type == "Link")
-				gi = new GofunLinkItem(cat->iconview,(*sit)->Name);
-			gi->setData((*sit));
+				gi = new GofunLinkItem(cat->iconview,(*sit)->Name,(*sit));
 		}
 		delete (*it).ItemData;
 	}
@@ -296,18 +294,18 @@ void GofunWidget::changeToTools()
 	current_cat = tools_cat;
 }
 
-void GofunWidget::insertCategory(GofunCatButton* cat)
+void GofunWidget::insertDirectory(GofunDirectoryButton* cat)
 {
 	cats_bg->insert(cat,cats_bg->count()-1);
 	cat->show();
 
-	connectCatIconview(cat);
+	connectDirectoryIconview(cat);
 	
 	//At last we add the new IconView to the WidgetStack
 	view_ws->addWidget(cat->iconview, cats_bg->count()-1);
 }
 
-void GofunWidget::connectCatIconview(GofunCatButton* cat)
+void GofunWidget::connectDirectoryIconview(GofunDirectoryButton* cat)
 {
 	connect(cat->iconview, SIGNAL(doubleClicked(QIconViewItem*)),this, SLOT(performDefaultActionOnItem(QIconViewItem*)));
 	connect(cat->iconview, SIGNAL(returnPressed(QIconViewItem*)),this, SLOT(performDefaultActionOnItem(QIconViewItem*)));	
@@ -323,21 +321,17 @@ void GofunWidget::performDefaultActionOnItem(QIconViewItem* item)
 void GofunWidget::openSettingsDlg()
 {
 	GofunSettings* settings_dlg = new GofunSettings();
-	GofunWindowOperations::attach_window(this,settings_dlg,D_Under,D_Above,365,220);
+	GofunWindowOperations::attachWindow(this,settings_dlg,D_Under,D_Above,365,220);
 	settings_dlg->load();
 	settings_dlg->exec();
 	delete settings_dlg;
 	
 }
 
-//Open a dialog for adding a new Category
-void GofunWidget::addCategory()
+//Open a dialog for adding a new Directory
+void GofunWidget::addDirectory()
 {
-	GofunCatSettings* settings_dlg = new GofunCatSettings();
-	GofunWindowOperations::attach_window(this,settings_dlg,D_Right,D_Left,275,200);
-	settings_dlg->setDefaults();
-	settings_dlg->exec();
-	delete settings_dlg;
+	GofunDirectoryButton::createNewItem(cats_bg);
 }
 
 //Evaluate popup that is shown, when the user did right-clicks on empty space in a left IconView
@@ -347,13 +341,13 @@ void GofunWidget::popupMenuSpace(int id)
 	switch(id)
 	{
 		case PID_Add_Application:
-			GofunApplicationItem::createNewItem(current_cat);
+			GofunApplicationItem::createNewItem(current_cat->iconview);
 			break;
 		case PID_Add_Device:
-			GofunFSDeviceItem::createNewItem(current_cat);
+			GofunFSDeviceItem::createNewItem(current_cat->iconview);
 			break;
 		case PID_Add_Link:
-			GofunLinkItem::createNewItem(current_cat);
+			GofunLinkItem::createNewItem(current_cat->iconview);
 			break;
 		case PID_Add_Wizard:
 			wizard->exec();
@@ -381,31 +375,29 @@ void GofunWidget::rightClickedItem(QIconViewItem* item,const QPoint& pos)
 		add_popup->insertItem(tr("Application"),PID_Add_Application);
 		add_popup->insertItem(tr("Device"),PID_Add_Device);
 		add_popup->insertItem(tr("Link"),PID_Add_Link);
-		/*add_popup->insertItem(GofunMisc::get_icon("default_application.png",16,16),tr("Application"),PID_Add_Application);
-		add_popup->insertItem(GofunMisc::get_icon("default_device.png",16,16),tr("Device"),PID_Add_Device);
-		add_popup->insertItem(GofunMisc::get_icon("default_link.png",16,16),tr("Link"),PID_Add_Link);*/
+		/*add_popup->insertItem(GofunMisc::getIcon("default_application.png",16,16),tr("Application"),PID_Add_Application);
+		add_popup->insertItem(GofunMisc::getIcon("default_device.png",16,16),tr("Device"),PID_Add_Device);
+		add_popup->insertItem(GofunMisc::getIcon("default_link.png",16,16),tr("Link"),PID_Add_Link);*/
 		popup->insertItem(tr("Add Entry"),add_popup);
 		popup->insertItem(tr("Add Entry Wizard"),PID_Add_Wizard);
 		popup->popup(pos);
 	}
 }
 
-//Switch between categories.
-void GofunWidget::changeCategory(int id)
+//Switch between directories.
+void GofunWidget::changeDirectory(int id)
 {
-	//If id==0 (the add-Category-button) return
+	//If id==0 (the add-Directory-button) return
 	if(!id)
 		return;
 	
 	//Do what the function is supposed to do
-	GofunCatButton* button = dynamic_cast<GofunCatButton*>(cats_bg->find(id));
+	GofunDirectoryButton* button = dynamic_cast<GofunDirectoryButton*>(cats_bg->find(id));
 	current_cat = button;
 	
 	view_ws->raiseWidget(id);
-	if(QSound::isAvailable()) //If sound can be played, we do so.
-	{
-		QSound::play("doublet.wav");
-	}
+
+	GofunMisc::playSound("doublet.wav");
 	
 	tools_cat->setOn(false);
 }

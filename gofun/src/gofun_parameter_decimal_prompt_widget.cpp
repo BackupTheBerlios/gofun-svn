@@ -27,8 +27,9 @@
 
 GofunParameterDecimalPromptWidget::GofunParameterDecimalPromptWidget(QWidget* parent) : GofunParameterPromptWidget(parent)
 {
-	QGridLayout* grid = new QGridLayout(this);
+	grid = new QGridLayout(this);
 	value_spin = new GofunDecimalSpinBox(this);
+	value_spin->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	
 	grid->addWidget(value_spin,0,1);
 }
@@ -50,6 +51,8 @@ void GofunParameterDecimalPromptWidget::setParameterData(const GofunParameterDat
 		
 		connect(value_slider,SIGNAL(valueChanged(int)),value_spin,SLOT(setValue(int)));
 		connect(value_spin,SIGNAL(valueChanged(int)),value_slider,SLOT(setValue(int)));
+
+		grid->addWidget(value_slider,0,0);
 	}
 	
 	value_spin->setValue(value_spin->mapTextToValue(_par_data.Default_Value));

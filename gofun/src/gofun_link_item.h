@@ -24,6 +24,8 @@
 #ifndef GOFUN_LINK_ITEM
 #define GOFUN_LINK_ITEM
 
+class QIconView;
+
 class GofunURLComposer;
 
 enum
@@ -36,7 +38,8 @@ class GofunLinkItem : public GofunItem
 	Q_OBJECT
 
 	public:
-	GofunLinkItem(GofunIconView*, const QString& = 0);
+	GofunLinkItem(QIconView*, const QString& = 0);
+	GofunLinkItem(QIconView*, const QString&, GofunDesktopEntryData*);
 	
 	void setData(GofunDesktopEntryData*);
 	QPopupMenu* rightClickPopup(const QPoint&);
@@ -44,7 +47,7 @@ class GofunLinkItem : public GofunItem
 	void performDefaultAction();
 	void open();
 	
-	static void createNewItem(GofunCatButton*);
+	static void createNewItem(QIconView*);
 	
 	GofunLinkEntryData* data() { return m_data; }
 	

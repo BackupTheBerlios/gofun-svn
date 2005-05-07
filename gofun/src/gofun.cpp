@@ -41,11 +41,11 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   //Do some magic to setup the right data directory
-  QString gofun_bin_dir = GofunMisc::bin_dir();
+  QString gofun_binDir = GofunMisc::binDir();
   QString gofun_data_dir;
-  if(!gofun_bin_dir.isEmpty())
+  if(!gofun_binDir.isEmpty())
   {
-  	gofun_data_dir = gofun_bin_dir + "/../share/gofun/";
+  	gofun_data_dir = gofun_binDir + "/../share/gofun/";
 	
 	QDir dir;
 	if(!dir.exists(gofun_data_dir))
@@ -64,9 +64,9 @@ int main(int argc, char *argv[])
   if(QFileInfo("/usr/share/pixmaps").exists())
   	icon_dir_string += "/usr/share/pixmaps";
   if(!icon_dir_string.isEmpty())
-  	GofunMisc::shell_call("find "+icon_dir_string+" > $HOME/.gofun/icon_files");
+  	GofunMisc::shellCall("find "+icon_dir_string+" > $HOME/.gofun/icon_files");
   else
-  	GofunMisc::shell_call("touch $HOME/.gofun/icon_files");
+  	GofunMisc::shellCall("touch $HOME/.gofun/icon_files");
   
   //This is the app's core
   QApplication app(argc, argv);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   if((GSC::get()->main_x == "-1") && (GSC::get()->main_y == "-1"))
   {
   	//Move the widget to the middle of the screen
-  	GofunWindowOperations::center_window(&gofun_widget,GSC::get()->main_width.toInt(),GSC::get()->main_height.toInt());
+  	GofunWindowOperations::centerWindow(&gofun_widget,GSC::get()->main_width.toInt(),GSC::get()->main_height.toInt());
   }
   else
   {
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
   
   //Set a caption and an icon
   gofun_widget.setCaption("GoFun");
-  gofun_widget.setIcon(GofunMisc::get_icon("gofun-16x16.png",16,16));
+  gofun_widget.setIcon(GofunMisc::getIcon("gofun-16x16.png",16,16));
   
   //Declare gofun_widget to the official mainWidget
   app.setMainWidget(&gofun_widget);

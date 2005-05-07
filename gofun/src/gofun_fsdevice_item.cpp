@@ -27,19 +27,25 @@
 #include "gofun_misc.h"
 #include "gofun_settings_container.h"
 
-GofunFSDeviceItem::GofunFSDeviceItem(GofunIconView* iconview, const QString& string) : GofunItem(iconview, string)
+GofunFSDeviceItem::GofunFSDeviceItem(QIconView* iconview, const QString& string) : GofunItem(iconview, string)
 {
 	m_data = new GofunFSDeviceEntryData();
+}
+
+GofunFSDeviceItem::GofunFSDeviceItem(QIconView* iconview, const QString& string, GofunDesktopEntryData* data) : GofunItem(iconview, string)
+{
+	setData(data);
 }
 
 //Open dialog for editing a Desktop Entry.
 void GofunFSDeviceItem::editEntry()
 {
-	GofunFSDeviceItemSettings* settings_dlg = new GofunFSDeviceItemSettings();
-	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
+	GofunFSDeviceEntrySettings* settings_dlg = new GofunFSDeviceEntrySettings();
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
 	settings_dlg->setCaption(tr("Edit entry"));
-	settings_dlg->load(this);
+	settings_dlg->load(data());
 	settings_dlg->exec();
+	implementData();
 }
 
 void GofunFSDeviceItem::setData(GofunDesktopEntryData* d)
@@ -54,7 +60,7 @@ void GofunFSDeviceItem::loadIcon()
 		GofunItem::loadIcon();
 	else
 	{
-		QPixmap px = GofunMisc::get_icon(data()->UnmountIcon,32,32);
+		QPixmap px = GofunMisc::getIcon(data()->UnmountIcon,32,32);
 		if(!px.isNull())
 			setPixmap(px);
 	}
@@ -114,16 +120,25 @@ void GofunFSDeviceItem::open()
 	data()->open();
 }
 
-void GofunFSDeviceItem::createNewItem(GofunCatButton* cat)
+void GofunFSDeviceItem::createNewItem(QIconView* iconview)
 {
-	GofunFSDeviceItemSettings* settings_dlg = new GofunFSDeviceItemSettings();
+	GofunFSDeviceEntryData* new_data = new GofunFSDeviceEntryData;
+	GofunFSDeviceEntrySettings* settings_dlg = new GofunFSDeviceEntrySettings();
 	int height = 200;
-	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
 	settings_dlg->setCaption(tr("Add entry"));
-	settings_dlg->setCategory(cat);
+	settings_dlg->load(new_data);
 	settings_dlg->setDefaults();
-	settings_dlg->exec();
-	delete settings_dlg;
+	if(settings_dlg->exec() == QDialog::Accepted)
+	{
+		GofunFSDeviceItem* new_item = new GofunFSDeviceItem(iconview,QString(""),new_data);
+		new_item->implementData();
+	}
+	else
+	{
+		delete new_data;
+		delete settings_dlg;
+	}
 }
 
 

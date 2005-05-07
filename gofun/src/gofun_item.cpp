@@ -34,11 +34,10 @@
 
 GofunItem* GofunIconViewToolTip::last_active = 0;
  
-GofunItem::GofunItem(GofunIconView* iconview, const QString& string) : QIconViewItem(iconview,string)
+GofunItem::GofunItem(QIconView* iconview, const QString& string) : QIconViewItem(iconview,string)
 {
 	m_data = new GofunDesktopEntryData();
 	toolTip = NULL;
-	readonly = false;
 }
 
 GofunItem::~GofunItem()
@@ -71,7 +70,7 @@ void GofunItem::setData(GofunDesktopEntryData* d)
 
 void GofunItem::loadIcon()
 {
-	QPixmap px = GofunMisc::get_icon(data()->Icon,32,32); //@todo: let the user choose the icon-size
+	QPixmap px = GofunMisc::getIcon(data()->Icon,32,32); //@todo: let the user choose the icon-size
 	if(!px.isNull())
 	{
 		setPixmap(px);
@@ -125,7 +124,7 @@ QPopupMenu* GofunItem::rightClickPopup(const QPoint& pos)
 	QObject::connect(popup,SIGNAL(activated(int)),this,SLOT(popupActivated(int)));
 	popup->insertSeparator();
 	
-	if(!isReadOnly())
+	if(!data()->isReadOnly())
 	{
 		popup->insertItem(tr("Edit entry"),PID_Edit);
 		popup->insertItem(tr("Delete entry"),PID_Delete);
@@ -150,26 +149,23 @@ void GofunItem::popupActivated(int id)
 	}
 }
 
-void GofunItem::createNewItem(GofunCatButton* cat)
+void GofunItem::createNewItem(QIconView* iconview)
 {
-	GofunItemSettings* settings_dlg = new GofunItemSettings();
+	GofunItem* new_item = new GofunItem(iconview,(""));
+	GofunDesktopEntrySettings* settings_dlg = new GofunDesktopEntrySettings();
 	int height = 200;
-	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
 	settings_dlg->setCaption(tr("Add entry"));
-	settings_dlg->setCategory(cat);
 	settings_dlg->exec();
 	delete settings_dlg;
+	new_item->implementData();
 }
 
 void GofunItem::implementData()
 {
+	setText(data()->Name);
 	loadIcon();
 	if(!data()->Comment.isEmpty())
 		setToolTipText(data()->Comment);
-		
-	if(!data()->File.isEmpty() && QFile::exists(data()->File)  && !QFileInfo(data()->File).isWritable())
-		readonly = true;
-	else
-		readonly = false;
 }
 

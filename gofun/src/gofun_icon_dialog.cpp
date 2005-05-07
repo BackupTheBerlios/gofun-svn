@@ -145,8 +145,8 @@ GofunIconItem::GofunIconItem(QIconView* iv,const QString& text, const QPixmap& p
 
 void GofunIconLoadThread::run() 
 {
-	QStringList icon_paths = QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps -path \\*32\\*.png"));
-	icon_paths += QStringList::split("\n",GofunMisc::shell_call("find /usr/share/icons /usr/share/pixmaps -maxdepth 1 -path \\*.png"));
+	QStringList icon_paths = QStringList::split("\n",GofunMisc::shellCall("find /usr/share/icons /usr/share/pixmaps -path \\*32\\*.png"));
+	icon_paths += QStringList::split("\n",GofunMisc::shellCall("find /usr/share/icons /usr/share/pixmaps -maxdepth 1 -path \\*.png"));
 	QApplication::postEvent(icon_load,new GofunIconTotalStepsEvent(icon_paths.count()));
 	QFileInfo fi;
 	for(QStringList::Iterator it = icon_paths.begin(); it != icon_paths.end(); ++it)
@@ -264,7 +264,7 @@ void GofunIconDialog::setStartDir( const QString & _start_dir)
 void GofunIconDialog::setStartIcon( const QString& _icon)
 {
 		icon_file->setText(_icon);
-		icon_preview->setPixmap(GofunMisc::get_icon(_icon));
+		icon_preview->setPixmap(GofunMisc::getIcon(_icon));
 }
 
 void GofunIconDialog::removeProgressBar( )

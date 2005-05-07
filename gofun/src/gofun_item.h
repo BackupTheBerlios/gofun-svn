@@ -29,7 +29,7 @@ class GofunDesktopEntryData;
 class GofunIconView;
 class GofunIconViewToolTip;
 class QPopupMenu;
-class GofunCatButton;
+class GofunDirectoryButton;
 
 #ifndef GOFUN_ITEM
 #define GOFUN_ITEM
@@ -46,7 +46,7 @@ class GofunItem : public QObject, public QIconViewItem , public GofunDesktopObje
 	Q_OBJECT
 
 public:
-	GofunItem(GofunIconView*, const QString& = 0);
+	GofunItem(QIconView*, const QString& = 0);
 	virtual ~GofunItem();
 
 	virtual void setData(GofunDesktopEntryData*);
@@ -56,14 +56,13 @@ public:
 	virtual void editEntry() {};
 	virtual QPopupMenu* rightClickPopup(const QPoint&);
 	
-	static void createNewItem(GofunCatButton*);
+	static void createNewItem(QIconView*);
 	
 	void setToolTipText(const QString);
 	const QString getToolTipText(void) const { return(toolTipText); }
 	
 	virtual GofunDesktopEntryData* data() { return m_data; }
 	virtual void performDefaultAction() {};
-	bool isReadOnly() { return readonly; }
 	
 public slots:
 	virtual void popupActivated(int);

@@ -36,6 +36,8 @@ class Golauncher
 	void setXStart(bool);
 	void setWait(bool);
 	void setDumpOutput(bool);
+	void setKeepDataFiles(bool);
+	void setWorkingDirectory(const QString&);
 	void setEnvVarsFile(const QString&);
 	void setArgumentsFile(const QString&);
 	void setDesktopEntryFile(const QString&);
@@ -54,10 +56,12 @@ class Golauncher
 	bool wait;
 	bool dumpoutput;
 	bool launch_data_loaded;
+	bool keep_data_files;
 	QString argumentsfile;
 	QString envvarsfile;
 	QString desktopentryfile;
 	QString proc_output;
+	QString working_directory;
 	
 	QStringList arguments;
 	QStringList* envvars;

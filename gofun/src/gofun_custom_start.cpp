@@ -26,7 +26,7 @@
 #include "gofun_custom_start.h"
 #include "gofun_application_item.h"
 #include "gofun_misc.h"
-#include "gofun_application_item_settings.h"
+#include "gofun_application_item_settings_advanced.h"
 
 GofunCustomStart::GofunCustomStart()
 {
@@ -41,7 +41,7 @@ GofunCustomStart::GofunCustomStart()
 	directory = new QLineEdit(this);
 	
 	QGroupBox* gb_adv = new QGroupBox(1,Qt::Horizontal,this);
-	widget_adv = new GofunApplicationItemSettingsAdvanced(gb_adv);
+	widget_adv = new GofunApplicationEntrySettingsAdvanced(gb_adv);
 		
 	QPushButton* start_button = new QPushButton(tr("Start"), this);
 	QPushButton* cancel_button = new QPushButton(tr("Cancel"), this);
@@ -81,7 +81,7 @@ void GofunCustomStart::load(GofunApplicationItem* _item)
 	directory->setText(item->data()->Path);
 	if(!item->data()->Icon.isEmpty())
 	{
-		QPixmap px = GofunMisc::get_icon(item->data()->Icon,64,64);
+		QPixmap px = GofunMisc::getIcon(item->data()->Icon,64,64);
 		if(!px.isNull())
 		{
 			setIcon(px);

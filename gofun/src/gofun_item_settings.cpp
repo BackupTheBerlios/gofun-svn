@@ -32,13 +32,14 @@
 #include "gofun_cat_button.h"
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_icon_dialog.h"
+#include "gofun_desktop_entry_data.h"
 
-GofunItemSettings::GofunItemSettings()
+GofunDesktopEntrySettings::GofunDesktopEntrySettings()
 {
 //	item = 0;
 }
 
-void GofunItemSettings::iconDialog()
+void GofunDesktopEntrySettings::iconDialog()
 {
 	GofunIconDialog* id = new GofunIconDialog();
 	QString start_dir;
@@ -53,40 +54,36 @@ void GofunItemSettings::iconDialog()
 	if(id->exec() == QDialog::Accepted)
 	{
 		desw->icon = id->selected();
-		desw->icon_button->setPixmap(GofunMisc::get_icon(id->selected()));
+		desw->icon_button->setPixmap(GofunMisc::getIcon(id->selected()));
 	}
 	delete id;
 }
 
-void GofunItemSettings::save()
+void GofunDesktopEntrySettings::save()
 {
 	if(data()->File.isEmpty())
 	{
-	 	data()->File = category->data()->Catdir + "/" + desw->caption->text().replace('/','\\') + ".desktop"; //FIXME: redundant? implement general "filename correcter"
+	 	//data()->File = category->data()->Directorydir + "/" + desw->caption->text().replace('/','\\') + ".desktop"; //FIXME: redundant? implement general "filename correcter"
 	}
 	data()->save();
 }
 
-void GofunItemSettings::apply()
+void GofunDesktopEntrySettings::apply()
 {
 	if(!item)
-		item = new GofunItem(category->iconview,QString(""));
+		item = new GofunDesktopEntryData;
 
 	data()->Name = desw->caption->text();
-	item->setText(data()->Name);
 	data()->Icon = desw->icon;
 	data()->Comment = desw->comment->text();
 	data()->GenericName = desw->generic_name;
-	if(!data()->Comment.isEmpty())
-		item->setToolTipText(data()->Comment);
 	if(data()->File.isEmpty()) //FIXME: redundant? implement general "filename correcter"
 	{
-		data()->File = category->data()->Catdir + "/" + desw->caption->text().replace('/','\\') + ".desktop";
+		//data()->File = category->data()->Directorydir + "/" + desw->caption->text().replace('/','\\') + ".desktop";
 	}
-	item->loadIcon();
 }
 
-bool GofunItemSettings::inputValid()
+bool GofunDesktopEntrySettings::inputValid()
 {
 	if(desw->caption->text().isEmpty())
 	{
@@ -100,17 +97,12 @@ bool GofunItemSettings::inputValid()
 	}
 }
 
-void GofunItemSettings::setCategory(GofunCatButton* cat)
-{
-	category = cat;
-}
-
-void GofunItemSettings::load(GofunItem* _item)
+void GofunDesktopEntrySettings::load(GofunDesktopEntryData* _item)
 {
 	item = _item;
-	desw->caption->setText(item->text());
+	desw->caption->setText(data()->Name);
 	desw->icon = data()->Icon;
-	desw->icon_button->setPixmap(item->pixmap()?*item->pixmap():0);
+	desw->icon_button->setPixmap(GofunMisc::getIcon(data()->Icon,32,32));
 	desw->comment->setText(data()->Comment);
 	desw->generic_name = data()->GenericName;
 	
@@ -118,12 +110,12 @@ void GofunItemSettings::load(GofunItem* _item)
 		apply_button->setEnabled(false);
 }
 
-GofunDesktopEntryData* GofunItemSettings::data()
+GofunDesktopEntryData* GofunDesktopEntrySettings::data()
 {
-	return item->data();
+	return item;
 }
 
-void GofunItemSettings::setDefaults()
+void GofunDesktopEntrySettings::setDefaults()
 {
 	desw->caption->setFocus();
 }

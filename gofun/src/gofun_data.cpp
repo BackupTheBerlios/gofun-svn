@@ -28,11 +28,9 @@
  
 #include "gofun_data.h"
 #include "gofun_settings_container.h"
-#include "gofun_item.h"
-#include "gofun_application_item.h"
-#include "gofun_fsdevice_item.h"
-#include "gofun_link_item.h"
-#include "gofun_cat_button.h"
+#include "gofun_application_entry_data.h"
+#include "gofun_link_entry_data.h"
+#include "gofun_fsdevice_entry_data.h"
  
 QString GofunDataLoader::getValue(QString line)
 {
@@ -110,12 +108,12 @@ bool GofunDataLoader::parseLine(const QString& key, const QString& line, GofunLo
 	return false;
 }
 
-GofunCatEntryData* GofunDataLoader::parseCatInfo(const QString& file)
+GofunDirectoryEntryData* GofunDataLoader::parseDirectoryInfo(const QString& file)
 {
 	QStringList catdata = loadFileData(file);
 			
-	GofunCatEntryData* cdata = new GofunCatEntryData;
-	cdata->Catdir = QString(file).remove(QRegExp("\\.directory$"));
+	GofunDirectoryEntryData* cdata = new GofunDirectoryEntryData;
+	cdata->Directorydir = QString(file).remove(QRegExp("\\.directory$"));
 			
 	for(QStringList::Iterator it = catdata.begin(); it != catdata.end(); ++it)
 	{
@@ -201,7 +199,7 @@ GofunDesktopEntryData* GofunDataLoader::parseGofunFile(const QString& file)
 	return idata;
 }
 
-std::vector<GofunDesktopEntryData*>* GofunDataLoader::parseCatdir(const QString& catdir)
+std::vector<GofunDesktopEntryData*>* GofunDataLoader::parseDirectorydir(const QString& catdir)
 {
 	glob_t files;
 	glob((catdir + "*.desktop"),0,0,&files);
@@ -221,28 +219,28 @@ std::vector<GofunDesktopEntryData*>* GofunDataLoader::parseCatdir(const QString&
 	return VoID;
 }
 
-std::vector<GofunCatEntryData>* GofunDataLoader::getData()
+std::vector<GofunDirectoryEntryData>* GofunDataLoader::getData()
 {
-	glob_t categories; //default data dir 
-	glob((GSC::get()->gofun_dir + "/*/.directory").ascii(),0,0,&categories);
+	glob_t directories; //default data dir 
+	glob((GSC::get()->gofun_dir + "/*/.directory").ascii(),0,0,&directories);
 
-	std::vector<GofunCatEntryData>* VaCD = new std::vector<GofunCatEntryData>;
+	std::vector<GofunDirectoryEntryData>* VaCD = new std::vector<GofunDirectoryEntryData>;
 	
-	GofunCatEntryData* p_cdata = parseCatInfo("tools/.directory");
+	GofunDirectoryEntryData* p_cdata = parseDirectoryInfo("tools/.directory");
 	VaCD->push_back(*p_cdata);
 	delete p_cdata;
 	
-	for(int i = 0; i < categories.gl_pathc; ++i)
+	for(int i = 0; i < directories.gl_pathc; ++i)
 	{
-		GofunCatEntryData* p_cdata = parseCatInfo(categories.gl_pathv[i]);
+		GofunDirectoryEntryData* p_cdata = parseDirectoryInfo(directories.gl_pathv[i]);
 		VaCD->push_back(*p_cdata);
 		delete p_cdata;
 	}
-	globfree(&categories);
+	globfree(&directories);
 	
-	for(std::vector<GofunCatEntryData>::iterator it = VaCD->begin(); it != VaCD->end(); ++it)
+	for(std::vector<GofunDirectoryEntryData>::iterator it = VaCD->begin(); it != VaCD->end(); ++it)
 	{
-		(*it).ItemData = parseCatdir((*it).Catdir);
+		(*it).ItemData = parseDirectorydir((*it).Directorydir);
 	}
  
 	return VaCD;

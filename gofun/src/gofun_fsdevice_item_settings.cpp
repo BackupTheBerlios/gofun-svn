@@ -33,7 +33,7 @@
 #include "gofun_directory_browser.h"
 #include "gofun_icon_dialog.h"
 
-GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
+GofunFSDeviceEntrySettings::GofunFSDeviceEntrySettings()
 {	
 	QWidget* widget_main = new QWidget(this);	
 	QGridLayout* grid = new QGridLayout(widget_main,3,3);
@@ -77,7 +77,7 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 	tabwidget->addTab(widget_advanced,tr("Advanced"));
 	
 	type = new QComboBox(widget_advanced);
-	QStringList filesystems = QStringList::split('\n',GofunMisc::shell_call("cat /proc/filesystems | sed -e 's/nodev//' | sed -e 's/\\t//'"));
+	QStringList filesystems = QStringList::split('\n',GofunMisc::shellCall("cat /proc/filesystems | sed -e 's/nodev//' | sed -e 's/\\t//'"));
 	filesystems.sort();
 	type->insertItem("auto");
 	type->insertStringList(filesystems);
@@ -97,18 +97,18 @@ GofunFSDeviceItemSettings::GofunFSDeviceItemSettings()
 	item = 0;
 }
 
-void GofunFSDeviceItemSettings::deviceDialog()
+void GofunFSDeviceEntrySettings::deviceDialog()
 {
 	QString dev_str = QFileDialog::getOpenFileName("/dev/","*",this,"",tr("Select device"));
 	if(!dev_str.isNull())
 		device->setCurrentText(dev_str);
 }
 
-void GofunFSDeviceItemSettings::mountPointDirectoryDialog()
+void GofunFSDeviceEntrySettings::mountPointDirectoryDialog()
 {
 	QString start_dir;
 	if(!mount_point->currentText().isEmpty())
-		start_dir = GofunMisc::ext_filestring(mount_point->currentText());
+		start_dir = GofunMisc::extendFileString(mount_point->currentText());
 	else
 		start_dir = "/mnt";
 	
@@ -118,12 +118,12 @@ void GofunFSDeviceItemSettings::mountPointDirectoryDialog()
 		mount_point->setCurrentText(dir_browser.selected());
 }
 
-void GofunFSDeviceItemSettings::load(GofunFSDeviceItem* _item)
+void GofunFSDeviceEntrySettings::load(GofunFSDeviceEntryData* _item)
 {
-	GofunItemSettings::load(_item);
+	GofunDesktopEntrySettings::load(_item);
 	
 	unmount_icon->setText(data()->UnmountIcon);
-	unmount_icon_button->setPixmap(GofunMisc::get_icon(data()->UnmountIcon,32,32));
+	unmount_icon_button->setPixmap(GofunMisc::getIcon(data()->UnmountIcon,32,32));
 	
 	device->setCurrentText(data()->Device);
 	mount_point->setCurrentText(data()->MountPoint);
@@ -133,21 +133,25 @@ void GofunFSDeviceItemSettings::load(GofunFSDeviceItem* _item)
 	readonly_chk->setChecked(GofunMisc::stringToBool(data()->ReadOnly));
 }
 
-void GofunFSDeviceItemSettings::dirDialog()
+void GofunFSDeviceEntrySettings::dirDialog()
 {
 }
 
-void GofunFSDeviceItemSettings::save()
+void GofunFSDeviceEntrySettings::save()
 {
-	GofunItemSettings::save();
+	GofunDesktopEntrySettings::save();
 }
 
-void GofunFSDeviceItemSettings::apply()
+void GofunFSDeviceEntrySettings::apply()
 {
 	if(!item)
-		item = new GofunFSDeviceItem(category->iconview,QString(""));
+		item = new GofunFSDeviceEntryData;
 		
-	GofunItemSettings::apply();
+	GofunDesktopEntrySettings::apply();
+
+
+	if(data()->Type.isEmpty())
+		data()->Type = "FSDevice";
 	
 	data()->Device = device->currentText();
 	data()->MountPoint = mount_point->currentText();
@@ -157,20 +161,20 @@ void GofunFSDeviceItemSettings::apply()
 	data()->FSType = type->currentText();
 }
 
-bool GofunFSDeviceItemSettings::inputValid()
+bool GofunFSDeviceEntrySettings::inputValid()
 {
-	if(!GofunItemSettings::inputValid())
+	if(!GofunDesktopEntrySettings::inputValid())
 		return false;
 	else
 		return true;
 }
 
-GofunFSDeviceEntryData* GofunFSDeviceItemSettings::data()
+GofunFSDeviceEntryData* GofunFSDeviceEntrySettings::data()
 {
-	return dynamic_cast<GofunFSDeviceItem*>(item)->data();
+	return dynamic_cast<GofunFSDeviceEntryData*>(item);
 }
 
-void GofunFSDeviceItemSettings::unmountIconDialog()
+void GofunFSDeviceEntrySettings::unmountIconDialog()
 {
 	GofunIconDialog* id = new GofunIconDialog();
 	QString start_dir;
@@ -185,29 +189,29 @@ void GofunFSDeviceItemSettings::unmountIconDialog()
 	if(id->exec() == QDialog::Accepted)
 	{
 		unmount_icon->setText(id->selected());
-		unmount_icon_button->setPixmap(GofunMisc::get_icon(id->selected()));
+		unmount_icon_button->setPixmap(GofunMisc::getIcon(id->selected()));
 	}
 	delete id;
 }
 
-void GofunFSDeviceItemSettings::iconDialog()
+void GofunFSDeviceEntrySettings::iconDialog()
 {
-	GofunItemSettings::iconDialog();
+	GofunDesktopEntrySettings::iconDialog();
 	
 	QString unfile =  desw->icon;
 	unfile.replace("mount","unmount");
-	if(GofunMisc::get_icon(unfile).isNull())
+	if(GofunMisc::getIcon(unfile).isNull())
 		unfile = QDir(desw->icon).path() + "/un" + QFileInfo(desw->icon).fileName();
-	if(GofunMisc::get_icon(unfile).isNull())
+	if(GofunMisc::getIcon(unfile).isNull())
 		unfile.replace("mount","unmount");
-	if(!GofunMisc::get_icon(unfile).isNull())	
+	if(!GofunMisc::getIcon(unfile).isNull())	
 	{
 		unmount_icon->setText(unfile);
-		unmount_icon_button->setPixmap(GofunMisc::get_icon(unfile));
+		unmount_icon_button->setPixmap(GofunMisc::getIcon(unfile));
 	}	
 }
 
-void GofunFSDeviceItemSettings::selectedDevice(const QString& device)
+void GofunFSDeviceEntrySettings::selectedDevice(const QString& device)
 {
 	FILE* fp = setmntent("/etc/fstab","r");
 	struct mntent* me;
@@ -222,9 +226,9 @@ void GofunFSDeviceItemSettings::selectedDevice(const QString& device)
 	endmntent(fp);
 }
 
-void GofunFSDeviceItemSettings::setDefaults()
+void GofunFSDeviceEntrySettings::setDefaults()
 {
-	GofunItemSettings::setDefaults();
+	GofunDesktopEntrySettings::setDefaults();
 
 	desw->icon = "default_device.png";
 	desw->icon_button->setPixmap(QPixmap(desw->icon));

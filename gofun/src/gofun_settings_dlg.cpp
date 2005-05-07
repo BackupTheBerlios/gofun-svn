@@ -36,10 +36,12 @@ GofunSettingsDlg::GofunSettingsDlg()
 	
 	top_grid->addMultiCellWidget(tabwidget,0,0,0,1);
 	
-	apply_button = new QPushButton(tr("Apply"),this);
+	QIconSet::setIconSize(QIconSet::Small,QSize(12,12));
+	apply_button = new QPushButton(QIconSet(QPixmap("green_check_12.png"),QIconSet::Small),tr("Apply"),this);
 	connect(apply_button,SIGNAL(clicked()),this,SLOT(accept()));
-	QPushButton* cancel = new QPushButton(tr("Cancel"),this);
+	QPushButton* cancel = new QPushButton(QIconSet(QPixmap("red_cross_12.png"),QIconSet::Small),tr("Cancel"),this);
 	connect(cancel,SIGNAL(clicked()),this,SLOT(reject()));
+	QIconSet::setIconSize(QIconSet::Small,QSize(22,22));
 
 	top_grid->addWidget(apply_button,1,0);
 	top_grid->addWidget(cancel,1,1);
@@ -55,7 +57,7 @@ void GofunSettingsDlg::iconDialog()
 	}
 	else if(directory->text().isEmpty())
 	{
-		start_dir = ext_filestring(directory->text());
+		start_dir = extendFileString(directory->text());
 	}
 	my $file = QFileDialog::getOpenFileName($start_dir,"Icons (*.png *.xpm *.jpg *.bmp *.ico)", this, "Pick icon dialog", "Pick an icon");
 	if($file ne "")
@@ -70,7 +72,7 @@ void GofunSettingsDlg::dirDialog()
 	my $start_dir;
 	if(directory->text() ne "")
 	{
-		$start_dir = ext_filestring(directory->text());
+		$start_dir = extendFileString(directory->text());
 	}
 	my $dir = QFileDialog::getExistingDirectory($start_dir, this, "get existing directory", "Choose a directory");
 	if($dir ne "")

@@ -44,6 +44,8 @@ Golauncher::Golauncher()
 	xmode = false;
 	xstart = false;
 	wait = false;
+	keep_data_files = false;
+	dumpoutput = false;
 	
 	launch_data_loaded = false;
 }
@@ -71,7 +73,7 @@ void Golauncher::launch()
 	if(xstart)
 	{
 		proc->addArgument("xinit");
-		proc->addArgument(GofunMisc::bin_dir() + "golauncher");
+		proc->addArgument(GofunMisc::binDir() + "golauncher");
 		proc->addArgument("-xmode");
 		proc->addArgument("-argumentsfile");
 		proc->addArgument(argumentsfile);
@@ -88,7 +90,13 @@ void Golauncher::launch()
 	if(!launch_data_loaded)
 	{
 		loadLaunchData();
-		cleanupLaunchDataOnFS();
+		if(!keep_data_files)
+			cleanupLaunchDataOnFS();
+	}
+
+	if(!working_directory.isEmpty())
+	{
+		chdir(working_directory);
 	}
 
 	proc->setArguments(arguments);
@@ -213,6 +221,10 @@ int main(int argc, char *argv[])
 			golauncher.setWait(true);
 		else if((QString(app.argv()[i])) == "-dumpoutput")
 			golauncher.setDumpOutput(true);
+		else if((QString(app.argv()[i])) == "-keepdatafiles")
+			golauncher.setKeepDataFiles(true);
+		else if((QString(app.argv()[i]) == "-workingdir") && (i+1 < app.argc()))
+			golauncher.setWorkingDirectory(app.argv()[i+1]);
 	}
 	
 	golauncher.launch();
@@ -226,7 +238,7 @@ void Golauncher::setWait(bool b)
 
 int Golauncher::getNumberOfRunningXServers()
 {
-	(GofunMisc::shell_call("ps -Ac | grep X | wc -l").stripWhiteSpace()).toInt();
+	(GofunMisc::shellCall("ps -Ac | grep X | wc -l").stripWhiteSpace()).toInt();
 }
 
 void Golauncher::setDumpOutput(bool b)
@@ -275,5 +287,15 @@ QStringList Golauncher::getOriginalEnvironmentVariables()
 	for(int i = 0;environ[i]; ++i)
 		envs += environ[i];
 	return envs;
+}
+
+void Golauncher::setWorkingDirectory(const QString& _working_directory)
+{
+	working_directory = _working_directory;
+}
+
+void Golauncher::setKeepDataFiles(bool b)
+{
+	keep_data_files = b;
 }
 

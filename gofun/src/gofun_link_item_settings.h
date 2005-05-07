@@ -21,17 +21,16 @@
 #include "gofun_item_settings.h"
 #include "gofun_link_entry_data.h"
 
-class GofunLinkItem;
-
 #ifndef GOFUN_LINK_ITEM_SETTINGS
 #define GOFUN_LINK_ITEM_SETTINGS
 
-class GofunLinkItemSettings : public GofunItemSettings
+///Settings-dialog for link entries
+class GofunLinkEntrySettings : public GofunDesktopEntrySettings
 {
 	Q_OBJECT
 public:
-	GofunLinkItemSettings();
-	void load(GofunLinkItem*);
+	GofunLinkEntrySettings();
+	void load(GofunLinkEntryData*);
 	void setDefaults();
 	
 public slots:

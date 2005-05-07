@@ -109,11 +109,11 @@ void GofunCommandEditor::commandExpand()
 		//fill completition list
 		qDebug(text->text(text->paragraphs()-1));
 		qDebug("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1)+"\\*");
-		QStringList files = QStringList::split('\n',GofunMisc::shell_call("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1).stripWhiteSpace()+"\\*"));
+		QStringList files = QStringList::split('\n',GofunMisc::shellCall("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1).stripWhiteSpace()+"\\*"));
 		expand_list->fill(files);
 		}
 		qDebug(text->text(text->paragraphs()-1));
-		QStringList echos = QStringList::split(' ',GofunMisc::shell_call("cd $HOME; echo "+text->text(text->paragraphs()-1).stripWhiteSpace()+"*"));
+		QStringList echos = QStringList::split(' ',GofunMisc::shellCall("cd $HOME; echo "+text->text(text->paragraphs()-1).stripWhiteSpace()+"*"));
 		//if(echos.count() > 1)
 		
 		expand_list->clear();
@@ -191,7 +191,7 @@ void GofunCommandEditor::browseForFile()
 	text->insert(s);
 }
 
-void GofunCommandEditor::setSettingsWidget(GofunApplicationItemSettings *_settings_widget)
+void GofunCommandEditor::setSettingsWidget(GofunApplicationEntrySettings *_settings_widget)
 {
 	settings_widget = _settings_widget;
 }

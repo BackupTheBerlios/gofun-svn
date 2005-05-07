@@ -34,41 +34,53 @@
 	return item;	
 }*/
 
+bool GofunApplicationEntryData::handleParameters(QString& parstr)
+{
+	if(X_GoFun_Parameter.empty())
+	{
+		parstr = QString();
+		return true;
+	}
+	
+	GofunParameterPrompt* prompt = new GofunParameterPrompt();
+	for(std::map<int,GofunParameterData>::iterator it = X_GoFun_Parameter.begin();it != X_GoFun_Parameter.end(); ++it)
+		prompt->addParameter(&((*it).second));
+	if(prompt->exec() == QDialog::Accepted)
+		parstr = prompt->parameterString();
+	else
+		return false;
+	return true;
+}
+
+void GofunApplicationEntryData::handleEnvVars()
+{
+	if(X_GoFun_Env.empty())
+		return;
+	
+	QStringList envs;
+	for(std::vector<QString>::iterator it = X_GoFun_Env.begin(); it != X_GoFun_Env.end(); ++it)
+	{
+		if((*it).isEmpty())
+			continue;
+		QStringList vk_pair = QStringList::split('=',(*it));
+		envs += vk_pair[0] + "=" + GofunMisc::extendFileString(vk_pair[1]);
+	}
+	saveStringListToFile(QDir::homeDirPath() + "/.gofun/tmp_proc_env",&envs);
+}
+
 void GofunApplicationEntryData::execute() //FIXME: 1. hackish, 2. maybe outsource code to golauncher 3. at least clean up and split 4. use golauncher to do stuff like opening in terminal
 {
 	QString poststring;
 	QProcess proc;
-	QString exec = Exec;	
-	
-	if(!X_GoFun_Parameter.empty())
-	{
-		GofunParameterPrompt* prompt = new GofunParameterPrompt();
-		for(std::map<int,GofunParameterData>::iterator it = X_GoFun_Parameter.begin();it != X_GoFun_Parameter.end(); ++it)
-		{
-			prompt->addParameter(&((*it).second));
-		}
-		if(prompt->exec() == QDialog::Accepted)
-		{
-			exec += prompt->parameterString();
-		}
-		else
-		{
-			return;
-		}
-	}
-	if(!X_GoFun_Env.empty())
-	{
-		QStringList envs;
-		for(std::vector<QString>::iterator it = X_GoFun_Env.begin(); it != X_GoFun_Env.end(); ++it)
-		{
-			if((*it).isEmpty())
-				continue;
-			QStringList vk_pair = QStringList::split('=',(*it));
-			//exec = "export " + vk_pair[0] + "=\"" + QString((*it)).remove(0,vk_pair[0].length()+1) + "\";" + exec;
-			envs += vk_pair[0] + "=" + GofunMisc::ext_filestring(vk_pair[1]);
-		}
-		saveStringListToFile(QDir::homeDirPath() + "/.gofun/tmp_proc_env",&envs);
-	}
+	QString exec(Exec);
+
+	handleParameterVariables(exec);
+	QString parstr;
+	if(handleParameters(parstr))
+		exec += parstr;
+	else
+		return;
+	handleEnvVars();
 	if(GofunMisc::stringToBool(Terminal))
 	{ 
 		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
@@ -76,19 +88,19 @@ void GofunApplicationEntryData::execute() //FIXME: 1. hackish, 2. maybe outsourc
 		if(exec[exec.length()-1] == ';')
 			exec.setLength(exec.length()-1);
 		exec += ";echo -e \"\\E[${2:-44};${3:-7}m\n" + QObject::tr("End of execution has been reached.\nPress any key to remove this terminal.\nPress -c- to continue operation in this terminal. \";");
-		exec += "read -n 1 EVAL; tput sgr0; if [ $EVAL == \"c\" ]; then /bin/sh; fi";
+		exec += "read -n 1 EVAL; tput sgr0; if [ \"$EVAL\" == \"c\" ]; then /bin/sh; fi";
 	}
 	proc.addArgument("/bin/sh");
 	proc.addArgument("-c");
 	if(Path.isEmpty())
 	{
 		proc.setWorkingDirectory(QDir::homeDirPath());
-		exec = "cd " + GofunMisc::shellify_path(QDir::homeDirPath()) + ";" + exec;
+		exec = "cd " + GofunMisc::shellifyPath(QDir::homeDirPath()) + ";" + exec;
 	}
 	else
 	{
 		proc.setWorkingDirectory(QDir(Path));
-		exec = "cd " + GofunMisc::shellify_path(Path) + ";" + exec;
+		exec = "cd " + GofunMisc::shellifyPath(Path) + ";" + exec;
 	}
 	proc.addArgument(exec);
 	if(!X_GoFun_User.isEmpty())
@@ -162,6 +174,7 @@ bool GofunApplicationEntryData::parseLine(const QString& line)
 	|| GofunDataLoader::parseLine("Path",line,Path)
 	|| GofunDataLoader::parseLine("Terminal",line,Terminal)
 	|| GofunDataLoader::parseLine("X-GoFun-NewX",line,X_GoFun_NewX)
+	|| GofunDataLoader::parseLine("X-GoFun-XOptions",line,X_GoFun_XOptions)
 	|| GofunDataLoader::parseLine("X-GoFun-User",line,X_GoFun_User)
 	|| GofunDataLoader::parseLine("X-GoFun-Env",line,X_GoFun_Env))
 		0;
@@ -234,6 +247,7 @@ void GofunApplicationEntryData::save()
 			stream << "Path=" << Path << "\n";
 		stream << "Terminal=" << Terminal << "\n";
 		stream << "X-GoFun-NewX=" << X_GoFun_NewX << "\n";
+		stream << "X-GoFun-XOptions=" << X_GoFun_XOptions << "\n";
 		if(!X_GoFun_Env.empty())
 		{
 			stream << "X-GoFun-Env=";
@@ -269,6 +283,11 @@ void GofunApplicationEntryData::save()
 		stream << Unknownkeys.join("\n") << "\n";
 		file.close();
 	}
+}
+
+void GofunApplicationEntryData::handleParameterVariables(QString& exec)
+{
+	exec.replace("%u","");
 }
 
 

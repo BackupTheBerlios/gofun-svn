@@ -28,22 +28,19 @@
 #include "gofun_settings_dlg.h"
 #include "gofun_desktop_entry_data.h"
 
-class GofunCatButton;
-class GofunItem;
 class GofunDesktopEntrySettingsWidget;
 
 #ifndef GOFUN_ITEM_SETTINGS 
 #define GOFUN_ITEM_SETTINGS
 
-///Settings-dialog for items
-class GofunItemSettings : public GofunSettingsDlg
+///Settings-dialog for desktop entries
+class GofunDesktopEntrySettings : public GofunSettingsDlg
 {
 	Q_OBJECT
 public:
-	GofunItemSettings();
-	void setCategory(GofunCatButton*);
+	GofunDesktopEntrySettings();
 	void setDefaults();
-	virtual void load(GofunItem*);
+	virtual void load(GofunDesktopEntryData*);
 	
 public slots:
 	virtual void iconDialog();
@@ -57,8 +54,7 @@ protected:
 
 	GofunDesktopEntrySettingsWidget* desw;
 		
-	GofunCatButton* category;
-	GofunItem* item;
+	GofunDesktopEntryData* item;
 };
 
 #endif

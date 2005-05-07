@@ -24,6 +24,8 @@
 #ifndef GOFUN_APPLICATION_ITEM
 #define GOFUN_APPLICATION_ITEM
 
+class QIconView;
+
 enum
 {
   PID_Execute = PID_Delete + 1,
@@ -38,7 +40,8 @@ class GofunApplicationItem : public GofunItem
 	Q_OBJECT
 	
 	public:
-	GofunApplicationItem(GofunIconView*, const QString& = 0);
+	GofunApplicationItem(QIconView*, const QString& = 0);
+	GofunApplicationItem(QIconView*, const QString&, GofunDesktopEntryData*);
 	//virtual ~GofunApplicationItem();
 
 	void setData(GofunDesktopEntryData*);
@@ -49,7 +52,7 @@ class GofunApplicationItem : public GofunItem
 	QPopupMenu* rightClickPopup(const QPoint&);
 	void editEntry();
 	void performDefaultAction() { execute(); };
-	static void createNewItem(GofunCatButton*);
+	static void createNewItem(QIconView*);
 	
 	GofunApplicationEntryData* data() { return m_data; }
 	

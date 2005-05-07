@@ -23,14 +23,14 @@
 #include "gofun_cat_entry_data.h"
 #include "gofun_data.h"
 
-/*GofunDesktopObject* GofunCatEntryData::GofunDesktopObjectFactory(QWidget* parent)
+/*GofunDesktopObject* GofunDirectoryEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
-	GofunCatButton* item = new GofunCatButton(Name,parent);
+	GofunDirectoryButton* item = new GofunDirectoryButton(Name,parent);
 	item->setData(this);
 	return item;
 }*/
 
-bool GofunCatEntryData::parseLine(const QString& line)
+bool GofunDirectoryEntryData::parseLine(const QString& line)
 {
 	if(GofunDesktopEntryData::parseLine(line))
 		return true;
@@ -41,14 +41,14 @@ bool GofunCatEntryData::parseLine(const QString& line)
 	return false;
 }
 
-GofunCatEntryData* GofunCatEntryData::makeCopy()
+GofunDirectoryEntryData* GofunDirectoryEntryData::makeCopy()
 {
-	GofunCatEntryData* copy = new GofunCatEntryData;
+	GofunDirectoryEntryData* copy = new GofunDirectoryEntryData;
 	*copy = *this;
 	return copy;
 }
 
-void GofunCatEntryData::save()
+void GofunDirectoryEntryData::save()
 {
 	GofunDesktopEntryData::save();
 
@@ -61,6 +61,11 @@ void GofunCatEntryData::save()
 			stream << "X-GoFun-Background=" << X_GoFun_Background << "\n";
 		file.close();
 	}
+}
+
+void GofunDirectoryEntryData::generateFileName()
+{
+	File = ".directory";
 }
 
 

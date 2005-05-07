@@ -36,11 +36,11 @@
 #include "gofun_fsdevice_item.h"
 #include "gofun_link_item.h"
  
-GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButton(str,widget)
+GofunDirectoryButton::GofunDirectoryButton(const QString& str, QWidget* widget) : QPushButton(str,widget)
 {
 	setText(str + "   ");
 	setToggleButton(true);	
-	//Needed so GofunItems can be moved/copied comfortably between categories
+	//Needed so GofunItems can be moved/copied comfortably between directories
 	setAcceptDrops(true);
 
 	//Create the appendix of this button
@@ -63,15 +63,16 @@ GofunCatButton::GofunCatButton(const QString& str, QWidget* widget) : QPushButto
 	m_data = 0;
 	
 	if(dynamic_cast<GofunWidget*>(qApp->mainWidget()))
-		dynamic_cast<GofunWidget*>(qApp->mainWidget())->insertCategory(this);
+		dynamic_cast<GofunWidget*>(qApp->mainWidget())->insertDirectory(this);
 }
 
-GofunCatButton::~GofunCatButton()
+GofunDirectoryButton::~GofunDirectoryButton()
 {
+	//delete m_data; //FIXME: uncommentings this results segfault/fatal glibc error
 	delete iconview;
 }
 
-void GofunCatButton::popupConfButton()
+void GofunDirectoryButton::popupConfButton()
 {
 	QPopupMenu* popup = new QPopupMenu(this);
 	QPopupMenu* add_popup = new QPopupMenu(this);
@@ -96,24 +97,24 @@ void GofunCatButton::popupConfButton()
 	makeCurrent();
 }
 
-void GofunCatButton::popupCBActivated(int id)
+void GofunDirectoryButton::popupCBActivated(int id)
 {
 	switch(id)
 	{
 		case PID_Add_Application:
-			GofunApplicationItem::createNewItem(this);
+			GofunApplicationItem::createNewItem(iconview);
 			break;
 		case PID_Add_Device:
-			GofunFSDeviceItem::createNewItem(this);
+			GofunFSDeviceItem::createNewItem(iconview);
 			break;
 		case PID_Add_Link:
-			GofunLinkItem::createNewItem(this);
+			GofunLinkItem::createNewItem(iconview);
 			break;
 		case PID_Add_Wizard:
 			runNewItemWizard();
 			break;
 		case PID_SETTINGS:
-			catSettings();
+			editEntry();
 			break;
 		case PID_DELETE:
 			deleteEntry();
@@ -121,32 +122,30 @@ void GofunCatButton::popupCBActivated(int id)
 	}
 }
 
-void GofunCatButton::deleteEntry()
+void GofunDirectoryButton::deleteEntry()
 {
 	//Kindly warn the user
 	if(!(QMessageBox::warning(qApp->mainWidget(),tr("Delete category"),tr("Do you really want to delete this category and all its entries, sir?"), tr("Ok"), tr("Cancel")) == 0))
 		return;
 	
 	deleteEntryFile();
-	GofunMisc::shell_call("rm -rf '"+data()->Catdir+"'");
-	delete iconview;
-	//delete m_data; //FIXME: uncommentings this results segfault/fatal glibc error
+	GofunMisc::shellCall("rm -rf '"+data()->Directorydir+"'");
 	delete this;
 }
 
-void GofunCatButton::deleteEntryFile()
+void GofunDirectoryButton::deleteEntryFile()
 {
 	QFile::remove(data()->File);
 }
 
-void GofunCatButton::runNewItemWizard()
+void GofunDirectoryButton::runNewItemWizard()
 {
 	GofunItemWizard* wizard = new GofunItemWizard();
 	wizard->exec();
 }
 
 //Make sure the right-button is in the right place (!you got the word joke?)
-void GofunCatButton::resizeEvent(QResizeEvent* event)
+void GofunDirectoryButton::resizeEvent(QResizeEvent* event)
 {
 	QPushButton::resizeEvent(event);
 
@@ -159,60 +158,59 @@ void GofunCatButton::resizeEvent(QResizeEvent* event)
 	
 }
 
-void GofunCatButton::catSettings()
+void GofunDirectoryButton::catSettings()
 {
-	GofunCatSettings* settings_dlg = new GofunCatSettings();
+
+	/*GofunDirectoryEntrySettings* settings_dlg = new GofunDirectoryEntrySettings();
 	settings_dlg->load(this);
 	QWidget* p = qApp->mainWidget(); //dynamic_cast<QWidget*>(parent()->parent());
-	GofunWindowOperations::attach_window(p,settings_dlg,D_Right,D_Left,275,200);
+	GofunWindowOperations::attachWindow(p,settings_dlg,D_Right,D_Left,275,200);
 	settings_dlg->exec();
-	delete settings_dlg;
+	delete settings_dlg;*/
 }
 
 //Too obvious for a comment, oh ...
-void GofunCatButton::setData(GofunCatEntryData* d)
+void GofunDirectoryButton::setData(GofunDirectoryEntryData* d)
 {
 	m_data = d;
 	
-	if(!data()->Catdir.isEmpty() && !QFileInfo(data()->Catdir).isWritable())
+	if(!data()->Directorydir.isEmpty() && !QFileInfo(data()->Directorydir).isWritable())
 		readonly = true;
 	else
 		readonly = false;
-	loadIcon();
-	setupToolTip();
-		
-	refreshBackground();
+
+	implementData();
 }
 
-void GofunCatButton::setupToolTip()
+void GofunDirectoryButton::setupToolTip()
 {
 	if(!data()->Comment.isEmpty())
 		QToolTip::add(this,data()->Comment);
 }
 
-void GofunCatButton::loadIcon()
+void GofunDirectoryButton::loadIcon()
 {
-	QPixmap px = GofunMisc::get_icon(data()->Icon,16,16);
+	QPixmap px = GofunMisc::getIcon(data()->Icon,16,16);
 	if(!px.isNull())
 		conf_button->setPixmap(px);
 	else
-		conf_button->setPixmap(QPixmap("default_cat.png"));
+		conf_button->setPixmap(QPixmap("default_directory.png"));
 }
 
-//Specify which IconView is related to this CatButton
-void GofunCatButton::setIconView(GofunIconView* iv)
+//Specify which IconView is related to this DirectoryButton
+void GofunDirectoryButton::setIconView(GofunIconView* iv)
 {
 	iconview = iv;
 }
 
 //Drag'n'Drop magic
-void GofunCatButton::dragEnterEvent(QDragEnterEvent* event)
+void GofunDirectoryButton::dragEnterEvent(QDragEnterEvent* event)
 {
 	event->accept(QIconDrag::canDecode(event));
 }
 
 //Drag'n'Drop magic 2nd part
-void GofunCatButton::dropEvent(QDropEvent* event)
+void GofunDirectoryButton::dropEvent(QDropEvent* event)
 {	
 	//Did we receive something from a widget in this application?
 	//If not, just return.
@@ -239,7 +237,7 @@ void GofunCatButton::dropEvent(QDropEvent* event)
 
 //The popup-menu resulting from a drag'n'drop action
 //has been triggered
-void GofunCatButton::popupItemDnD(int id)
+void GofunDirectoryButton::popupItemDnD(int id)
 {
 	//Wise man prepare ...
 	GofunItem* gi;
@@ -255,30 +253,40 @@ void GofunCatButton::popupItemDnD(int id)
 				gi = new GofunFSDeviceItem(iconview,current_item->data()->Name);
 			else if(current_item->data()->Type == "Link")
 				gi = new GofunLinkItem(iconview,current_item->data()->Name);
-			gi->setData(current_item->data()->makeCopy());			
-			gi->data()->File = data()->Catdir + gi->data()->Name + ".desktop";
+			gi->setData(current_item->data()->makeCopy());
+			gi->data()->File = data()->Directorydir + gi->data()->Name + ".desktop";
 			gi->data()->save();
 			break;
 		case PID_MOVE_ITEM: //Move the item into its new iconview. Save the new and delete the old Desktop Entry file.
 			current_item->deleteEntryFile();
 			current_item->iconView()->takeItem(current_item);
 			iconview->insertItem(current_item);
-			current_item->data()->File = data()->Catdir + current_item->data()->Name + ".desktop";
+			current_item->data()->File = data()->Directorydir + current_item->data()->Name + ".desktop";
 			current_item->data()->save();
 			break;
 	}
 }
 
 
-void GofunCatButton::refreshBackground()
+void GofunDirectoryButton::refreshBackground()
 {
-		if(!data()->X_GoFun_Background.isEmpty())
-			iconview->setPaletteBackgroundPixmap(QPixmap(data()->X_GoFun_Background));	
-		else
+		if(QFile::exists(data()->X_GoFun_Background))
+		{
+			QPixmap* bg_image = new QPixmap(data()->X_GoFun_Background);
+			//iconview->unsetPalette();
+			//iconview->setPaletteBackgroundPixmap(*bg_image);
+		}
+		else if(data()->X_GoFun_Background.isEmpty())
+		{
 			iconview->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Active,QColorGroup::Base));
+		}
+		else if(QColor(data()->X_GoFun_Background).isValid())
+		{
+			iconview->setPaletteBackgroundColor(QColor(data()->X_GoFun_Background));
+		}
 }
 
-void GofunCatButton::mouseReleaseEvent( QMouseEvent * event )
+void GofunDirectoryButton::mouseReleaseEvent( QMouseEvent * event )
 {
 	if (event->button() & RightButton)
 		popupConfButton();
@@ -288,9 +296,51 @@ void GofunCatButton::mouseReleaseEvent( QMouseEvent * event )
 	QPushButton::mouseReleaseEvent(event);
 }
 
-void GofunCatButton::makeCurrent( )
+void GofunDirectoryButton::makeCurrent()
 {
 	emit clicked();
 	setOn(true);
+}
+
+void GofunDirectoryButton::implementData()
+{
+	setText(data()->Name + "   ");
+	loadIcon();
+	setupToolTip();
+	refreshBackground();
+}
+
+void GofunDirectoryButton::createNewItem(QWidget* parent)
+{
+	GofunDirectoryEntryData* new_data = new GofunDirectoryEntryData;
+	GofunDirectoryEntrySettings* settings_dlg = new GofunDirectoryEntrySettings();
+	int height = 200;
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Right,D_Left,275,200);
+	settings_dlg->setCaption(tr("Add entry"));
+	settings_dlg->load(new_data);
+	settings_dlg->setDefaults();
+	if(settings_dlg->exec() == QDialog::Accepted)
+	{
+		GofunDirectoryButton* new_item = new GofunDirectoryButton(QString(""),parent);/*iconview,QString(""),new_data);*/
+		new_item->setData(new_data);
+		new_item->implementData();
+		new_item->show();
+	}
+	else
+	{
+		delete new_data;
+		delete settings_dlg;
+	}
+}
+
+//Open dialog for editing a Desktop Entry.
+void GofunDirectoryButton::editEntry()
+{
+	GofunDirectoryEntrySettings* settings_dlg = new GofunDirectoryEntrySettings();
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Right,D_Left,275,200);
+	settings_dlg->setCaption(tr("Edit entry"));
+	settings_dlg->load(data());
+	if(settings_dlg->exec() == QDialog::Accepted)
+		implementData();
 }
 

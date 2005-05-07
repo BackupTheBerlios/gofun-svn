@@ -37,10 +37,10 @@
 #include <qmessagebox.h>
 
 class GofunItem;
-class GofunCatButton;
+class GofunDirectoryButton;
 class GofunSettings;
-class GofunItemSettings;
-struct GofunCatEntryData;
+class GofunDesktopEntrySettings;
+struct GofunDirectoryEntryData;
 
 #ifndef GOFUN_WIDGET
 #define GOFUN_WIDGET
@@ -49,7 +49,7 @@ enum
 {
   PID_Add,
   PID_Add_Wizard,
-  PID_Add_Category,
+  PID_Add_Directory,
   PID_Add_Application,
   PID_Add_Device,
   PID_Add_Link
@@ -64,17 +64,17 @@ public:
 	virtual ~GofunWidget();
 	void reloadData();
 public slots:
-	void changeCategory(int);
+	void changeDirectory(int);
 	void rightClickedItem(QIconViewItem*,const QPoint&);
 	void popupMenuSpace(int);
-	void popupCatAdd();
+	void popupDirectoryAdd();
 	void popupCAActivated(int);
 	void openSettingsDlg();
-	void addCategory();
+	void addDirectory();
 	void showHelp();
 	void showAbout();
 	QVButtonGroup* categoryButtons() { return cats_bg; };
-	void insertCategory(GofunCatButton*);
+	void insertDirectory(GofunDirectoryButton*);
 	void changeToTools();
 	void performDefaultActionOnItem(QIconViewItem*);
 	void toggleFullscreen();
@@ -90,15 +90,15 @@ private:
 	void deleteEntry(GofunItem*);
 	void loadData();
 	void unloadData();
-	void connectCatIconview(GofunCatButton*);
+	void connectDirectoryIconview(GofunDirectoryButton*);
 
-	GofunCatButton* current_cat;
-	GofunCatButton* tools_cat;
+	GofunDirectoryButton* current_cat;
+	GofunDirectoryButton* tools_cat;
 	QWidgetStack * view_ws;
 	QVButtonGroup* cats_bg;
 	
-friend class GofunCatSettings;
-friend class GofunCatButton;
+friend class GofunDirectoryEntrySettings;
+friend class GofunDirectoryButton;
 };
 
 #endif

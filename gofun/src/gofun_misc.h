@@ -42,20 +42,21 @@ class QProcess;
 ///Mixed methods needed in GoFun
 struct GofunMisc
 {
-	static QString shell_call(const QString&);
-	static QString ext_filestring(const QString&);
-	static QString bin_dir();
-	static QPixmap get_icon(const QString&,int = 32,int = 32);
+	static QString shellCall(const QString&);
+	static QString extendFileString(const QString&);
+	static QString binDir();
+	static QPixmap getIcon(const QString&,int = 32,int = 32);
 	static bool makeDir(const QString&);
-	static QString shellify_path(const QString&);
+	static QString shellifyPath(const QString&);
 	static bool stringToBool(const QString&);
 	static QString boolToString(bool);
+	static void playSound(const QString&);
 };
 
 struct GofunWindowOperations
 {
-	static void center_window(QWidget*, int, int);
-	static void attach_window(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
+	static void centerWindow(QWidget*, int, int);
+	static void attachWindow(QWidget* base,QWidget* to_attach, Side pref, Side alt, int width = -1, int height = -1);
 };
 
 class GofunLineEdit : public QWidget

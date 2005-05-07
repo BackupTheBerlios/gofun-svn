@@ -24,12 +24,13 @@
 #include <qprocess.h>
 #include <qwidget.h>
 #include <qtoolbutton.h>
+#include <qsound.h>
 
 #include "gofun_misc.h" 
 #include "gofun_settings.h"
 #include "gofun_file_dialog_preview.h"
 
-QString GofunMisc::shell_call(const QString& call)
+QString GofunMisc::shellCall(const QString& call)
 {
         char buf[1024];
         FILE *ptr;
@@ -42,29 +43,29 @@ QString GofunMisc::shell_call(const QString& call)
         return output;
 }
 
-QString GofunMisc::shellify_path(const QString& path)
+QString GofunMisc::shellifyPath(const QString& path)
 {
 	//QString res = path;
 	//return res.replace(' ',"\\ ");
-	return "'"+ext_filestring(path)+"'";
+	return "'"+extendFileString(path)+"'";
 }
 
-QString GofunMisc::ext_filestring(const QString& str)
+QString GofunMisc::extendFileString(const QString& str)
 {
-	return shell_call("echo -n \""+ str+"\"").stripWhiteSpace();
+	return shellCall("echo -n \""+ str+"\"").stripWhiteSpace();
 }
 
-QString GofunMisc::bin_dir()
+QString GofunMisc::binDir()
 {
-	return GofunMisc::shell_call("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").stripWhiteSpace();
+	return GofunMisc::shellCall("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").stripWhiteSpace();
 }
 
-void GofunWindowOperations::center_window(QWidget* w, int width, int height)
+void GofunWindowOperations::centerWindow(QWidget* w, int width, int height)
 {
   w->setGeometry(QApplication::desktop()->screen()->width() / 2 - width/2, QApplication::desktop()->screen()->height() / 2 - height/2, width, height);
 }
 
-QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height)
+QPixmap GofunMisc::getIcon(const QString& name, int pref_width, int pref_height)
 {
 	if(name.isEmpty())
 		return QPixmap();
@@ -72,14 +73,14 @@ QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height
 	QString file;
 	if(QFile::exists(name))
 		file = name;
-	else if( QFile::exists(GofunMisc::ext_filestring(name)))
-		file = GofunMisc::ext_filestring(name);
+	else if( QFile::exists(GofunMisc::extendFileString(name)))
+		file = GofunMisc::extendFileString(name);
 	else
 	{		
 		//FIXME: that code still looks quite hackish
 		QStringList::Iterator choice;
 		int m_width = 0;
-		QStringList icon_files = QStringList::split("\n",GofunMisc::shell_call("grep "+name+" $HOME/.gofun/icon_files"));
+		QStringList icon_files = QStringList::split("\n",GofunMisc::shellCall("grep "+name+" $HOME/.gofun/icon_files"));
 		for(QStringList::Iterator it = icon_files.begin(); it != icon_files.end(); ++it)
 		{
 			if(!(*it).contains(name))
@@ -104,7 +105,7 @@ QPixmap GofunMisc::get_icon(const QString& name, int pref_width, int pref_height
 	return pixmap;
 }
 
-void GofunWindowOperations::attach_window( QWidget * base, QWidget * to_attach, Side pref, Side alt, int width, int height )
+void GofunWindowOperations::attachWindow( QWidget * base, QWidget * to_attach, Side pref, Side alt, int width, int height )
 {
 	if(width == -1)
 		width = base->width();
@@ -163,14 +164,14 @@ void GofunWindowOperations::attach_window( QWidget * base, QWidget * to_attach, 
 	}
 	
 	if(!success)
-		GofunWindowOperations::center_window(to_attach,width,height);
+		GofunWindowOperations::centerWindow(to_attach,width,height);
 }
 
 bool GofunMisc::makeDir(const QString& path)
 {
 	//HACK: this might be slightly hackish, but should work (tm)
 	QString call = "mkdir -p " + path;
-	shell_call(call);
+	shellCall(call);
 }
 
 bool GofunMisc::stringToBool(const QString& str)
@@ -185,6 +186,16 @@ QString GofunMisc::boolToString(bool b)
 	else
 		return "false";
 }
+
+void GofunMisc::playSound(const QString& file)
+{
+	if(QSound::isAvailable()) //If sound can be played, we do so.
+	{
+		QSound::play("doublet.wav");
+	}
+}
+
+
 
 
 

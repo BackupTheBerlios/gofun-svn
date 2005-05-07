@@ -51,6 +51,7 @@ struct GofunApplicationEntryData : public GofunDesktopEntryData
 	std::vector<QString> X_GoFun_Env;
 	QString X_GoFun_User;
 	QString X_GoFun_NewX;
+	QString X_GoFun_XOptions;
 	std::map<int,GofunParameterData> X_GoFun_Parameter;
 	
 	///Parse a line of the Desktop Entry.
@@ -63,6 +64,9 @@ struct GofunApplicationEntryData : public GofunDesktopEntryData
 	virtual GofunApplicationEntryData* makeCopy();
 	
 	private:
+	void handleParameterVariables(QString&);
+	bool handleParameters(QString&);
+	void handleEnvVars();
 	///Adds arguments to a process by splitting a string
 	void addSplittedProcArgument(QProcess*,const QString&);
 	///Saves process arguments

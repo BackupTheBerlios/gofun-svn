@@ -85,7 +85,7 @@ GofunInterpretedLineEdit::GofunInterpretedLineEdit(QWidget* parent) : QLineEdit(
 
 void GofunInterpretedLineEdit::setText(const QString& text)
 {
-	QLineEdit::setText(GofunMisc::shell_call("echo -n "+text));
+	QLineEdit::setText(GofunMisc::shellCall("echo -n "+text));
 }
 
 

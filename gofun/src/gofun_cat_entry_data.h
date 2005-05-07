@@ -28,9 +28,9 @@
 ///Data-type for Desktop Entries, that represent a category
 /** Contains a std::vector with the GofunDesktopEntryData, that is present
     in this category. **/
-struct GofunCatEntryData : public GofunDesktopEntryData
+struct GofunDirectoryEntryData : public GofunDesktopEntryData
 {
-	QString Catdir;
+	QString Directorydir;
 	QString Background;
 	QString X_GoFun_Background;
 	QString X_GoFun_Color;
@@ -38,8 +38,9 @@ struct GofunCatEntryData : public GofunDesktopEntryData
 	
 	bool parseLine(const QString&);
 	void save();
+	void generateFileName();
 	
-	virtual GofunCatEntryData* makeCopy();
+	virtual GofunDirectoryEntryData* makeCopy();
 };
 
 

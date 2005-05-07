@@ -25,7 +25,7 @@
 #ifndef GOFUN_COMMAND_EDITOR
 #define GOFUN_COMMAND_EDITOR
 
-class GofunApplicationItemSettings;
+class GofunApplicationEntrySettings;
 class GofunListPopup;
 
 ///Command editor
@@ -36,7 +36,7 @@ class GofunCommandEditor : public QDialog
 	GofunCommandEditor();
 	void setCommand(const QString&);
 	QString command();
-	void setSettingsWidget(GofunApplicationItemSettings*);
+	void setSettingsWidget(GofunApplicationEntrySettings*);
 	
 	private slots:
 	void optionsDialog();
@@ -55,7 +55,7 @@ class GofunCommandEditor : public QDialog
 	QString cmd;
 	GofunListPopup* expand_list;
 	
-	GofunApplicationItemSettings* settings_widget;
+	GofunApplicationEntrySettings* settings_widget;
 };
 
 #endif

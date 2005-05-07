@@ -21,6 +21,12 @@
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qmessagebox.h>
+#include <qgroupbox.h>
+#include <qradiobutton.h>
+#include <qcolordialog.h>
+#include <qlineedit.h>
+#include <qradiobutton.h>
+#include <qtoolbutton.h>
 
 #include "gofun_cat_settings.h"
 #include "gofun_cat_button.h"
@@ -31,10 +37,11 @@
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_icon_dialog.h"
 #include "gofun_file_dialog.h"
+#include "gofun_radio_button_group.h"
 
-GofunCatSettings::GofunCatSettings()
+GofunDirectoryEntrySettings::GofunDirectoryEntrySettings()
 {
-	setCaption(tr("GoFun Category Settings"));
+	setCaption(tr("GoFun Directory Settings"));
 	
 	QWidget* widget_main = new QWidget(this);
 	QGridLayout* grid = new QGridLayout(widget_main,6,3);
@@ -42,124 +49,151 @@ GofunCatSettings::GofunCatSettings()
 	tabwidget->addTab(widget_main,tr("Main"));
 	
 	desw = new GofunDesktopEntrySettingsWidget(widget_main);
-	background = new QLineEdit(widget_main);
-	background_button = new QToolButton(widget_main);
-	grid->addMultiCellWidget(desw,0,0,0,2);
-	grid->addWidget(new QLabel(tr("Background"),widget_main),1,0);
-	grid->addWidget(background,1,1);
-	grid->addWidget(background_button,1,2);
+
+	QGroupBox* gb_background = new QGroupBox(tr("Background"),widget_main);
+	gb_background->setColumnLayout(0, Qt::Vertical );
+	gb_background->layout()->setSpacing( 6 );
+	gb_background->layout()->setMargin( 5 );
+
+	QGridLayout* grid_background = new QGridLayout(gb_background->layout());
+
+	background_image = new QLineEdit(gb_background);
+	background_image_button = new QToolButton(gb_background);
+	background_color_button = new QToolButton(gb_background);
+
+	GofunRadioButtonGroup* rb_bg_group = new GofunRadioButtonGroup;
+
+	rb_bg_image = new QRadioButton(tr("Image"),gb_background);
+	rb_bg_color = new QRadioButton(tr("Color"),gb_background);
+	rb_bg_none = new QRadioButton(tr("None"),gb_background);
+
+	rb_bg_group->add(rb_bg_image);
+	rb_bg_group->add(rb_bg_color);
+	rb_bg_group->add(rb_bg_none);
+
+	grid_background->addWidget(rb_bg_image,0,0);
+	grid_background->addWidget(background_image,0,1);
+	grid_background->addWidget(background_image_button,0,2);
+	grid_background->addWidget(rb_bg_color,1,0);
+	grid_background->addMultiCellWidget(background_color_button,1,1,1,2);
+	grid_background->addWidget(rb_bg_none,2,0);
+
+	grid->addWidget(desw,0,0);
+	grid->addWidget(gb_background,1,0);
 	
 	connect(desw->icon_button,SIGNAL(clicked()),this,SLOT(iconDialog()));
-	connect(background_button,SIGNAL(clicked()),this,SLOT(backgroundDialog()));
+	connect(background_image_button,SIGNAL(clicked()),this,SLOT(backgroundDialog()));
+	connect(background_color_button,SIGNAL(clicked()),this,SLOT(backgroundColorDialog()));
 
 	item = 0;	
 }
 
-void GofunCatSettings::iconDialog()
-{	//@TODO: Eliminate code duplication (GofunItem::iconDialog())
-	GofunIconDialog* id = new GofunIconDialog();
-	QString start_dir;
-	if(!desw->icon.isEmpty())
-	{
-		start_dir = desw->icon;
-		id->setStartIcon(desw->icon);
-	}
-	if(!start_dir.isEmpty())
-		start_dir = "/usr/share/icons";
-	id->setStartDir(start_dir);
-	if(id->exec() == QDialog::Accepted)
-	{
-		desw->icon = id->selected();
-		desw->icon_button->setPixmap(GofunMisc::get_icon(id->selected()));
-	}
-	delete id;
-}
-
-void GofunCatSettings::backgroundDialog()
+void GofunDirectoryEntrySettings::backgroundDialog()
 {
 	QString start_dir;
-	if(!background->text().isEmpty())
-		start_dir = background->text();
+	if(!background_image->text().isEmpty())
+		start_dir = background_image->text();
 	else
 		start_dir = QDir::homeDirPath();
 	QString file = GofunFileDialog::getOpenImageFileName(start_dir,tr("Select background image"),tr("Images"));
 	if(!file.isEmpty())
 	{
-		background->setText(file);
-		background_button->setPixmap(file);
+		background_image->setText(file);
+		background_image_button->setPixmap(file);
 	}
 }
 
-void GofunCatSettings::save()
+void GofunDirectoryEntrySettings::save()
 {
-	if(item && item->data()->Catdir.isEmpty())
+	/*if(data()->Directorydir.isEmpty())
 	{
-		item->data()->Catdir = GSC::get()->gofun_dir + "/" + desw->caption->text();
+		data()->Directorydir = GSC::get()->gofun_dir + "/" + desw->caption->text();
 		QDir dir;
-		if(!dir.exists(item->data()->Catdir))
-			dir.mkdir(item->data()->Catdir);
+		if(!dir.exists(data()->Directorydir))
+			dir.mkdir(data()->Directorydir);
 		
-		if(item->data()->File.isEmpty())
-			item->data()->File = item->data()->Catdir + "/.directory";
-	}
-	item->data()->save();
+		if(data()->File.isEmpty())
+			data()->File = data()->Directorydir + "/.directory";
+	}*/
+	GofunDesktopEntrySettings::save();
 }
 
-void GofunCatSettings::apply()
+void GofunDirectoryEntrySettings::apply()
 {
-	if(item)
-	{
-		item->data()->Name = desw->caption->text();
-		item->setText(item->data()->Name + "   ");
-		item->data()->Comment = desw->comment->text();
+	if(data()->Type.isEmpty())
+		data()->Type = "Directory";
+	data()->Name = desw->caption->text();
+	data()->Comment = desw->comment->text();
+	data()->Icon = desw->icon;
+	if(rb_bg_image->isChecked())
+		data()->X_GoFun_Background = background_image->text();
+	else if(rb_bg_color->isChecked())
+		data()->X_GoFun_Background = background_color_button->paletteBackgroundColor().name();
+	else if(rb_bg_none->isChecked())
+		data()->X_GoFun_Background = "";
 
-		item->data()->Icon = desw->icon;
-		
-		item->data()->X_GoFun_Background = background->text();
-		item->refreshBackground();
-		item->loadIcon();
-	}
-	else
+/*	setText(data()->Name + "   ");
+	refreshBackground();
+	loadIcon();*/
+
+/*	else
 	{
-		item = new GofunCatButton(QString(""),dynamic_cast<GofunWidget*>(qApp->mainWidget())->categoryButtons());
-		item->setData(new GofunCatEntryData);
-		item->show();
-		item->makeCurrent();
+		item = new GofunDirectoryButton(QString(""),dynamic_cast<GofunWidget*>(qApp->mainWidget())->categoryButtons());
+		setData(new GofunDirectoryEntryData);
+		show();
+		makeCurrent();
 		apply();
-	}
+	}*/
 }
 
-bool GofunCatSettings::inputValid()
+bool GofunDirectoryEntrySettings::inputValid()
 {
-	if(desw->caption->text().isEmpty())
-	{
-		QMessageBox::information(this,tr("Caption isn't set yet"),tr("Dear User, I can set up this stuff properly for you,\n after you type in a caption for this entry. Thanks. :)"));
-		desw->caption->setFocus();
+	if(!GofunDesktopEntrySettings::inputValid())
 		return false;
-	}
 	else
-	{
 		return true;
-	}
 }
 
-void GofunCatSettings::load(GofunCatButton* _item)
+void GofunDirectoryEntrySettings::load(GofunDirectoryEntryData* _item)
 {
-	item = _item;
-	desw->caption->setText(item->data()->Name);
-	desw->comment->setText(item->data()->Comment);
-	background->setText(item->data()->X_GoFun_Background);
-	background_button->setPixmap(QPixmap(item->data()->X_GoFun_Background));
-	desw->icon = item->data()->Icon;
-	desw->icon_button->setPixmap(item->confButtonPixmap()?*item->confButtonPixmap():0);
+	GofunDesktopEntrySettings::load(_item);
+	
+	if(QFile::exists(data()->X_GoFun_Background))
+	{
+		background_image->setText(data()->X_GoFun_Background);
+		background_image_button->setPixmap(QPixmap(data()->X_GoFun_Background));
+		rb_bg_image->setChecked(true);
+	}
+	else if(data()->X_GoFun_Background.isEmpty())
+	{
+		rb_bg_none->setChecked(true);
+	}
+	else if(QColor(data()->X_GoFun_Background).isValid())
+	{
+		background_color_button->setPaletteBackgroundColor(QColor(data()->X_GoFun_Background));
+		rb_bg_color->setChecked(true);
+	}
+
 	if(item->isReadOnly())
 		apply_button->setEnabled(false);
 }
 
-void GofunCatSettings::setDefaults( )
+void GofunDirectoryEntrySettings::setDefaults( )
 {
-	desw->caption->setFocus(); //FIXME: yet another example why GofunCatSettings must be merged with the GofunItemSettings hierarchy ...
+	GofunDesktopEntrySettings::setDefaults();
 
-	desw->icon = "default_cat.png";
+	desw->icon = "default_directory.png";
 	desw->icon_button->setPixmap(QPixmap(desw->icon));
+}
+
+GofunDirectoryEntryData* GofunDirectoryEntrySettings::data()
+{
+	return dynamic_cast<GofunDirectoryEntryData*>(item);
+}
+
+void GofunDirectoryEntrySettings::backgroundColorDialog()
+{
+	QColor col;
+	if((col = QColorDialog::getColor(QColor())).isValid())
+		background_color_button->setPaletteBackgroundColor(col);
 }

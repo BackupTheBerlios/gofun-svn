@@ -91,9 +91,9 @@ GofunURLComposer::GofunURLComposer()
 	gb_fetch->layout()->setSpacing( 6 );
 	gb_fetch->layout()->setMargin( 5 );
 	
-	QPushButton* fetch_file = new QPushButton(tr("Fetch file"),gb_fetch);
-	QPushButton* fetch_directory = new QPushButton(tr("Fetch directory"),gb_fetch);
-	QPushButton* fetch_browser = new QPushButton(tr("Fetch with\nweb-browser"),gb_fetch);
+	QPushButton* fetch_file = new QPushButton(tr("File"),gb_fetch);
+	QPushButton* fetch_directory = new QPushButton(tr("Directory"),gb_fetch);
+	QPushButton* fetch_browser = new QPushButton(tr("Internet"),gb_fetch);
 	
 	connect(fetch_file,SIGNAL(clicked()),this,SLOT(fetchFile()));
 	connect(fetch_directory,SIGNAL(clicked()),this,SLOT(fetchDirectory()));
@@ -281,7 +281,7 @@ void GofunClipboardLineEdit::focusInEvent(QFocusEvent* e)
 		QUrl cb_url(cb_text);
 		if(cb_url.protocol() == "file" && !QFile::exists(cb_url.path()))
 			cb_url.setProtocol("http");
-		if(cb_url.isValid() && cb_url != text() && cb_url != last_ignored)
+		if(!QString(cb_url).contains("\n") && cb_url.isValid() && cb_url != text() && cb_url != last_ignored)
 		{
 			if(QMessageBox::information(this,tr("Found URL in clipboard"),cb_url,tr("Use it"),tr("Ignore it")) == 0)
 				setText(cb_url);

@@ -43,6 +43,8 @@ struct GofunDesktopEntryData
 	
 	virtual bool parseLine(const QString&);
 	virtual void save();
+	virtual void generateFileName();
+	bool isReadOnly();
 	
 	virtual GofunDesktopEntryData* makeCopy();
 };

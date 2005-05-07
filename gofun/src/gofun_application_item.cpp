@@ -34,9 +34,14 @@
 #include "gofun_custom_start.h"
 #include "gofun_application_item_settings.h"
 
-GofunApplicationItem::GofunApplicationItem(GofunIconView* iconview, const QString& string) : GofunItem(iconview,string)
+GofunApplicationItem::GofunApplicationItem(QIconView* iconview, const QString& string) : GofunItem(iconview,string)
 {
 	m_data = new GofunApplicationEntryData();
+}
+
+GofunApplicationItem::GofunApplicationItem(QIconView* iconview, const QString& string, GofunDesktopEntryData* data) : GofunItem(iconview,string)
+{
+	setData(data);
 }
 
 /*GofunItem::~GofunItem()
@@ -63,7 +68,7 @@ void GofunApplicationItem::openDirectory()
 {
 	QProcess proc(GSC::get()->filemanager_cmd);
 	if(!data()->Path.isEmpty())
-		proc.addArgument((GofunMisc::ext_filestring(data()->Path)));
+		proc.addArgument((GofunMisc::extendFileString(data()->Path)));
 	else
 		proc.addArgument(QDir::homeDirPath());
 	if(!proc.start())
@@ -76,7 +81,7 @@ void GofunApplicationItem::openDirectory()
 void GofunApplicationItem::customizedStart()
 {
 	GofunCustomStart* cstart_widget = new GofunCustomStart();
-	GofunWindowOperations::attach_window(qApp->mainWidget(),cstart_widget,D_Left,D_Right,375,200);
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),cstart_widget,D_Left,D_Right,375,200);
 	cstart_widget->load(this);
 	cstart_widget->show();
 }
@@ -120,11 +125,12 @@ void GofunApplicationItem::popupActivated(int id)
 //Open dialog for editing a Desktop Entry.
 void GofunApplicationItem::editEntry()
 {
-	GofunApplicationItemSettings* settings_dlg = new GofunApplicationItemSettings();
-	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
+	GofunApplicationEntrySettings* settings_dlg = new GofunApplicationEntrySettings();
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
 	settings_dlg->setCaption(tr("Edit entry"));
-	settings_dlg->load(this);
+	settings_dlg->load(data());
 	settings_dlg->exec();
+	implementData();
 }
 
 //Forwards execution of a Desktop Entry.
@@ -146,15 +152,24 @@ void GofunApplicationItem::execute(const QString& option)
 	eo->execute();
 }
 
-void GofunApplicationItem::createNewItem(GofunCatButton* cat)
+void GofunApplicationItem::createNewItem(QIconView* iconview)
 {
-	GofunApplicationItemSettings* settings_dlg = new GofunApplicationItemSettings();
+	GofunApplicationEntryData* new_data = new GofunApplicationEntryData;
+	GofunApplicationEntrySettings* settings_dlg = new GofunApplicationEntrySettings();
 	int height = 200;
-	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
 	settings_dlg->setCaption(tr("Add entry"));
-	settings_dlg->setCategory(cat);
+	settings_dlg->load(new_data);
 	settings_dlg->setDefaults();
-	settings_dlg->exec();
-	delete settings_dlg;
+	if(settings_dlg->exec() == QDialog::Accepted)
+	{
+		GofunApplicationItem* new_item = new GofunApplicationItem(iconview,QString(""),new_data);
+		new_item->implementData();
+	}
+	else
+	{
+		delete new_data;
+		delete settings_dlg;
+	}
 }
 

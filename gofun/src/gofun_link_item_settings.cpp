@@ -27,7 +27,7 @@
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_url_composer.h"
 
-GofunLinkItemSettings::GofunLinkItemSettings()
+GofunLinkEntrySettings::GofunLinkEntrySettings()
 {	
 	QWidget* widget_main = new QWidget(this);	
 	QGridLayout* grid = new QGridLayout(widget_main,3,3);
@@ -48,7 +48,7 @@ GofunLinkItemSettings::GofunLinkItemSettings()
 	item = 0;
 }
 
-void GofunLinkItemSettings::urlComposer()
+void GofunLinkEntrySettings::urlComposer()
 {
 	GofunURLComposer* url_composer = new GofunURLComposer;
 	url_composer->setStartURL(url->text());
@@ -57,48 +57,52 @@ void GofunLinkItemSettings::urlComposer()
 		url->setText(url_composer->getURL());
 }
 
-void GofunLinkItemSettings::load(GofunLinkItem* _item)
+void GofunLinkEntrySettings::load(GofunLinkEntryData* _item)
 {
-	GofunItemSettings::load(_item);
+	GofunDesktopEntrySettings::load(_item);
 	
 	url->setText(data()->URL);
 }
 
-void GofunLinkItemSettings::dirDialog()
+void GofunLinkEntrySettings::dirDialog()
 {
 }
 
-void GofunLinkItemSettings::save()
+void GofunLinkEntrySettings::save()
 {
-	GofunItemSettings::save();
+	GofunDesktopEntrySettings::save();
 }
 
-void GofunLinkItemSettings::apply()
+void GofunLinkEntrySettings::apply()
 {
 	if(!item)
-		item = new GofunLinkItem(category->iconview,QString(""));
+		item = new GofunLinkEntryData;
 		
-	GofunItemSettings::apply();
+	GofunDesktopEntrySettings::apply();
+
 	
+	if(data()->Type.isEmpty())
+		data()->Type = "Link";	
+
 	data()->URL = url->text();
 }
 
-bool GofunLinkItemSettings::inputValid()
+bool GofunLinkEntrySettings::inputValid()
 {
-	if(!GofunItemSettings::inputValid())
+	if(!GofunDesktopEntrySettings::inputValid())
 		return false;
 	else
 		return true;
 }
 
-GofunLinkEntryData* GofunLinkItemSettings::data()
+GofunLinkEntryData* GofunLinkEntrySettings::data()
 {
-	return dynamic_cast<GofunLinkItem*>(item)->data();
+	return dynamic_cast<GofunLinkEntryData*>(item);
 }
 
-void GofunLinkItemSettings::setDefaults()
+void GofunLinkEntrySettings::setDefaults()
 {
-	GofunItemSettings::setDefaults();
+	GofunDesktopEntrySettings::setDefaults();
 	
 	desw->icon = "default_link.png";
 	desw->icon_button->setPixmap(QPixmap(desw->icon));

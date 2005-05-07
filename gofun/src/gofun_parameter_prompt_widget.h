@@ -25,12 +25,16 @@
 #ifndef GOFUN_PARAMETER_PROMPT_WIDGET
 #define GOFUN_PARAMETER_PROMPT_WIDGET
 
+class QGridLayout;
+
 struct GofunParameterPromptWidget : public QWidget
 {
 	GofunParameterPromptWidget(QWidget*parent) : QWidget(parent) {};
 	virtual void setParameterData(const GofunParameterData& _par_data) { par_data = _par_data; }
 	virtual QString returnParameter() { return par_data.Flag + " " + par_data.Default_Value; }
 	GofunParameterData par_data;
+
+	QGridLayout* grid;
 };
 
 #endif

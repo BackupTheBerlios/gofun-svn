@@ -27,19 +27,25 @@
 #include "gofun_misc.h"
 #include "gofun_settings.h"
 
-GofunLinkItem::GofunLinkItem(GofunIconView* iconview, const QString& string) : GofunItem(iconview,string)
+GofunLinkItem::GofunLinkItem(QIconView* iconview, const QString& string) : GofunItem(iconview,string)
 {
 	m_data = new GofunLinkEntryData();
+}
+
+GofunLinkItem::GofunLinkItem(QIconView* iconview, const QString& string, GofunDesktopEntryData* data) : GofunItem(iconview,string)
+{
+	setData(data);
 }
 
 //Open dialog for editing a Desktop Entry.
 void GofunLinkItem::editEntry()
 {
-	GofunLinkItemSettings* settings_dlg = new GofunLinkItemSettings();
-	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
+	GofunLinkEntrySettings* settings_dlg = new GofunLinkEntrySettings();
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,375,200);
 	settings_dlg->setCaption(tr("Edit entry"));
-	settings_dlg->load(this);
+	settings_dlg->load(data());
 	settings_dlg->exec();
+	implementData();
 }
 
 void GofunLinkItem::setData(GofunDesktopEntryData* d)
@@ -81,16 +87,25 @@ void GofunLinkItem::performDefaultAction()
 	open();
 }
 
-void GofunLinkItem::createNewItem(GofunCatButton* cat)
+void GofunLinkItem::createNewItem(QIconView* iconview)
 {
-	GofunLinkItemSettings* settings_dlg = new GofunLinkItemSettings();
+	GofunLinkEntryData* new_data = new GofunLinkEntryData;
+	GofunLinkEntrySettings* settings_dlg = new GofunLinkEntrySettings();
 	int height = 200;
-	GofunWindowOperations::attach_window(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
+	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);
 	settings_dlg->setCaption(tr("Add entry"));
-	settings_dlg->setCategory(cat);
+	settings_dlg->load(new_data);
 	settings_dlg->setDefaults();
-	settings_dlg->exec();
-	delete settings_dlg;
+	if(settings_dlg->exec() == QDialog::Accepted)
+	{
+		GofunLinkItem* new_item = new GofunLinkItem(iconview,QString(""),new_data);
+		new_item->implementData();
+	}
+	else
+	{
+		delete new_data;
+		delete settings_dlg;
+	}
 }
 
 

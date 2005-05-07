@@ -48,7 +48,7 @@ bool GofunLinkEntryData::parseLine(const QString& line)
 
 void GofunLinkEntryData::open()
 {
-	QUrl url(GofunMisc::ext_filestring(URL));
+	QUrl url(GofunMisc::extendFileString(URL));
 	QProcess proc;
 	if(url.protocol() == "file")
 		proc.addArgument(GSC::get()->filemanager_cmd);

@@ -106,9 +106,9 @@ bool GofunFSDeviceEntryData::open() //@TODO resolve code duplication between thi
 
 bool GofunFSDeviceEntryData::mount()
 {
-	QString shell_call;
-	shell_call += "mount ";
-	shell_call += QString(GofunMisc::stringToBool(ReadOnly) ? "-r " : " ");
+	QString shellCall;
+	shellCall += "mount ";
+	shellCall += QString(GofunMisc::stringToBool(ReadOnly) ? "-r " : " ");
 	
 	if((!Device.isEmpty() && !MountPoint.isEmpty()) || (!FSType.isEmpty() && FSType != "auto")) //When we give 'mount' both it'll end up in an error (only root bla) //fixme: this can just be seen as workaround
 	{
@@ -125,23 +125,23 @@ bool GofunFSDeviceEntryData::mount()
 				solved = true;
 				if(me->mnt_type != FSType && !FSType.isEmpty())
 				{
-					shell_call += QString(FSType.isEmpty() ? " " : ("-t "+FSType+" "));
+					shellCall += QString(FSType.isEmpty() ? " " : ("-t "+FSType+" "));
 					if(Device.isEmpty())
-						shell_call += QString(me->mnt_fsname) + " ";
+						shellCall += QString(me->mnt_fsname) + " ";
 					else
-						shell_call += Device + " ";
+						shellCall += Device + " ";
 					if(MountPoint.isEmpty())
-						shell_call += QString(me->mnt_dir) + " ";
+						shellCall += QString(me->mnt_dir) + " ";
 					else
-						shell_call += MountPoint + " ";
+						shellCall += MountPoint + " ";
 					solved = false;
 					cmd_cmplt = true;
 					break;
 				}
 				if(!Device.isEmpty())
-					shell_call += Device + " ";
+					shellCall += Device + " ";
 				else
-					shell_call += MountPoint;
+					shellCall += MountPoint;
 				cmd_cmplt  = true;
 				break;
 			}
@@ -152,12 +152,12 @@ bool GofunFSDeviceEntryData::mount()
 		{
 			if(!cmd_cmplt)
 			{
-				shell_call += QString(FSType.isEmpty() ? " " : ("-t "+FSType+" "));
-				shell_call += Device + " ";
-				shell_call += MountPoint + " ";
+				shellCall += QString(FSType.isEmpty() ? " " : ("-t "+FSType+" "));
+				shellCall += Device + " ";
+				shellCall += MountPoint + " ";
 			}
 			
-			qDebug(shell_call);
+			qDebug(shellCall);
 		
 			QProcess proc_gosu;
 		
@@ -167,20 +167,20 @@ bool GofunFSDeviceEntryData::mount()
 			proc_gosu.addArgument(qApp->palette().color(QPalette::Active,QColorGroup::Background).name());
 			proc_gosu.addArgument("-l");
 			proc_gosu.addArgument("-c");
-			proc_gosu.addArgument(shell_call);
+			proc_gosu.addArgument(shellCall);
 			proc_gosu.start();
 			return true;
 		}
 	}
 	else
 	{
-		shell_call += Device + " ";
-		shell_call += MountPoint + " ";
+		shellCall += Device + " ";
+		shellCall += MountPoint + " ";
 	}
 	
-	shell_call += " 2>&1";
+	shellCall += " 2>&1";
 
-	QString tmp = GofunMisc::shell_call(shell_call);
+	QString tmp = GofunMisc::shellCall(shellCall);
 	if(!isMounted())
 	{
 		QMessageBox::warning(0,QObject::tr("Mount error"),QObject::tr("Mount failed:\n")+tmp);
@@ -192,7 +192,7 @@ bool GofunFSDeviceEntryData::mount()
 
 bool GofunFSDeviceEntryData::unMount()
 {
-	QString tmp = GofunMisc::shell_call("umount "+getMountPoint()+" 2>&1");
+	QString tmp = GofunMisc::shellCall("umount "+getMountPoint()+" 2>&1");
 	if(isMounted())
 	{
 		QMessageBox::warning(0,QObject::tr("Unmount error"),QObject::tr("Unmounting failed:\n")+tmp);
