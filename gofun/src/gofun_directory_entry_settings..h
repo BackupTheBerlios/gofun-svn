@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 #include "gofun_item_settings.h"
-#include "gofun_cat_entry_data.h"
+#include "gofun_directory_entry_data.h"
 
 #ifndef GOFUN_CAT_SETTINGS
 #define GOFUN_CAT_SETTINGS
