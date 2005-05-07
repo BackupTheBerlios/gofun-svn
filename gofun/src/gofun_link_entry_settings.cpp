@@ -21,9 +21,9 @@
 #include <qlineedit.h>
 #include <qlabel.h>
  
-#include "gofun_link_item_settings.h"
+#include "gofun_link_entry_settings.h"
 #include "gofun_link_item.h"
-#include "gofun_cat_button.h"
+#include "gofun_directory_button.h"
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_url_composer.h"
 

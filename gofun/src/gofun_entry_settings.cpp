@@ -26,10 +26,10 @@
 #include <qcursor.h>
 #include <qapplication.h>
 
-#include "gofun_item_settings.h"
+#include "gofun_entry_settings.h"
 #include "gofun_misc.h"
 #include "gofun_item.h"
-#include "gofun_cat_button.h"
+#include "gofun_directory_button.h"
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_icon_dialog.h"
 #include "gofun_desktop_entry_data.h"

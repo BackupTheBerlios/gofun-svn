@@ -23,7 +23,7 @@
 #include <qmessagebox.h>
  
 #include "gofun_fsdevice_item.h"
-#include "gofun_fsdevice_item_settings.h"
+#include "gofun_fsdevice_entry_settings.h"
 #include "gofun_misc.h"
 #include "gofun_settings_container.h"
 

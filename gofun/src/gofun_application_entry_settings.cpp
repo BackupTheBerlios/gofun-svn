@@ -26,10 +26,10 @@
 #include <qcursor.h>
 #include <qapplication.h>
 
-#include "gofun_application_item_settings.h"
+#include "gofun_application_entry_settings.h"
 #include "gofun_misc.h"
 #include "gofun_application_item.h"
-#include "gofun_cat_button.h"
+#include "gofun_directory_button.h"
 #include "gofun_list_dialog.h"
 #include "gofun_command_editor.h"
 #include "gofun_icon_dialog.h"
@@ -38,9 +38,9 @@
 #include "gofun_parameter_edit.h"
 #include "gofun_list_popup.h"
 #include "gofun_envvar_edit.h"
-#include "gofun_application_item_settings_parameter.h"
-#include "gofun_application_item_settings_advanced.h"
-#include "gofun_application_item_settings_environment.h"
+#include "gofun_application_entry_settings_parameter.h"
+#include "gofun_application_entry_settings_advanced.h"
+#include "gofun_application_entry_settings_environment.h"
 
 GofunApplicationEntrySettings::GofunApplicationEntrySettings()
 {	

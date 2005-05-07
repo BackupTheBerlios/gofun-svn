@@ -24,7 +24,7 @@
 #include <qheader.h>
 #include <qcursor.h>
 
-#include "gofun_application_item_settings_environment.h"
+#include "gofun_application_entry_settings_environment.h"
 #include "gofun_application_entry_data.h"
 #include "gofun_envvar_edit.h"
 #include "gofun_list_popup.h"

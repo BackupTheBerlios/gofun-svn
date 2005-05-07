@@ -25,7 +25,7 @@
 #include <qstringlist.h>
 
 #include "gofun_locale_string.h"
-#include "gofun_cat_entry_data.h"
+#include "gofun_directory_entry_data.h"
 
 class QWidget;
 class QProcess;

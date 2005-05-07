@@ -26,7 +26,7 @@
 #include "gofun_custom_start.h"
 #include "gofun_application_item.h"
 #include "gofun_misc.h"
-#include "gofun_application_item_settings_advanced.h"
+#include "gofun_application_entry_settings_advanced.h"
 
 GofunCustomStart::GofunCustomStart()
 {

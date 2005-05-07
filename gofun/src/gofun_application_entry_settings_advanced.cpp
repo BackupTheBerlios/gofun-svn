@@ -25,7 +25,7 @@
 #include <qgroupbox.h>
 #include <qlabel.h>
 
-#include "gofun_application_item_settings_advanced.h"
+#include "gofun_application_entry_settings_advanced.h"
 #include "gofun_application_entry_data.h"
 #include "gofun_misc.h"
 

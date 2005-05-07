@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "gofun_item_settings.h"
+#include "gofun_entry_settings.h"
 #include "gofun_directory_entry_data.h"
 
 #ifndef GOFUN_CAT_SETTINGS

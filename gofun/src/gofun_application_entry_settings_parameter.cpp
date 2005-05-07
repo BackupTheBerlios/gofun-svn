@@ -22,7 +22,7 @@
 #include <qtable.h>
 #include <qpushbutton.h>
 
-#include "gofun_application_item_settings_parameter.h"
+#include "gofun_application_entry_settings_parameter.h"
 #include "gofun_parameter_edit.h"
 #include "gofun_misc.h"
 

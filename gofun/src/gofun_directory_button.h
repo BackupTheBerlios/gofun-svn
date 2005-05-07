@@ -23,7 +23,7 @@
 #include <qiconview.h>
 
 #include "gofun_desktop_object.h"
-#include "gofun_cat_entry_data.h"
+#include "gofun_directory_entry_data.h"
 
 class GofunItem;
 class GofunIconView;

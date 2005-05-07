@@ -23,7 +23,7 @@
 #include <qurl.h>
  
 #include "gofun_link_item.h"
-#include "gofun_link_item_settings.h"
+#include "gofun_link_entry_settings.h"
 #include "gofun_misc.h"
 #include "gofun_settings.h"
 

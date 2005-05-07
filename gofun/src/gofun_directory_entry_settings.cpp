@@ -28,8 +28,8 @@
 #include <qradiobutton.h>
 #include <qtoolbutton.h>
 
-#include "gofun_cat_settings.h"
-#include "gofun_cat_button.h"
+#include "gofun_directory_entry_settings.h"
+#include "gofun_directory_button.h"
 #include "gofun_iconview.h"
 #include "gofun_misc.h"
 #include "gofun_widget.h"

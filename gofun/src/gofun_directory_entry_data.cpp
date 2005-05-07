@@ -20,7 +20,7 @@
 
 #include <qfile.h>
  
-#include "gofun_cat_entry_data.h"
+#include "gofun_directory_entry_data.h"
 #include "gofun_data.h"
 
 /*GofunDesktopObject* GofunDirectoryEntryData::GofunDesktopObjectFactory(QWidget* parent)

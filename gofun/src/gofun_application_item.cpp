@@ -32,7 +32,7 @@
 #include "gofun_settings_container.h"
 #include "gofun_parameter_prompt.h"
 #include "gofun_custom_start.h"
-#include "gofun_application_item_settings.h"
+#include "gofun_application_entry_settings.h"
 
 GofunApplicationItem::GofunApplicationItem(QIconView* iconview, const QString& string) : GofunItem(iconview,string)
 {

@@ -31,7 +31,7 @@
 #include "gofun_list_popup.h"
 #include "gofun_directory_browser.h"
 #include "gofun_application_item.h"
-#include "gofun_application_item_settings.h"
+#include "gofun_application_entry_settings.h"
 #include "gofun_executable_browser.h"
 #include "gofun_settings_container.h"
 #include "gofun_data.h"
