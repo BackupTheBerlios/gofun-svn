@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:export-ydpi="17.836498"
+   inkscape:export-xdpi="17.836498"
+   inkscape:export-filename="/home/tobgle/filez/pj/gofun/gofun/data/yellow_plus_12.png"
+   sodipodi:docname="yellow_minus.svg"
+   sodipodi:docbase="/home/tobgle/filez/pj/gofun/gofun/data"
+   inkscape:version="0.41"
+   sodipodi:version="0.32"
+   id="svg1291"
+   height="64px"
+   width="64px">
+  <defs
+     id="defs3">
+    <linearGradient
+       id="linearGradient2833">
+      <stop
+         id="stop2835"
+         offset="0"
+         style="stop-color:#730000;stop-opacity:1;" />
+      <stop
+         id="stop2837"
+         offset="1"
+         style="stop-color:#730000;stop-opacity:0;" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-y="24"
+     inkscape:window-x="-2"
+     inkscape:window-height="978"
+     inkscape:window-width="1280"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:current-layer="layer1"
+     inkscape:cy="32.000000"
+     inkscape:cx="32.000000"
+     inkscape:zoom="12.562500"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata4">
+    <rdf:RDF
+       id="RDF5">
+      <cc:Work
+         id="Work6"
+         rdf:about="">
+        <dc:format
+           id="format7">image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage"
+           id="type9" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1"
+     id="layer1">
+    <rect
+       rx="2.5840213"
+       ry="2.5840213"
+       y="27.375000"
+       x="3.3750000"
+       height="10.000000"
+       width="58.000000"
+       id="rect1305"
+       style="stroke-opacity:1.0000000;stroke-miterlimit:3.2000000;stroke-linejoin:round;stroke-linecap:round;stroke-width:2.5500000;stroke:#000000;fill-rule:nonzero;fill-opacity:1.0000000;fill:#ffff00;stroke-dasharray:none" />
+  </g>
+</svg>
