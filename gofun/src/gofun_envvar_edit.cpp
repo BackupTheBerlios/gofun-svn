@@ -23,7 +23,7 @@
 #include <qpushbutton.h>
 
 #include "gofun_envvar_edit.h"
-#include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 
 GofunEnvVarEdit::GofunEnvVarEdit(QWidget* parent) : QDialog(parent,0,1)
 {
@@ -85,7 +85,7 @@ GofunInterpretedLineEdit::GofunInterpretedLineEdit(QWidget* parent) : QLineEdit(
 
 void GofunInterpretedLineEdit::setText(const QString& text)
 {
-	QLineEdit::setText(GofunMisc::shellCall("echo -n "+text));
+	QLineEdit::setText(GofunShellOperations::shellCall("echo -n "+text));
 }
 
 

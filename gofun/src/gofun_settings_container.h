@@ -51,6 +51,7 @@ public:
 	QString main_y;
 	QString save_main_geom;
 	QString ce_completion_popup;
+	QString sc_fullscreen;
 private:
 	//private constructor (singleton)
 	GofunSettingsContainer();

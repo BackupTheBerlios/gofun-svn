@@ -50,7 +50,7 @@ class GofunFSDeviceItem : public GofunItem
 	void mount();
 	void loadIcon();
 	
-	static void createNewItem(QIconView*);
+	static void createNewItem(QIconView*,const QString&);
 	
 	GofunFSDeviceEntryData* data() { return m_data; }
 	

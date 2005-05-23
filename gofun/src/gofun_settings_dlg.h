@@ -36,8 +36,6 @@ public:
 public slots:
 	virtual void accept();
 	virtual void reject();
-	void iconDialog();
-	void dirDialog();
 protected:
 	QTabWidget* tabwidget;
 	QPushButton* apply_button;

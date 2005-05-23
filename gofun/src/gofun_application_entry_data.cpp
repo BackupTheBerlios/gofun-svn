@@ -26,6 +26,7 @@
 #include "gofun_settings_container.h"
 #include "gofun_parameter_prompt.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 
 /*GofunDesktopObject* GofunApplicationEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
@@ -63,7 +64,7 @@ void GofunApplicationEntryData::handleEnvVars()
 		if((*it).isEmpty())
 			continue;
 		QStringList vk_pair = QStringList::split('=',(*it));
-		envs += vk_pair[0] + "=" + GofunMisc::extendFileString(vk_pair[1]);
+		envs += vk_pair[0] + "=" + GofunShellOperations::extendFileString(vk_pair[1]);
 	}
 	saveStringListToFile(QDir::homeDirPath() + "/.gofun/tmp_proc_env",&envs);
 }
@@ -83,7 +84,7 @@ void GofunApplicationEntryData::execute() //FIXME: 1. hackish, 2. maybe outsourc
 	handleEnvVars();
 	if(GofunMisc::stringToBool(Terminal))
 	{ 
-		addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
+		GofunMisc::addSplittedProcArgument(&proc,GSC::get()->terminal_cmd);
 		proc.addArgument("-e");
 		if(exec[exec.length()-1] == ';')
 			exec.setLength(exec.length()-1);
@@ -95,14 +96,15 @@ void GofunApplicationEntryData::execute() //FIXME: 1. hackish, 2. maybe outsourc
 	if(Path.isEmpty())
 	{
 		proc.setWorkingDirectory(QDir::homeDirPath());
-		exec = "cd " + GofunMisc::shellifyPath(QDir::homeDirPath()) + ";" + exec;
+		exec = "cd " + GofunShellOperations::shellifyPath(QDir::homeDirPath()) + ";" + exec;
 	}
 	else
 	{
 		proc.setWorkingDirectory(QDir(Path));
-		exec = "cd " + GofunMisc::shellifyPath(Path) + ";" + exec;
+		exec = "cd " + GofunShellOperations::shellifyPath(Path) + ";" + exec;
 	}
 	proc.addArgument(exec);
+	saveOptionalArguments();
 	if(!X_GoFun_User.isEmpty())
 	{		
 		QString spa_file = saveProcArguments(&proc);
@@ -127,19 +129,31 @@ void GofunApplicationEntryData::execute() //FIXME: 1. hackish, 2. maybe outsourc
 		proc.addArgument(QDir::homeDirPath() + "/.gofun/tmp_proc_exec");
 		proc.addArgument("-envvarsfile");
 		proc.addArgument(QDir::homeDirPath() + "/.gofun/tmp_proc_env");
-		if(GofunMisc::stringToBool(X_GoFun_NewX))
+		proc.addArgument("-optargsfile");
+		proc.addArgument(QDir::homeDirPath() + "/.gofun/tmp_opt_args");
+		/*if(GofunMisc::stringToBool(X_GoFun_NewX))
+		{
 			proc.addArgument("-xstart");
+			if(!X_GoFun_XOptions.isEmpty())
+			{
+				proc.addArgument("-xoptions");
+				proc.addArgument(X_GoFun_XOptions);
+			}
+		}*/
 		proc.start();
 	}
 }
 
-void GofunApplicationEntryData::addSplittedProcArgument(QProcess* proc,const QString& argument)
+QString GofunApplicationEntryData::saveOptionalArguments()
 {
-	QStringList arguments = QStringList::split(' ',argument);
-	for(QStringList::Iterator it = arguments.begin(); it != arguments.end(); ++it)
-	{
-		proc->addArgument((*it));
-	}
+	QStringList optional_arguments;
+	optional_arguments += Path;
+	optional_arguments += X_GoFun_XOptions;
+
+	saveStringListToFile(QDir::homeDirPath() + "/.gofun/tmp_opt_args",&optional_arguments);
+
+	if(GofunMisc::stringToBool(X_GoFun_NewX))
+		QFile(QDir::homeDirPath() + "/.gofun/tmp_opt_newx").open(IO_WriteOnly);
 }
 
 QString GofunApplicationEntryData::saveStringListToFile(const QString& _file,QStringList* stringlist)

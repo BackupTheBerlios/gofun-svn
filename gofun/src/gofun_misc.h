@@ -42,15 +42,14 @@ class QProcess;
 ///Mixed methods needed in GoFun
 struct GofunMisc
 {
-	static QString shellCall(const QString&);
-	static QString extendFileString(const QString&);
 	static QString binDir();
-	static QPixmap getIcon(const QString&,int = 32,int = 32);
+	static QPixmap getIcon(const QString&,int = 32,int = 32,QString* = 0);
 	static bool makeDir(const QString&);
-	static QString shellifyPath(const QString&);
 	static bool stringToBool(const QString&);
 	static QString boolToString(bool);
 	static void playSound(const QString&);
+	///Adds arguments to a process by splitting a string
+	static void addSplittedProcArgument(QProcess*,const QString&);
 };
 
 struct GofunWindowOperations

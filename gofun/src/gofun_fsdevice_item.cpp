@@ -120,9 +120,10 @@ void GofunFSDeviceItem::open()
 	data()->open();
 }
 
-void GofunFSDeviceItem::createNewItem(QIconView* iconview)
+void GofunFSDeviceItem::createNewItem(QIconView* iconview, const QString& top_directory)
 {
 	GofunFSDeviceEntryData* new_data = new GofunFSDeviceEntryData;
+	new_data->TopDirectory = top_directory;
 	GofunFSDeviceEntrySettings* settings_dlg = new GofunFSDeviceEntrySettings();
 	int height = 200;
 	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);

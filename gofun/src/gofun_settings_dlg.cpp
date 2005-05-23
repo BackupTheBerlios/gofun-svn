@@ -48,39 +48,6 @@ GofunSettingsDlg::GofunSettingsDlg()
 	
 }
 
-void GofunSettingsDlg::iconDialog()
-{
-	/*QString start_dir;
-	if(icon->text().isEmpty())
-	{
-		start_dir = icon->text();
-	}
-	else if(directory->text().isEmpty())
-	{
-		start_dir = extendFileString(directory->text());
-	}
-	my $file = QFileDialog::getOpenFileName($start_dir,"Icons (*.png *.xpm *.jpg *.bmp *.ico)", this, "Pick icon dialog", "Pick an icon");
-	if($file ne "")
-	{
-		icon->setText($file);
-		icon_button->setPixmap(QPixmap($file));
-	}*/
-}
-
-void GofunSettingsDlg::dirDialog()
-{/*
-	my $start_dir;
-	if(directory->text() ne "")
-	{
-		$start_dir = extendFileString(directory->text());
-	}
-	my $dir = QFileDialog::getExistingDirectory($start_dir, this, "get existing directory", "Choose a directory");
-	if($dir ne "")
-	{
-		directory->setText($dir);
-	}*/
-}
-
 void GofunSettingsDlg::save()
 {
 	std::cout<<"Not implemented!\n";

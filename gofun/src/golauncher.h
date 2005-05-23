@@ -24,26 +24,47 @@
 #ifndef GOLAUNCHER_WIDGET
 #define GOLAUNCHER_WIDGET
 
+class GoArgParser
+{
+	public:
+	GoArgParser(int, char**);
+
+	bool notDone();
+	bool increment();
+	bool parse(const QString&, bool = false);
+	QString getParameter();
+
+	private:
+	int i;
+	const int argc;
+	char** argv;
+	QString parameter;
+};
+
 class Golauncher
 {
 	public:
 	Golauncher();
 	void launch();
 
+	void startInNewX();
 	void loadLaunchData();
 	void cleanupLaunchDataOnFS();
 	void setXMode(bool);
 	void setXStart(bool);
+	void setXOptions(const QString&);
 	void setWait(bool);
 	void setDumpOutput(bool);
 	void setKeepDataFiles(bool);
 	void setWorkingDirectory(const QString&);
 	void setEnvVarsFile(const QString&);
 	void setArgumentsFile(const QString&);
+	void setOptionalArgumentsFile(const QString&);
 	void setDesktopEntryFile(const QString&);
 	void getStringListFromNullTerminatedStringListFile(const QString&,QStringList*);
 	void getArgumentsFromArgumentsFile(const QString&,QStringList*);
 	void getEnvVarsFromEnvVarsFile(const QString&,QStringList*);
+	void getOptionalArgumentsFromOptionalArgumentsFile(const QString&);
 	void getArgumentsFromDesktopEntry(const QString&,QStringList*);
 	QStringList getOriginalEnvironmentVariables();
 	void launchWidget();
@@ -57,11 +78,14 @@ class Golauncher
 	bool dumpoutput;
 	bool launch_data_loaded;
 	bool keep_data_files;
+
 	QString argumentsfile;
 	QString envvarsfile;
+	QString optargsfile;
 	QString desktopentryfile;
 	QString proc_output;
 	QString working_directory;
+	QString x_options;
 	
 	QStringList arguments;
 	QStringList* envvars;

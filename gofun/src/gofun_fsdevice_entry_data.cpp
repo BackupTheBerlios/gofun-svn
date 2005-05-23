@@ -29,6 +29,7 @@
 #include "gofun_settings_container.h"
 #include "gofun_data.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 
 /*GofunDesktopObject* GofunFSDeviceEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
@@ -180,7 +181,7 @@ bool GofunFSDeviceEntryData::mount()
 	
 	shellCall += " 2>&1";
 
-	QString tmp = GofunMisc::shellCall(shellCall);
+	QString tmp = GofunShellOperations::shellCall(shellCall);
 	if(!isMounted())
 	{
 		QMessageBox::warning(0,QObject::tr("Mount error"),QObject::tr("Mount failed:\n")+tmp);
@@ -192,7 +193,7 @@ bool GofunFSDeviceEntryData::mount()
 
 bool GofunFSDeviceEntryData::unMount()
 {
-	QString tmp = GofunMisc::shellCall("umount "+getMountPoint()+" 2>&1");
+	QString tmp = GofunShellOperations::shellCall("umount "+getMountPoint()+" 2>&1");
 	if(isMounted())
 	{
 		QMessageBox::warning(0,QObject::tr("Unmount error"),QObject::tr("Unmounting failed:\n")+tmp);

@@ -39,10 +39,12 @@ GofunApplicationEntrySettingsParameter::GofunApplicationEntrySettingsParameter(Q
 	tb_par->adjustColumn(2);
 	tb_par->setColumnReadOnly(0,true);
 	tb_par->setColumnStretchable(0,true);
-	paradd = new QPushButton(tr("Add"), this);
-	parrem = new QPushButton(tr("Remove"), this);	
-	parup = new QPushButton(tr("Up"), this);
-	pardown = new QPushButton(tr("Down"), this);
+	QIconSet::setIconSize(QIconSet::Small,QSize(12,12));
+	paradd = new QPushButton(QIconSet(QPixmap("yellow_plus_12.png"),QIconSet::Small),tr("Add"), this);
+	parrem = new QPushButton(QIconSet(QPixmap("yellow_minus_12.png"),QIconSet::Small),tr("Remove"), this);	
+	parup = new QPushButton(QIconSet(QPixmap("yellow_arrow_up_12.png"),QIconSet::Small),tr("Up"), this);
+	pardown = new QPushButton(QIconSet(QPixmap("yellow_arrow_down_12.png"),QIconSet::Small),tr("Down"), this);
+	QIconSet::setIconSize(QIconSet::Small,QSize(22,22));
 	
 	grid_par->addMultiCellWidget(tb_par,0,0,0,4);
 	grid_par->addWidget(paradd,2,0);
@@ -171,4 +173,7 @@ void GofunApplicationEntrySettingsParameter::load(GofunApplicationEntryData* dat
 		}
 	}
 }
+
+
+
 

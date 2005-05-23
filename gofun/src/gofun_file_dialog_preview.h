@@ -24,6 +24,7 @@
 #ifndef GOFUN_FILE_DIALOG_PREVIEW
 #define GOFUN_FILE_DIALOG_PREVIEW
 
+///Generates a preview for files in a file-dialog
 class GofunFileDialogPreview : public QLabel, public QFilePreview
 {
 	public:
@@ -32,6 +33,7 @@ class GofunFileDialogPreview : public QLabel, public QFilePreview
         void previewUrl( const QUrl &u );
 };
 
+///Provides icons for files in a file-dialog
 class GofunFileIconProvider : public QFileIconProvider
 {
 	public:

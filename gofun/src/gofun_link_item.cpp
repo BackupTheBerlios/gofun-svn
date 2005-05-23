@@ -87,9 +87,10 @@ void GofunLinkItem::performDefaultAction()
 	open();
 }
 
-void GofunLinkItem::createNewItem(QIconView* iconview)
+void GofunLinkItem::createNewItem(QIconView* iconview, const QString& top_directory)
 {
 	GofunLinkEntryData* new_data = new GofunLinkEntryData;
+	new_data->TopDirectory = top_directory;
 	GofunLinkEntrySettings* settings_dlg = new GofunLinkEntrySettings();
 	int height = 200;
 	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);

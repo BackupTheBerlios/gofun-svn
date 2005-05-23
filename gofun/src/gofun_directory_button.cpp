@@ -30,6 +30,7 @@
 #include "gofun_directory_entry_settings.h"
 #include "gofun_iconview.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 #include "gofun_widget.h"
 #include "gofun_item_wizard.h"
 #include "gofun_application_item.h"
@@ -102,13 +103,13 @@ void GofunDirectoryButton::popupCBActivated(int id)
 	switch(id)
 	{
 		case PID_Add_Application:
-			GofunApplicationItem::createNewItem(iconview);
+			GofunApplicationItem::createNewItem(iconview,QFileInfo(data()->File).dirPath());
 			break;
 		case PID_Add_Device:
-			GofunFSDeviceItem::createNewItem(iconview);
+			GofunFSDeviceItem::createNewItem(iconview,QFileInfo(data()->File).dirPath());
 			break;
 		case PID_Add_Link:
-			GofunLinkItem::createNewItem(iconview);
+			GofunLinkItem::createNewItem(iconview,QFileInfo(data()->File).dirPath());
 			break;
 		case PID_Add_Wizard:
 			runNewItemWizard();
@@ -129,7 +130,7 @@ void GofunDirectoryButton::deleteEntry()
 		return;
 	
 	deleteEntryFile();
-	GofunMisc::shellCall("rm -rf '"+data()->Directorydir+"'");
+	GofunShellOperations::shellCall("rm -rf '"+data()->Directorydir+"'");
 	delete this;
 }
 
@@ -270,20 +271,7 @@ void GofunDirectoryButton::popupItemDnD(int id)
 
 void GofunDirectoryButton::refreshBackground()
 {
-		if(QFile::exists(data()->X_GoFun_Background))
-		{
-			QPixmap* bg_image = new QPixmap(data()->X_GoFun_Background);
-			//iconview->unsetPalette();
-			//iconview->setPaletteBackgroundPixmap(*bg_image);
-		}
-		else if(data()->X_GoFun_Background.isEmpty())
-		{
-			iconview->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Active,QColorGroup::Base));
-		}
-		else if(QColor(data()->X_GoFun_Background).isValid())
-		{
-			iconview->setPaletteBackgroundColor(QColor(data()->X_GoFun_Background));
-		}
+		iconview->setBackground(data()->X_GoFun_Background);
 }
 
 void GofunDirectoryButton::mouseReleaseEvent( QMouseEvent * event )
@@ -310,9 +298,10 @@ void GofunDirectoryButton::implementData()
 	refreshBackground();
 }
 
-void GofunDirectoryButton::createNewItem(QWidget* parent)
+void GofunDirectoryButton::createNewItem(QWidget* parent, const QString& top_directory)
 {
 	GofunDirectoryEntryData* new_data = new GofunDirectoryEntryData;
+	new_data->TopDirectory = top_directory;
 	GofunDirectoryEntrySettings* settings_dlg = new GofunDirectoryEntrySettings();
 	int height = 200;
 	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Right,D_Left,275,200);
@@ -321,7 +310,7 @@ void GofunDirectoryButton::createNewItem(QWidget* parent)
 	settings_dlg->setDefaults();
 	if(settings_dlg->exec() == QDialog::Accepted)
 	{
-		GofunDirectoryButton* new_item = new GofunDirectoryButton(QString(""),parent);/*iconview,QString(""),new_data);*/
+		GofunDirectoryButton* new_item = new GofunDirectoryButton(QString(""),parent);
 		new_item->setData(new_data);
 		new_item->implementData();
 		new_item->show();

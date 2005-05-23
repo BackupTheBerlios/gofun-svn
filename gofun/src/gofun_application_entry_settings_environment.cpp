@@ -29,6 +29,7 @@
 #include "gofun_envvar_edit.h"
 #include "gofun_list_popup.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 
 GofunApplicationEntrySettingsEnvironment::GofunApplicationEntrySettingsEnvironment(QWidget* parent) : QWidget(parent)
 {
@@ -39,10 +40,12 @@ GofunApplicationEntrySettingsEnvironment::GofunApplicationEntrySettingsEnvironme
 	envvars->addColumn(tr("Value"));
 	envvars->addColumn(tr("Interpreted"));
 	envvars->setResizeMode(QListView::AllColumns);
-	envadd = new QPushButton(tr("Add"), this);
-	envrem = new QPushButton(tr("Remove"), this);
-	envpre = new QPushButton(tr("Predefined"), this);
-	envedit = new QPushButton(tr("Edit"), this);
+	QIconSet::setIconSize(QIconSet::Small,QSize(12,12));
+	envadd = new QPushButton(QIconSet(QPixmap("yellow_plus_12.png"),QIconSet::Small),tr("Add"), this);
+	envrem = new QPushButton(QIconSet(QPixmap("yellow_minus_12.png"),QIconSet::Small),tr("Remove"), this);
+	envpre = new QPushButton(QIconSet(QPixmap("way_and_landscape_12.png"),QIconSet::Small),tr("Predefined"), this);
+	envedit = new QPushButton(QIconSet(QPixmap("stone_cutting_12.png"),QIconSet::Small),tr("Edit"), this);
+	QIconSet::setIconSize(QIconSet::Small,QSize(22,22));
 	envedit->setEnabled(false);
 	grid_env->addMultiCellWidget(envvars,0,0,0,4);
 	grid_env->addWidget(envedit,1,0);
@@ -69,7 +72,7 @@ void GofunApplicationEntrySettingsEnvironment::envPredefinedPopup()
 	popup->addColumn(tr("Predefined environment variables"));
 	popup->header()->hide();
 	
-	QStringList envs = QStringList::split("\n",GofunMisc::shellCall("set | sed -e 's/=.*$//'"));
+	QStringList envs = QStringList::split("\n",GofunShellOperations::shellCall("set | sed -e 's/=.*$//'"));
 	
 	for(QStringList::Iterator it = envs.begin(); it != envs.end(); ++it)
 		new QListViewItem(popup,(*it));
@@ -90,7 +93,7 @@ void GofunApplicationEntrySettingsEnvironment::addEnvVar()
 
 void GofunApplicationEntrySettingsEnvironment::addEnvVar(const QString& name, const QString& value)
 {
-	new QListViewItem(envvars,name,value,GofunMisc::shellCall("echo -n "+value));
+	new QListViewItem(envvars,name,value,GofunShellOperations::shellCall("echo -n "+value));
 }
 
 void GofunApplicationEntrySettingsEnvironment::remEnvVar()
@@ -114,7 +117,7 @@ void GofunApplicationEntrySettingsEnvironment::envItemEdit(QListViewItem* item,c
 	{
 		item->setText(0,edit_dlg->getName());
 		item->setText(1,edit_dlg->getValue());
-		item->setText(2,GofunMisc::shellCall("echo -n "+edit_dlg->getValue()));
+		item->setText(2,GofunShellOperations::shellCall("echo -n "+edit_dlg->getValue()));
 	}
 }
 
@@ -133,22 +136,6 @@ void GofunApplicationEntrySettingsEnvironment::editableEnvVar()
 
 void GofunApplicationEntrySettingsEnvironment::apply(GofunApplicationEntryData* data)
 {
-	if(!data->X_GoFun_Env.empty())
-	{
-		for(std::vector<QString>::iterator it = data->X_GoFun_Env.begin(); it != data->X_GoFun_Env.end(); ++it)
-		{
-			if((*it).isEmpty())
-			{
-				continue;
-			}
-			QStringList vk_pair = QStringList::split("=",(*it));
-			addEnvVar(vk_pair[0],QString((*it)).remove(0,vk_pair[0].length()+1));
-		}
-	}
-}
-
-void GofunApplicationEntrySettingsEnvironment::load( GofunApplicationEntryData* data)
-{
 	if(envvars->childCount() > 0)
 	{
 		QListViewItem* env_item = envvars->firstChild();
@@ -163,6 +150,22 @@ void GofunApplicationEntrySettingsEnvironment::load( GofunApplicationEntryData* 
 	else
 	{
 		data->X_GoFun_Env.clear();
+	}
+}
+
+void GofunApplicationEntrySettingsEnvironment::load( GofunApplicationEntryData* data)
+{
+	if(!data->X_GoFun_Env.empty())
+	{
+		for(std::vector<QString>::iterator it = data->X_GoFun_Env.begin(); it != data->X_GoFun_Env.end(); ++it)
+		{
+			if((*it).isEmpty())
+			{
+				continue;
+			}
+			QStringList vk_pair = QStringList::split("=",(*it));
+			addEnvVar(vk_pair[0],QString((*it)).remove(0,vk_pair[0].length()+1));
+		}
 	}
 }
 

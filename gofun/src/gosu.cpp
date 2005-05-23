@@ -346,6 +346,10 @@ run_shell (const char *shell, const char *command, char **additional_args)
 	proc->addArgument("golauncher");
 	proc->addArgument("-argumentsfile");
 	proc->addArgument(pre_home_dir + QString("/.gofun/tmp_proc_exec"));
+	proc->addArgument("-envvarsfile");
+	proc->addArgument(pre_home_dir + QString("/.gofun/tmp_proc_env"));
+	proc->addArgument("-optargsfile");
+	proc->addArgument(pre_home_dir + QString("/.gofun/tmp_opt_args"));
 	proc->start();
     }
   args[argno] = NULL;

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Tobias Glaesser                                 *
+ *   Copyright (C) 2004 by Tobias Glaesser                                 *
  *   tobi.web@gmx.de                                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,48 +18,44 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <unistd.h>
+#include <qpoint.h>
+#include <qlistview.h>
+#include <qcheckbox.h>
+#include <qcombobox.h>
+#include <qtoolbutton.h>
+#include <qtable.h>
+ 
+#include "gofun_settings_dlg.h"
+#include "gofun_desktop_entry_data.h"
 
-#include "gofun_process.h"
+class GofunDesktopEntrySettingsWidget;
 
-GofunProcess::GofunProcess()
+#ifndef GOFUN_ITEM_SETTINGS 
+#define GOFUN_ITEM_SETTINGS
+
+///Settings-dialog for desktop entries
+class GofunDesktopEntrySettings : public GofunSettingsDlg
 {
-}
-
-void GofunProcess::setArguments(const QStringList& args)
-{
-	arguments = args;
-}
-
-void GofunProcess::start(QStringList* envs)
-{
-	// construct the arguments for exec
-	QCString *arglistQ = new QCString[arguments.count() + 1];
-	const char** arglist = new const char*[arguments.count() + 1];
-	int i = 0;
-	for (QStringList::Iterator it = arguments.begin(); it != arguments.end(); ++it)
-	{
-		arglistQ[i] = (*it).local8Bit();
-		arglist[i] = arglistQ[i];
-		i++;
-	}
-	arglist[i] = 0;
+	Q_OBJECT
+public:
+	GofunDesktopEntrySettings();
+	void setDefaults();
+	virtual void load(GofunDesktopEntryData*);
 	
-	const char** envslist = const_cast<const char**>(environ);
-	if(envs)
-	{
-		QCString *envslistQ = new QCString[envs->count() + 1];
-		envslist = new const char*[envs->count() + 1];
-		i = 0;
-		for(QStringList::Iterator it = envs->begin(); it != envs->end(); ++it)
-		{
-			envslistQ[i] = (*it).local8Bit();
-			envslist[i] = envslistQ[i];
-			i++;
-		}
-		envslist[i] = 0;
-	}
+public slots:
+	virtual void iconDialog();
+private:
+	virtual GofunDesktopEntryData* data();
 	
-	execve(arglist[0],const_cast<char*const*>(arglist),const_cast<char*const*>(envslist));
-}
+protected:
+	virtual void apply();
+	virtual bool inputValid();
+	virtual void save();
 
+	GofunDesktopEntrySettingsWidget* desw;
+	QWidget* widget_main;
+		
+	GofunDesktopEntryData* item;
+};
+
+#endif

@@ -33,15 +33,17 @@ class GofunIconView : public QIconView
 	~GofunIconView();
 	void setTopMode();
 	void setLeftMode();
+	void updateBackground();
 	
 	public slots:
 	virtual void arrangeItemsInGrid(bool = TRUE);
+	void setBackground(const QString&);
 	void setPalette(const QPalette&);
 	void contentsMove(int,int);
 	
 	private:
 	virtual void resizeEvent(QResizeEvent*);
-	QPixmap background;
+	QString background;
 };
 
 #endif

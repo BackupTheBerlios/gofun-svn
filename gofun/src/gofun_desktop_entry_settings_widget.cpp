@@ -23,8 +23,10 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
+#include <qfileinfo.h>
 
 #include "gofun_desktop_entry_settings_widget.h"
+#include "gofun_misc.h"
 
 GofunDesktopEntrySettingsWidget::GofunDesktopEntrySettingsWidget(QWidget* parent) : QFrame(parent)
 {
@@ -43,6 +45,7 @@ GofunDesktopEntrySettingsWidget::GofunDesktopEntrySettingsWidget(QWidget* parent
 	more->setFixedHeight(7);
 	
 	connect(more,SIGNAL(clicked()),this,SLOT(showMoreSettings()));
+	connect(caption,SIGNAL(textChanged(const QString&)),this,SLOT(guessIcon(const QString&)));
 	
 	grid->addWidget(icon_button,0,0);
 	grid->addWidget(new QLabel(tr("Caption"),this),0,1);
@@ -84,5 +87,30 @@ GofunDesktopEntrySettingsMore::GofunDesktopEntrySettingsMore(QWidget* parent) : 
 	grid->addMultiCellLayout(grid_more,0,0,0,1);
 	grid->addWidget(ok_button,1,0);
 	grid->addWidget(cancel_button,1,1);
+}
+
+void GofunDesktopEntrySettingsWidget::guessIcon(const QString& guess)
+{
+	if(!icon.isEmpty()
+	   && icon != "default_directory.png"
+	   && icon != "default_application.png"
+	   && icon != "default_link.png"
+	   && icon != "default_device.png")
+		return;
+
+	if(guess.length() < 4)
+		return;
+	
+	QString file;
+	if(!GofunMisc::getIcon(guess,32,32,&file).isNull())
+	{
+		setIcon(QFileInfo(file).fileName());
+	}
+}
+
+void GofunDesktopEntrySettingsWidget::setIcon(const QString& _icon)
+{
+	icon = _icon;
+	icon_button->setPixmap(GofunMisc::getIcon(icon));
 }
 

@@ -28,6 +28,7 @@
 #include "gofun_application_entry_settings_advanced.h"
 #include "gofun_application_entry_data.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 
 GofunApplicationEntrySettingsAdvanced::GofunApplicationEntrySettingsAdvanced(QWidget* parent) : QWidget(parent)
 {
@@ -36,31 +37,22 @@ GofunApplicationEntrySettingsAdvanced::GofunApplicationEntrySettingsAdvanced(QWi
 	user_chk = new QCheckBox(tr("Start as (user)"),this);
 	user_combo = new QComboBox(this);
 	user_combo->insertItem("root");
-	QStringList users = QStringList::split('\n',GofunMisc::shellCall("cat /etc/passwd | grep /home/ | sed -e 's/:.*$//'"));
+	QStringList users = QStringList::split('\n',GofunShellOperations::shellCall("cat /etc/passwd | grep /home/ | sed -e 's/:.*$//'"));
 	for(QStringList::Iterator it = users.begin(); it != users.end(); ++it)
 	{
 		user_combo->insertItem((*it));
 	}
 
-	QGroupBox* gb_newx = new QGroupBox(tr("Start in new XServer"),this);
-	gb_newx->setColumnLayout(0, Qt::Vertical );
-	gb_newx->layout()->setSpacing( 6 );
-	gb_newx->layout()->setMargin( 5 );
-
-	QGridLayout* grid_newx = new QGridLayout(gb_newx->layout());
-
-	newx_chk = new QCheckBox(tr("Start in new X-Server"),gb_newx);
-	newx_options = new QLineEdit(gb_newx);
-
-	grid_newx->addMultiCellWidget(newx_chk,0,0,0,1);
-	grid_newx->addWidget(new QLabel(tr("Options:"),gb_newx),1,0);
-	grid_newx->addWidget(newx_options,1,1);
+	newx_chk = new QCheckBox(tr("Start in new X-Server"),this);
+	newx_options = new QLineEdit(this);
 	
-	grid_adv->addMultiCellWidget(terminal_chk,0,0,0,1);
+	grid_adv->addMultiCellWidget(terminal_chk,0,0,0,2);
 	grid_adv->addWidget(user_chk,1,0);
-	grid_adv->addWidget(user_combo,1,1);
-	grid_adv->addMultiCellWidget(gb_newx,2,2,0,1);
-	grid_adv->setRowStretch(1,1);
+	grid_adv->addMultiCellWidget(user_combo,1,1,1,2);
+	grid_adv->addWidget(newx_chk,2,0);
+	grid_adv->addWidget(new QLabel(tr("Options:"),this),2,1);
+	grid_adv->addWidget(newx_options,2,2);
+	grid_adv->setColStretch(0,1);
 	
 	connect(user_chk, SIGNAL(toggled(bool)),this, SLOT(userChkToggled(bool)));
 	connect(newx_chk, SIGNAL(toggled(bool)),this, SLOT(newxChkToggled(bool)));

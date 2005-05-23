@@ -28,9 +28,8 @@
 
 #include "gofun_misc.h"
 #include "gofun_item.h"
-#include "gofun_iconview.h"
 #include "gofun_settings.h"
-#include "gofun_entry_settings.h"
+#include "gofun_desktop_entry_settings.h"
 
 GofunItem* GofunIconViewToolTip::last_active = 0;
  

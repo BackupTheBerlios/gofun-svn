@@ -126,16 +126,16 @@ class GofunIconItem : public QIconViewItem
 
 enum
 {
-	IconItemEventID = 5555,
-	IconsLoadedEventID = 6666,
-	IconTotalStepsEventID = 77777
+	ILE_Data = QEvent::User,
+	ILE_Loaded,
+	ILE_TotalSteps
 };
 
 class GofunIconItemDataEvent : public QCustomEvent
 {
 	public:
 	GofunIconItemDataEvent(const QString _text, const QImage _pixmap, const QString _file)
-	: QCustomEvent(IconItemEventID) , data(_pixmap,_text,_file) {}
+	: QCustomEvent(ILE_Data) , data(_pixmap,_text,_file) {}
 	
 	GofunIconItemData data;
 };
@@ -143,13 +143,13 @@ class GofunIconItemDataEvent : public QCustomEvent
 class GofunIconsLoadedEvent : public QCustomEvent
 {
 	public:
-	GofunIconsLoadedEvent() : QCustomEvent(IconsLoadedEventID) {}
+	GofunIconsLoadedEvent() : QCustomEvent(ILE_Loaded) {}
 };
 
 class GofunIconTotalStepsEvent : public QCustomEvent
 {
 	public:
-	GofunIconTotalStepsEvent(int _total_steps) : QCustomEvent(IconTotalStepsEventID) , total_steps(_total_steps) {}
+	GofunIconTotalStepsEvent(int _total_steps) : QCustomEvent(ILE_TotalSteps) , total_steps(_total_steps) {}
 	
 	int total_steps;
 };

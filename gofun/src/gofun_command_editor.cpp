@@ -28,6 +28,7 @@
 
 #include "gofun_command_editor.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 #include "gofun_list_popup.h"
 #include "gofun_directory_browser.h"
 #include "gofun_application_item.h"
@@ -109,11 +110,11 @@ void GofunCommandEditor::commandExpand()
 		//fill completition list
 		qDebug(text->text(text->paragraphs()-1));
 		qDebug("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1)+"\\*");
-		QStringList files = QStringList::split('\n',GofunMisc::shellCall("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1).stripWhiteSpace()+"\\*"));
+		QStringList files = QStringList::split('\n',GofunShellOperations::shellCall("find . -maxdepth 1 -path \\*"+text->text(text->paragraphs()-1).stripWhiteSpace()+"\\*"));
 		expand_list->fill(files);
 		}
 		qDebug(text->text(text->paragraphs()-1));
-		QStringList echos = QStringList::split(' ',GofunMisc::shellCall("cd $HOME; echo "+text->text(text->paragraphs()-1).stripWhiteSpace()+"*"));
+		QStringList echos = QStringList::split(' ',GofunShellOperations::shellCall("cd $HOME; echo "+text->text(text->paragraphs()-1).stripWhiteSpace()+"*"));
 		//if(echos.count() > 1)
 		
 		expand_list->clear();
@@ -154,11 +155,12 @@ void GofunCommandEditor::commandCompletion(QListViewItem* item)
 
 void GofunCommandEditor::test()
 {
+	QString tmp = text->text(); //Wtf? Had to workaround a gcc4 flaw. :(
 	if(settings_widget)
 	{
 		GofunApplicationEntryData app_entry;
 		settings_widget->apply(&app_entry);
-		app_entry.Exec = text->text();
+		app_entry.Exec = tmp;
 		app_entry.execute();
 	}
 }

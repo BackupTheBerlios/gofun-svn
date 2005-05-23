@@ -20,7 +20,7 @@
 
 #include <qlineedit.h>
  
-#include "gofun_entry_settings.h"
+#include "gofun_desktop_entry_settings.h"
 #include "gofun_application_entry_data.h"
 
 #ifndef GOFUN_APPLICATION_ITEM_SETTINGS

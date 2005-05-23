@@ -28,6 +28,7 @@
 
 #include "gofun_application_entry_settings.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 #include "gofun_application_item.h"
 #include "gofun_directory_button.h"
 #include "gofun_list_dialog.h"
@@ -44,12 +45,8 @@
 
 GofunApplicationEntrySettings::GofunApplicationEntrySettings()
 {	
-	QWidget* widget_main = new QWidget(this);	
 	QGridLayout* grid = new QGridLayout(widget_main,3,3);
-	
-	tabwidget->addTab(widget_main,tr("Main"));
 		
-	desw = new GofunDesktopEntrySettingsWidget(widget_main);
 	command = new QLineEdit(widget_main);
 	command_button = new QToolButton(widget_main);
 	directory = new QLineEdit(widget_main);
@@ -67,8 +64,8 @@ GofunApplicationEntrySettings::GofunApplicationEntrySettings()
 	grid->addMultiCell(spacer,3,3,0,3);*/ //I'm not sure, if it looks better or worse.
 	
 	connect(command_button, SIGNAL(clicked()),this, SLOT(commandEditor()));
+	connect(command,SIGNAL(textChanged(const QString&)),desw,SLOT(guessIcon(const QString&)));
 	connect(dir_button, SIGNAL(clicked()),this, SLOT(dirDialog()));
-	connect(desw->icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
 	
 	widget_env = new GofunApplicationEntrySettingsEnvironment(this);
 	tabwidget->addTab(widget_env,tr("Environment"));
@@ -102,13 +99,12 @@ void GofunApplicationEntrySettings::iconDialog()
 	}
 	else if(!directory->text().isEmpty())
 	{
-		start_dir = GofunMisc::extendFileString(directory->text());
+		start_dir = GofunShellOperations::extendFileString(directory->text());
 	}
 	id->setStartDir(start_dir);
 	if(id->exec() == QDialog::Accepted)
 	{
-		desw->icon = id->selected();
-		desw->icon_button->setPixmap(GofunMisc::getIcon(id->selected()));
+		desw->setIcon(id->selected());
 	}
 	delete id;
 }
@@ -117,7 +113,7 @@ void GofunApplicationEntrySettings::dirDialog()
 {
 	QString start_dir;
 	if(!directory->text().isEmpty())
-		start_dir = GofunMisc::extendFileString(directory->text());
+		start_dir = GofunShellOperations::extendFileString(directory->text());
 	else
 		start_dir = "/";
 	
@@ -190,8 +186,7 @@ void GofunApplicationEntrySettings::setDefaults()
 {
 	GofunDesktopEntrySettings::setDefaults();
 
-	desw->icon = "default_application.png";
-	desw->icon_button->setPixmap(QPixmap(desw->icon));
+	desw->setIcon("default_application.png");
 }
 
 

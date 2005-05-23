@@ -31,6 +31,7 @@
 
 #include "gofun_icon_dialog.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 #include "gofun_file_dialog.h"
 
 std::vector<GofunIconItemData*> GofunIconDialog::icon_pool;
@@ -50,7 +51,6 @@ GofunIconDialog::GofunIconDialog()
 	
 	icon_preview = new QLabel(tr("Preview: No icon selected"),gb_selected);
 	icon_file = new QLabel(gb_selected);
-	
 	
 	QGroupBox* gb_icon_browse = new QGroupBox(this);
 	gb_icon_browse->setColumnLayout(2, Qt::Horizontal );
@@ -76,7 +76,6 @@ GofunIconDialog::GofunIconDialog()
 	grid_filter->addWidget(new QLabel(tr("Filter icons"),gb_icon_filter),0,0);
 	grid_filter->addWidget(filter_edit,0,1);
 	grid_filter->addMultiCellWidget(filter_view,1,1,0,1);
-	
 
 	QHBox* hbox_oc = new QHBox(this);
 	QPushButton* ok = new QPushButton(tr("Ok"),hbox_oc);
@@ -134,8 +133,8 @@ QString GofunIconDialog::selected()
 
 void GofunIconDialog::setSelectedIcon(QIconViewItem* item)
 {
-	icon_file->setText((dynamic_cast<GofunIconItem*>(item))->file);
-	icon_preview->setPixmap(icon_file->text());
+	icon_file->setText(QFileInfo((dynamic_cast<GofunIconItem*>(item))->file).fileName());
+	icon_preview->setPixmap(GofunMisc::getIcon(icon_file->text()));
 }
 
 GofunIconItem::GofunIconItem(QIconView* iv,const QString& text, const QPixmap& pix, const QString& _file) : QIconViewItem(iv,text,pix)
@@ -145,14 +144,14 @@ GofunIconItem::GofunIconItem(QIconView* iv,const QString& text, const QPixmap& p
 
 void GofunIconLoadThread::run() 
 {
-	QStringList icon_paths = QStringList::split("\n",GofunMisc::shellCall("find /usr/share/icons /usr/share/pixmaps -path \\*32\\*.png"));
-	icon_paths += QStringList::split("\n",GofunMisc::shellCall("find /usr/share/icons /usr/share/pixmaps -maxdepth 1 -path \\*.png"));
+	QStringList icon_paths = QStringList::split("\n",GofunShellOperations::shellCall("find /usr/share/icons /usr/share/pixmaps -path \\*32\\*.png"));
+	icon_paths += QStringList::split("\n",GofunShellOperations::shellCall("find /usr/share/icons /usr/share/pixmaps -maxdepth 1 -path \\*.png"));
 	QApplication::postEvent(icon_load,new GofunIconTotalStepsEvent(icon_paths.count()));
 	QFileInfo fi;
 	for(QStringList::Iterator it = icon_paths.begin(); it != icon_paths.end(); ++it)
 	{
 		fi.setFile((*it));
-		QImage pix((*it));
+		QImage pix((*it)); //NOTE: maybe make use of pointer
 		if(pix.width() > 48 || pix.height() > 48)
 		{
 			pix = pix.scale(48,48);
@@ -166,7 +165,7 @@ void GofunIconLoadThread::run()
 
 void GofunIconDialog::customEvent(QCustomEvent* event)
 {
-        if ( event->type() == static_cast<QEvent::Type>(IconItemEventID) )
+        if ( event->type() == static_cast<QEvent::Type>(ILE_Data) )
 	{ 
             GofunIconItemDataEvent* icon_event = dynamic_cast<GofunIconItemDataEvent*>(event);
 	    QPixmap pix;
@@ -182,7 +181,7 @@ void GofunIconDialog::customEvent(QCustomEvent* event)
 	    if(load_progress)
 	    	load_progress->setProgress(load_progress->progress()+1);
         }
-	else if ( event->type() == static_cast<QEvent::Type>(IconsLoadedEventID) )
+	else if ( event->type() == static_cast<QEvent::Type>(ILE_Loaded) )
 	{
 		grid->remove(load_progress);
 		delete load_progress;
@@ -192,23 +191,21 @@ void GofunIconDialog::customEvent(QCustomEvent* event)
 
 void GofunIconLoad::customEvent(QCustomEvent* event)
 {
-        if ( event->type() == static_cast<QEvent::Type>(IconItemEventID) )
+        if ( event->type() == static_cast<QEvent::Type>(ILE_Data) )
 	{ 
             GofunIconItemDataEvent* icon_event = dynamic_cast<GofunIconItemDataEvent*>(event);
-	    QPixmap pix;
-	    pix.convertFromImage(icon_event->data.pixmap);
 	    GofunIconDialog::icon_pool.push_back(new GofunIconItemData(icon_event->data.pixmap,icon_event->data.text,icon_event->data.file));
 	    
 	    if(initiator && initiator->load_progress)
 	    	initiator->load_progress->setProgress(initiator->load_progress->progress()+1);
         }
-	else if ( event->type() == static_cast<QEvent::Type>(IconTotalStepsEventID) )
+	else if ( event->type() == static_cast<QEvent::Type>(ILE_TotalSteps) )
 	{
 		GofunIconTotalStepsEvent* icon_event = dynamic_cast<GofunIconTotalStepsEvent*>(event);
 		if(initiator)
 			initiator->load_progress->setTotalSteps(icon_event->total_steps);
 	}	
-	else if ( event->type() == static_cast<QEvent::Type>(IconsLoadedEventID) )
+	else if ( event->type() == static_cast<QEvent::Type>(ILE_Loaded) )
 	{
 		if(initiator)
 		{

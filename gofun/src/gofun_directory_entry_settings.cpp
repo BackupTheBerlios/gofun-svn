@@ -30,7 +30,6 @@
 
 #include "gofun_directory_entry_settings.h"
 #include "gofun_directory_button.h"
-#include "gofun_iconview.h"
 #include "gofun_misc.h"
 #include "gofun_widget.h"
 #include "gofun_settings_container.h"
@@ -42,13 +41,8 @@
 GofunDirectoryEntrySettings::GofunDirectoryEntrySettings()
 {
 	setCaption(tr("GoFun Directory Settings"));
-	
-	QWidget* widget_main = new QWidget(this);
-	QGridLayout* grid = new QGridLayout(widget_main,6,3);
 
-	tabwidget->addTab(widget_main,tr("Main"));
-	
-	desw = new GofunDesktopEntrySettingsWidget(widget_main);
+	QGridLayout* grid = new QGridLayout(widget_main,6,3);
 
 	QGroupBox* gb_background = new QGroupBox(tr("Background"),widget_main);
 	gb_background->setColumnLayout(0, Qt::Vertical );
@@ -80,8 +74,7 @@ GofunDirectoryEntrySettings::GofunDirectoryEntrySettings()
 
 	grid->addWidget(desw,0,0);
 	grid->addWidget(gb_background,1,0);
-	
-	connect(desw->icon_button,SIGNAL(clicked()),this,SLOT(iconDialog()));
+
 	connect(background_image_button,SIGNAL(clicked()),this,SLOT(backgroundDialog()));
 	connect(background_color_button,SIGNAL(clicked()),this,SLOT(backgroundColorDialog()));
 
@@ -182,8 +175,7 @@ void GofunDirectoryEntrySettings::setDefaults( )
 {
 	GofunDesktopEntrySettings::setDefaults();
 
-	desw->icon = "default_directory.png";
-	desw->icon_button->setPixmap(QPixmap(desw->icon));
+	desw->setIcon("default_directory.png");
 }
 
 GofunDirectoryEntryData* GofunDirectoryEntrySettings::data()

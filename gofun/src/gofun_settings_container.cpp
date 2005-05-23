@@ -84,6 +84,13 @@ GofunSettingsContainer::GofunSettingsContainer()
 	m_settings->beginGroup("command_editor");
 	ce_completion_popup = m_settings->readEntry("completion_popup");
 	m_settings->endGroup();
+
+	m_settings->beginGroup("shortcuts");
+	sc_fullscreen = m_settings->readEntry("fullscreen");
+	m_settings->endGroup();
+
+	if(sc_fullscreen.isEmpty())
+		sc_fullscreen = "f";
 }
 
 GofunSettingsContainer::~GofunSettingsContainer()
@@ -117,6 +124,7 @@ GofunSettingsContainer::~GofunSettingsContainer()
 	m_settings->writeEntry("/lookandfeel/main_y",main_y);
 	m_settings->writeEntry("/lookandfeel/save_main_geom",save_main_geom);
 	m_settings->writeEntry("/command_editor/completion_popup",ce_completion_popup);
+	m_settings->writeEntry("/shortcuts/fullscreen",sc_fullscreen);
 	m_settings->endGroup();
 	delete m_settings;
 }

@@ -35,7 +35,7 @@
 #include "gofun_data.h"
 #include "gofun_directory_button.h"
 #include "gofun_item.h"
-#include "gofun_entry_settings.h"
+#include "gofun_desktop_entry_settings.h"
 #include "gofun_directory_entry_settings.h"
 #include "gofun_help.h"
 #include "gofun_about.h"
@@ -88,8 +88,7 @@ class GofunVButtonGroup : public QVButtonGroup
 GofunWidget::GofunWidget(WFlags f) : QWidget(0,0,f)
 {    
 	//Set up some accelerators
-	QAccel* a = new QAccel(this);
-	a->connectItem(a->insertItem(Key_F),this,SLOT(toggleFullscreen())); 
+	accel = new QAccel(this);
 	
 	//Do some layout magic
 	QHBoxLayout* hbox = new QHBoxLayout(this);
@@ -331,7 +330,7 @@ void GofunWidget::openSettingsDlg()
 //Open a dialog for adding a new Directory
 void GofunWidget::addDirectory()
 {
-	GofunDirectoryButton::createNewItem(cats_bg);
+	GofunDirectoryButton::createNewItem(cats_bg,GSC::get()->gofun_dir);
 }
 
 //Evaluate popup that is shown, when the user did right-clicks on empty space in a left IconView
@@ -341,13 +340,13 @@ void GofunWidget::popupMenuSpace(int id)
 	switch(id)
 	{
 		case PID_Add_Application:
-			GofunApplicationItem::createNewItem(current_cat->iconview);
+			GofunApplicationItem::createNewItem(current_cat->iconview,QFileInfo(current_cat->data()->File).dirPath());
 			break;
 		case PID_Add_Device:
-			GofunFSDeviceItem::createNewItem(current_cat->iconview);
+			GofunFSDeviceItem::createNewItem(current_cat->iconview,QFileInfo(current_cat->data()->File).dirPath());
 			break;
 		case PID_Add_Link:
-			GofunLinkItem::createNewItem(current_cat->iconview);
+			GofunLinkItem::createNewItem(current_cat->iconview,QFileInfo(current_cat->data()->File).dirPath());
 			break;
 		case PID_Add_Wizard:
 			wizard->exec();
@@ -423,10 +422,19 @@ void GofunWidget::applyColorSettings()
 		for(QObjectListIt it(*wl); it.current(); ++it)
 		{
 		if(static_cast<GofunIconView*>(it.current()))
+		{
 			static_cast<GofunIconView*>(it.current())->setPalette(pal);
+			static_cast<GofunIconView*>(it.current())->updateBackground();
+		}
 		}
 		delete wl; 
 	}
+}
+
+void GofunWidget::applyShortcutSettings()
+{
+	accel->clear();
+	accel->connectItem(accel->insertItem(QKeySequence(GSC::get()->sc_fullscreen),SID_Fullscreen),this,SLOT(toggleFullscreen()));
 }
 
 void GofunWidget::toggleFullscreen( )

@@ -34,6 +34,7 @@
 
 #include "gofun_widget.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 #include "gofun_settings_container.h"
 
 using namespace std;
@@ -64,9 +65,9 @@ int main(int argc, char *argv[])
   if(QFileInfo("/usr/share/pixmaps").exists())
   	icon_dir_string += "/usr/share/pixmaps";
   if(!icon_dir_string.isEmpty())
-  	GofunMisc::shellCall("find "+icon_dir_string+" > $HOME/.gofun/icon_files");
+  	GofunShellOperations::shellCall("find "+icon_dir_string+" > $HOME/.gofun/icon_files");
   else
-  	GofunMisc::shellCall("touch $HOME/.gofun/icon_files");
+  	GofunShellOperations::shellCall("touch $HOME/.gofun/icon_files");
   
   //This is the app's core
   QApplication app(argc, argv);
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
     
   //make GoFun look colorful and different every startup
   GofunWidget::applyStyleSettings();
-  GofunWidget::applyColorSettings();  
+  GofunWidget::applyColorSettings();
   
   //Here the main widget is being created
   GofunWidget gofun_widget(0); //Qt::WStyle_Customize | Qt::WStyle_NormalBorder | Qt::WStyle_Dialog);
@@ -88,6 +89,8 @@ int main(int argc, char *argv[])
   {
   	gofun_widget.setGeometry(GSC::get()->main_x.toInt(),GSC::get()->main_y.toInt(),GSC::get()->main_width.toInt(),GSC::get()->main_height.toInt());
   }
+  //Apply shortcut settings
+  gofun_widget.applyShortcutSettings();
   
   //Set a caption and an icon
   gofun_widget.setCaption("GoFun");

@@ -28,7 +28,7 @@
 
 #include "gofun_application_item.h"
 #include "gofun_misc.h"
-#include "gofun_iconview.h"
+#include "gofun_shell_operations.h"
 #include "gofun_settings_container.h"
 #include "gofun_parameter_prompt.h"
 #include "gofun_custom_start.h"
@@ -68,7 +68,7 @@ void GofunApplicationItem::openDirectory()
 {
 	QProcess proc(GSC::get()->filemanager_cmd);
 	if(!data()->Path.isEmpty())
-		proc.addArgument((GofunMisc::extendFileString(data()->Path)));
+		proc.addArgument((GofunShellOperations::extendFileString(data()->Path)));
 	else
 		proc.addArgument(QDir::homeDirPath());
 	if(!proc.start())
@@ -152,9 +152,10 @@ void GofunApplicationItem::execute(const QString& option)
 	eo->execute();
 }
 
-void GofunApplicationItem::createNewItem(QIconView* iconview)
+void GofunApplicationItem::createNewItem(QIconView* iconview,const QString& top_directory)
 {
 	GofunApplicationEntryData* new_data = new GofunApplicationEntryData;
+	new_data->TopDirectory = top_directory;
 	GofunApplicationEntrySettings* settings_dlg = new GofunApplicationEntrySettings();
 	int height = 200;
 	GofunWindowOperations::attachWindow(qApp->mainWidget(),settings_dlg,D_Above,D_Under,365,200);

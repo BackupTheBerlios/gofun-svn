@@ -24,11 +24,10 @@
 
 void GofunFileDialogPreview::previewUrl(const QUrl& u)
 {
-	QString path = u.path();
-	QImage img( path );
+	QImage img(u.path());
 	if(img.isNull())
 	{
-		setText(tr("This is not a pixmap"));
+		setText(tr("This is not an image"));
 		return;
 	}
 
@@ -40,12 +39,12 @@ void GofunFileDialogPreview::previewUrl(const QUrl& u)
 	pix.convertFromImage(img);
 	
 	if ( pix.isNull() )
-		setText(tr("This is not a pixmap"));
+		setText(tr("This is not an image"));
 	else
 		setPixmap( pix );
 }
 
-const QPixmap * GofunFileIconProvider::pixmap ( const QFileInfo & info )
+const QPixmap * GofunFileIconProvider::pixmap(const QFileInfo& info)
 {
 	if(!info.isFile())
 		return 0;

@@ -21,9 +21,11 @@
 #include <qwidget.h>
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qdir.h>
 
 #include "gofun_data.h"
 #include "gofun_desktop_entry_data.h"
+#include "gofun_misc.h"
 
 /*GofunDesktopObject* GofunDesktopEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
@@ -57,7 +59,11 @@ GofunDesktopEntryData * GofunDesktopEntryData::makeCopy( )
 void GofunDesktopEntryData::save( )
 {
 	if(File.isEmpty())
-		generateFileName();	
+	{
+		generateFileName();
+		if(!QFileInfo(File).dir().exists())
+			GofunMisc::makeDir(QFileInfo(File).dirPath());
+	}
 
 	QFile file( File );
 	if ( file.open( IO_WriteOnly ) )
@@ -85,6 +91,6 @@ bool GofunDesktopEntryData::isReadOnly()
 
 void GofunDesktopEntryData::generateFileName()
 {
-	File = Name + ".desktop";
+	File = TopDirectory + "/" + Name + ".desktop";
 }
 

@@ -25,7 +25,7 @@
 #include "gofun_link_entry_data.h"
 #include "gofun_settings_container.h"
 #include "gofun_data.h"
-#include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 
 /*GofunDesktopObject* GofunLinkEntryData::GofunDesktopObjectFactory(QWidget* parent)
 {
@@ -48,7 +48,7 @@ bool GofunLinkEntryData::parseLine(const QString& line)
 
 void GofunLinkEntryData::open()
 {
-	QUrl url(GofunMisc::extendFileString(URL));
+	QUrl url(GofunShellOperations::extendFileString(URL));
 	QProcess proc;
 	if(url.protocol() == "file")
 		proc.addArgument(GSC::get()->filemanager_cmd);

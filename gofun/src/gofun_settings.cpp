@@ -36,6 +36,8 @@
 #include "gofun_widget.h"
 #include "gofun_misc.h"
 #include "gofun_directory_browser.h"
+#include "gofun_shortcut_view.h"
+#include "gofun_shortcut_widget.h"
 
 GofunSettings::GofunSettings()
 {
@@ -97,6 +99,13 @@ GofunSettings::GofunSettings()
 	grid_laf->addWidget(style_group,0,0);
 	grid_laf->addWidget(col_group,1,0);
 	grid_laf->addWidget(save_main_geom,2,0);
+
+	QWidget* widget_shortcuts = new QWidget(this);
+	QGridLayout* grid_shortcuts = new QGridLayout(widget_shortcuts);
+	tabwidget->addTab(widget_shortcuts,tr("Shortcuts"));
+
+	shortcut_view = new GofunShortcutView(widget_shortcuts);
+	grid_shortcuts->addWidget(shortcut_view,0,0);
 }
 
 void GofunSettings::directoryDialog()
@@ -111,15 +120,6 @@ void GofunSettings::directoryDialog()
 }
 
 void GofunSettings::save()
-{
-}
-
-bool GofunSettings::inputValid()
-{
-	return true;
-}
-
-void GofunSettings::apply()
 {
 	GSC::get()->terminal_cmd = terminal->text();
 	GSC::get()->filemanager_cmd = filemanager->text();
@@ -145,11 +145,22 @@ void GofunSettings::apply()
 	GSC::get()->save_main_geom = GofunMisc::boolToString(save_main_geom->isChecked());
 	
 	GSC::get()->custom_color = custom_col_bt->paletteBackgroundColor().name();
+
+	GSC::get()->sc_fullscreen = QString(shortcut_view->getShortcut(SID_Fullscreen));
 	
 	GSC::get()->save();
-	
+}
+
+bool GofunSettings::inputValid()
+{
+	return true;
+}
+
+void GofunSettings::apply()
+{	
 	GofunWidget::applyStyleSettings();
 	GofunWidget::applyColorSettings();
+	dynamic_cast<GofunWidget*>(qApp->mainWidget())->applyShortcutSettings();
 }
 
 void GofunSettings::load()
@@ -171,6 +182,8 @@ void GofunSettings::load()
 	custom_col_bt->setPaletteBackgroundColor(GSC::get()->custom_color);
 	
 	save_main_geom->setChecked(GofunMisc::stringToBool(GSC::get()->save_main_geom));
+
+	shortcut_view->insert(new GofunShortcutWidget(shortcut_view,tr("Fullscreen"),GSC::get()->sc_fullscreen,SID_Fullscreen));
 }
 
 void GofunSettings::customColorDialog()
@@ -180,5 +193,20 @@ void GofunSettings::customColorDialog()
 		custom_col_bt->setPaletteBackgroundColor(col);
 }
 
-
+void GofunSettings::accept()
+{
+	//call inputValid() to validate, if the settings are sufficient
+	if(inputValid())
+	{
+		//if so, we save those settings and apply them
+		//the difference between GofunSettingsDlg and this
+		//is that we save first and apply then
+		save();
+		apply();
+		
+		hide();
+		
+		QDialog::accept();
+	}
+}
 

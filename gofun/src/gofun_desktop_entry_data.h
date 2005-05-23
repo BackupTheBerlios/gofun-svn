@@ -31,6 +31,7 @@
 struct GofunDesktopEntryData
 {
 	QString File;
+	QString TopDirectory;
 	GofunLocaleString Name;
 	GofunLocaleString GenericName;
 	GofunLocaleString Comment;

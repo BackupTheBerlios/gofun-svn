@@ -43,7 +43,7 @@ class GofunApplicationEntrySettingsParameter : public QWidget
 	void remParRow();
 	void parRowUp();
 	void parRowDown();
-	void parEditDialog();	
+	void parEditDialog();
 
 	private:
 	QTable* tb_par;

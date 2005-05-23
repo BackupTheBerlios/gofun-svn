@@ -23,41 +23,16 @@
 #include <qapplication.h>
 #include <qprocess.h>
 #include <qwidget.h>
-#include <qtoolbutton.h>
 #include <qsound.h>
 
 #include "gofun_misc.h" 
-#include "gofun_settings.h"
-#include "gofun_file_dialog_preview.h"
-
-QString GofunMisc::shellCall(const QString& call)
-{
-        char buf[1024];
-        FILE *ptr;
-
-	QString output;
-        if ((ptr = popen(call.ascii(), "r")) != NULL)
-                while (fgets(buf, 1024, ptr) != NULL)
-                        output += buf;
-                (void) pclose(ptr);
-        return output;
-}
-
-QString GofunMisc::shellifyPath(const QString& path)
-{
-	//QString res = path;
-	//return res.replace(' ',"\\ ");
-	return "'"+extendFileString(path)+"'";
-}
-
-QString GofunMisc::extendFileString(const QString& str)
-{
-	return shellCall("echo -n \""+ str+"\"").stripWhiteSpace();
-}
+#include "gofun_shell_operations.h"
+//#include "gofun_settings.h"
+//#include "gofun_file_dialog_preview.h"
 
 QString GofunMisc::binDir()
 {
-	return GofunMisc::shellCall("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").stripWhiteSpace();
+	return GofunShellOperations::shellCall("whereis gofun | sed -e 's/gofun://' | sed -e 's/gofun//';").stripWhiteSpace();
 }
 
 void GofunWindowOperations::centerWindow(QWidget* w, int width, int height)
@@ -65,7 +40,7 @@ void GofunWindowOperations::centerWindow(QWidget* w, int width, int height)
   w->setGeometry(QApplication::desktop()->screen()->width() / 2 - width/2, QApplication::desktop()->screen()->height() / 2 - height/2, width, height);
 }
 
-QPixmap GofunMisc::getIcon(const QString& name, int pref_width, int pref_height)
+QPixmap GofunMisc::getIcon(const QString& name, int pref_width, int pref_height, QString* return_file)
 {
 	if(name.isEmpty())
 		return QPixmap();
@@ -73,14 +48,14 @@ QPixmap GofunMisc::getIcon(const QString& name, int pref_width, int pref_height)
 	QString file;
 	if(QFile::exists(name))
 		file = name;
-	else if( QFile::exists(GofunMisc::extendFileString(name)))
-		file = GofunMisc::extendFileString(name);
+	else if( QFile::exists(GofunShellOperations::extendFileString(name)))
+		file = GofunShellOperations::extendFileString(name);
 	else
 	{		
 		//FIXME: that code still looks quite hackish
 		QStringList::Iterator choice;
 		int m_width = 0;
-		QStringList icon_files = QStringList::split("\n",GofunMisc::shellCall("grep "+name+" $HOME/.gofun/icon_files"));
+		QStringList icon_files = QStringList::split("\n",GofunShellOperations::shellCall("grep '"+name+"' $HOME/.gofun/icon_files"));
 		for(QStringList::Iterator it = icon_files.begin(); it != icon_files.end(); ++it)
 		{
 			if(!(*it).contains(name))
@@ -102,6 +77,8 @@ QPixmap GofunMisc::getIcon(const QString& name, int pref_width, int pref_height)
 	QImage image(file);
 	QPixmap pixmap;
 	pixmap.convertFromImage(image.scale(pref_width,pref_height));
+	if(return_file)
+		*return_file = file;
 	return pixmap;
 }
 
@@ -171,7 +148,7 @@ bool GofunMisc::makeDir(const QString& path)
 {
 	//HACK: this might be slightly hackish, but should work (tm)
 	QString call = "mkdir -p " + path;
-	shellCall(call);
+	GofunShellOperations::shellCall(call);
 }
 
 bool GofunMisc::stringToBool(const QString& str)
@@ -195,7 +172,14 @@ void GofunMisc::playSound(const QString& file)
 	}
 }
 
-
+void GofunMisc::addSplittedProcArgument(QProcess* proc,const QString& argument)
+{
+	QStringList arguments = QStringList::split(' ',argument);
+	for(QStringList::Iterator it = arguments.begin(); it != arguments.end(); ++it)
+	{
+		proc->addArgument((*it));
+	}
+}
 
 
 

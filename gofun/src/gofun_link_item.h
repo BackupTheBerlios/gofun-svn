@@ -47,7 +47,7 @@ class GofunLinkItem : public GofunItem
 	void performDefaultAction();
 	void open();
 	
-	static void createNewItem(QIconView*);
+	static void createNewItem(QIconView*,const QString&);
 	
 	GofunLinkEntryData* data() { return m_data; }
 	

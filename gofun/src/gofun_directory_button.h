@@ -69,7 +69,7 @@ public:
 	void deleteEntryFile();
 	void makeCurrent();
 	void implementData();
-	static void createNewItem(QWidget*);
+	static void createNewItem(QWidget*,const QString&);
 	void editEntry();
 
 	GofunIconView* iconview;

@@ -29,20 +29,15 @@
 
 GofunLinkEntrySettings::GofunLinkEntrySettings()
 {	
-	QWidget* widget_main = new QWidget(this);	
 	QGridLayout* grid = new QGridLayout(widget_main,3,3);
-	
-	tabwidget->addTab(widget_main,tr("Main"));
-		
-	desw = new GofunDesktopEntrySettingsWidget(widget_main);
+
 	url = new QLineEdit(widget_main);
 	url_button = new QToolButton(widget_main);
 	grid->addMultiCellWidget(desw,0,0,0,2);
 	grid->addWidget(new QLabel(tr("URL"),widget_main),1,0);
 	grid->addWidget(url,1,1);
 	grid->addWidget(url_button,1,2);
-	
-	connect(desw->icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
+
 	connect(url_button,SIGNAL(clicked()),this, SLOT(urlComposer()));
 	
 	item = 0;
@@ -104,7 +99,6 @@ void GofunLinkEntrySettings::setDefaults()
 {
 	GofunDesktopEntrySettings::setDefaults();
 	
-	desw->icon = "default_link.png";
-	desw->icon_button->setPixmap(QPixmap(desw->icon));
+	desw->setIcon("default_link.png");
 }
 

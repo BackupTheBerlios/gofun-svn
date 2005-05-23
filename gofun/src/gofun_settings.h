@@ -28,6 +28,7 @@ class QLineEdit;
 class QCheckBox;
 class QRadioButton;
 class QToolButton;
+class GofunShortcutView;
 
 ///Main settings dialog
 class GofunSettings : public GofunSettingsDlg
@@ -45,6 +46,7 @@ private:
 	virtual void save();
 	virtual void apply();
 	virtual bool inputValid();
+	virtual void accept();
 
 	QLineEdit* terminal;
 	QLineEdit* directory;
@@ -56,6 +58,7 @@ private:
 	QRadioButton* col_custom;
 	QToolButton* custom_col_bt;
 	QCheckBox* save_main_geom;
+	GofunShortcutView* shortcut_view;
 	QString file;
 };
 

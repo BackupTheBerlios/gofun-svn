@@ -67,8 +67,7 @@ struct GofunApplicationEntryData : public GofunDesktopEntryData
 	void handleParameterVariables(QString&);
 	bool handleParameters(QString&);
 	void handleEnvVars();
-	///Adds arguments to a process by splitting a string
-	void addSplittedProcArgument(QProcess*,const QString&);
+	QString saveOptionalArguments();
 	///Saves process arguments
 	/** The filename is returned */
 	QString saveProcArguments(QProcess*);

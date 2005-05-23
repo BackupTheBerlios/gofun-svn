@@ -623,6 +623,9 @@ GofunDirectoryBrowser::GofunDirectoryBrowser()
 	grid->setMargin(3);
 
 	current_selection = new QLabel(this);
+	current_selection->setFrameStyle(QFrame::Box|QFrame::Plain);
+	current_selection->setMargin(2);
+	current_selection->setPaletteBackgroundColor(QColor(255,255,255));
 	
 	dir_view = new GofunDirectoryView(this,0,true);
 	dir_view->addColumn( tr("Directory tree") );

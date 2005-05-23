@@ -26,17 +26,18 @@ QString GofunFileDialog::getOpenImageFileName(const QString& start_dir,const QSt
 	GofunFileDialogPreview* pre = new GofunFileDialogPreview;
 	GofunFileIconProvider* iconpro = new GofunFileIconProvider;
 	
-	QFileDialog* fd = new QFileDialog(start_dir,filter_desc + " (*.png *.xpm *.jpg *.bmp *.ico)");
-	fd->setDir(start_dir);
-	fd->setCaption(caption);
-	fd->setContentsPreviewEnabled( TRUE );
-	fd->setContentsPreview( pre, pre );
-	fd->setIconProvider(iconpro);
-	fd->setPreviewMode( QFileDialog::Contents );
-	if(fd->exec() == QDialog::Accepted)
+	QFileDialog fd(start_dir,filter_desc + " (*.png *.xpm *.jpg *.bmp *.ico)");
+	fd.setDir(start_dir);
+	fd.setCaption(caption);
+	fd.setContentsPreviewEnabled( TRUE );
+	fd.setContentsPreview( pre, pre );
+	fd.setIconProvider(iconpro);
+	fd.setPreviewMode( QFileDialog::Contents );
+	if(fd.exec() == QDialog::Accepted)
 	{
-		QString file = fd->selectedFile();
-		delete fd;
+		QString file = fd.selectedFile();
+		delete pre;
+		delete iconpro;
 		if(QFileInfo(file).isFile())
 			return file;
 		else
@@ -44,7 +45,8 @@ QString GofunFileDialog::getOpenImageFileName(const QString& start_dir,const QSt
 	}
 	else
 	{
-		delete fd;
+		delete pre;
+		delete iconpro;
 		return QString();
 	}
 }

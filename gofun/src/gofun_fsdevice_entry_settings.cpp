@@ -28,19 +28,16 @@
 #include "gofun_fsdevice_entry_settings.h"
 #include "gofun_fsdevice_item.h"
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 #include "gofun_directory_button.h"
 #include "gofun_desktop_entry_settings_widget.h"
 #include "gofun_directory_browser.h"
 #include "gofun_icon_dialog.h"
 
 GofunFSDeviceEntrySettings::GofunFSDeviceEntrySettings()
-{	
-	QWidget* widget_main = new QWidget(this);	
+{
 	QGridLayout* grid = new QGridLayout(widget_main,3,3);
-	
-	tabwidget->addTab(widget_main,tr("Main"));
-		
-	desw = new GofunDesktopEntrySettingsWidget(widget_main);
+
 	device = new QComboBox(true,widget_main);
 	QToolButton* device_button = new QToolButton(widget_main);
 	mount_point = new QComboBox(true,widget_main);
@@ -77,7 +74,7 @@ GofunFSDeviceEntrySettings::GofunFSDeviceEntrySettings()
 	tabwidget->addTab(widget_advanced,tr("Advanced"));
 	
 	type = new QComboBox(widget_advanced);
-	QStringList filesystems = QStringList::split('\n',GofunMisc::shellCall("cat /proc/filesystems | sed -e 's/nodev//' | sed -e 's/\\t//'"));
+	QStringList filesystems = QStringList::split('\n',GofunShellOperations::shellCall("cat /proc/filesystems | sed -e 's/nodev//' | sed -e 's/\\t//'"));
 	filesystems.sort();
 	type->insertItem("auto");
 	type->insertStringList(filesystems);
@@ -90,8 +87,7 @@ GofunFSDeviceEntrySettings::GofunFSDeviceEntrySettings()
 	grid_adv->addWidget(new QLabel(tr("Filesystem"),widget_advanced),1,0);
 	grid_adv->addWidget(type,1,1);
 	grid_adv->addMultiCellWidget(readonly_chk,2,2,0,2);
-	
-	connect(desw->icon_button, SIGNAL(clicked()),this, SLOT(iconDialog()));
+
 	connect(unmount_icon_button, SIGNAL(clicked()),this, SLOT(unmountIconDialog()));
 	
 	item = 0;
@@ -108,7 +104,7 @@ void GofunFSDeviceEntrySettings::mountPointDirectoryDialog()
 {
 	QString start_dir;
 	if(!mount_point->currentText().isEmpty())
-		start_dir = GofunMisc::extendFileString(mount_point->currentText());
+		start_dir = GofunShellOperations::extendFileString(mount_point->currentText());
 	else
 		start_dir = "/mnt";
 	
@@ -230,8 +226,7 @@ void GofunFSDeviceEntrySettings::setDefaults()
 {
 	GofunDesktopEntrySettings::setDefaults();
 
-	desw->icon = "default_device.png";
-	desw->icon_button->setPixmap(QPixmap(desw->icon));
+	desw->setIcon("default_device.png");
 }
 
 

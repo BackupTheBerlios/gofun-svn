@@ -55,6 +55,11 @@ enum
   PID_Add_Link
 };
 
+enum
+{
+  SID_Fullscreen
+};
+
 ///Is being the main window of GoFun
 class GofunWidget : public QWidget
 {
@@ -63,6 +68,8 @@ public:
 	GofunWidget(WFlags f = 0);
 	virtual ~GofunWidget();
 	void reloadData();
+	void applyShortcutSettings();
+
 public slots:
 	void changeDirectory(int);
 	void rightClickedItem(QIconViewItem*,const QPoint&);
@@ -96,6 +103,7 @@ private:
 	GofunDirectoryButton* tools_cat;
 	QWidgetStack * view_ws;
 	QVButtonGroup* cats_bg;
+	QAccel* accel;
 	
 friend class GofunDirectoryEntrySettings;
 friend class GofunDirectoryButton;

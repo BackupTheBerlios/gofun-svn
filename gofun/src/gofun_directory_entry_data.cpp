@@ -65,7 +65,7 @@ void GofunDirectoryEntryData::save()
 
 void GofunDirectoryEntryData::generateFileName()
 {
-	File = ".directory";
+	File = TopDirectory + "/" + Name + "/" + ".directory";
 }
 
 

@@ -18,6 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <stdlib.h>
+
 #include <qlineedit.h>
 #include <qlistview.h>
 #include <qpushbutton.h>
@@ -26,7 +28,7 @@
 #include <qstringlist.h>
  
 #include "gofun_executable_browser.h"
-#include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 
 GofunExecutableBrowser::GofunExecutableBrowser()
 {
@@ -52,7 +54,7 @@ GofunExecutableBrowser::GofunExecutableBrowser()
 	}
 
 	fill_cmd += " -N";
-	QStringList cmds = QStringList::split('\n',GofunMisc::shellCall(fill_cmd));
+	QStringList cmds = QStringList::split('\n',GofunShellOperations::shellCall(fill_cmd));
 	for(QStringList::Iterator it = cmds.begin(); it != cmds.end(); ++it)
 		new QListViewItem(cmd_list,(*it));
 		

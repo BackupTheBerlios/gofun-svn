@@ -52,7 +52,7 @@ class GofunApplicationItem : public GofunItem
 	QPopupMenu* rightClickPopup(const QPoint&);
 	void editEntry();
 	void performDefaultAction() { execute(); };
-	static void createNewItem(QIconView*);
+	static void createNewItem(QIconView*,const QString&);
 	
 	GofunApplicationEntryData* data() { return m_data; }
 	

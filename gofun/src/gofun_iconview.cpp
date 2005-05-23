@@ -57,7 +57,7 @@ void GofunIconView::resizeEvent(QResizeEvent* event)
 
 //We reimplement this method to add automatic change of the grid size
 void GofunIconView::arrangeItemsInGrid(bool update)
-{	
+{
 	int b_height, b_width = 0;
 	
 	QIconViewItem* item = firstItem();
@@ -92,16 +92,27 @@ void GofunIconView::setLeftMode()
 
 void GofunIconView::setPalette(const QPalette& pal)
 {
-	QPixmap bg;
-	if(paletteBackgroundPixmap())
-		bg = *paletteBackgroundPixmap();	
-	
 	QIconView::setPalette(pal);
-	setItemTextBackground(QApplication::palette().brush(QPalette::Active,QColorGroup::Base));
-	
-	if(!bg.isNull())
-		setPaletteBackgroundPixmap(bg);
+	setItemTextBackground(QApplication::palette().brush(QPalette::Active,QColorGroup::Base)); 
 }
+
+void GofunIconView::setBackground(const QString& _background)
+{
+	background = _background;
+	updateBackground();
+}
+
+void GofunIconView::updateBackground()
+{
+	if(QFile::exists(background))
+		setPaletteBackgroundPixmap(QPixmap(background));
+	else if(background.isEmpty())
+		setPaletteBackgroundColor(QApplication::palette().color(QPalette::Active,QColorGroup::Base));
+	else if(QColor(background).isValid())
+		setPaletteBackgroundColor(QColor(background));
+}
+
+
 
 
 

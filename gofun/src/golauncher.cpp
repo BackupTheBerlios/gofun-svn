@@ -28,6 +28,7 @@
 #include <qeventloop.h>
 
 #include "gofun_misc.h"
+#include "gofun_shell_operations.h"
 #include "gofun_process_logger.h"
 #include "gofun_process_problem_feedback.h"
 #include "golauncher.h"
@@ -63,27 +64,30 @@ void Golauncher::loadLaunchData()
 		*envvars = getOriginalEnvironmentVariables();
 		getEnvVarsFromEnvVarsFile(envvarsfile,envvars);
 	}
+
+	if(!optargsfile.isEmpty())
+	{
+		getOptionalArgumentsFromOptionalArgumentsFile(optargsfile);
+	}
 	
 	launch_data_loaded = true;
 }
 
 void Golauncher::launch()
 {
-	QProcess* proc = new QProcess;
+	if(!optargsfile.isEmpty())
+	{
+		QFile file(QFileInfo(optargsfile).dirPath() + "/tmp_opt_newx");
+		if(file.exists())
+		{
+			file.remove();
+			setXStart(true);
+		}
+	}
+
 	if(xstart)
 	{
-		proc->addArgument("xinit");
-		proc->addArgument(GofunMisc::binDir() + "golauncher");
-		proc->addArgument("-xmode");
-		proc->addArgument("-argumentsfile");
-		proc->addArgument(argumentsfile);
-		proc->addArgument("--");
-		int xservnum = getNumberOfRunningXServers();
-		proc->addArgument(":"+QString::number(xservnum));
-		proc->start();
-
-		sleep(2000);
-			
+		startInNewX();
 		return;
 	}
 	
@@ -97,8 +101,15 @@ void Golauncher::launch()
 	if(!working_directory.isEmpty())
 	{
 		chdir(working_directory);
+		if(!envvars)
+		{	//NOTE: code duplication with loadLaunchData()
+		 	envvars = new QStringList;
+			*envvars = getOriginalEnvironmentVariables();
+		}
+		envvars->gres("PATH=","PATH=.:",true); //hack to make execution of binaries in current directory possible without ./
 	}
 
+	QProcess* proc = new QProcess;
 	proc->setArguments(arguments);
 	proc_output = "";
 	if(dumpoutput)
@@ -135,6 +146,8 @@ void Golauncher::cleanupLaunchDataOnFS()
 		QFile(argumentsfile).remove();
 	if(!envvarsfile.isEmpty())
 		QFile(envvarsfile).remove();
+	if(!optargsfile.isEmpty())
+		QFile(optargsfile).remove();
 }
 
 void Golauncher::problemFeedback(QProcess* proc)
@@ -187,6 +200,14 @@ void Golauncher::getArgumentsFromDesktopEntry(const QString& file, QStringList* 
 		application_entry->execute();
 }
 
+void Golauncher::getOptionalArgumentsFromOptionalArgumentsFile(const QString& file)
+{
+	QStringList tmp;
+	getStringListFromNullTerminatedStringListFile(file,&tmp);
+	working_directory = tmp[0];
+	x_options = tmp[1];
+}
+
 void Golauncher::launchWidget()
 {
 	GolauncherWidget wid;
@@ -204,29 +225,37 @@ int main(int argc, char *argv[])
 {
 	QApplication app(argc,argv);
 	Golauncher golauncher;
-			
-	for ( int i = 0; i < app.argc(); i++ )
-	{
-		if((QString(app.argv()[i]) == "-argumentsfile") && (i+1 < app.argc()))
-			golauncher.setArgumentsFile(app.argv()[i+1]);
-		else if((QString(app.argv()[i]) == "-desktopentryfile") && (i+1 < app.argc()))
-			golauncher.setDesktopEntryFile(app.argv()[i+1]);
-		else if((QString(app.argv()[i]) == "-envvarsfile") && (i+1 < app.argc()))
-			golauncher.setEnvVarsFile(app.argv()[i+1]);
-		else if((QString(app.argv()[i])) == "-xmode")
-			golauncher.setXMode(true);
-		else if((QString(app.argv()[i])) == "-xstart")
-			golauncher.setXStart(true);
-		else if((QString(app.argv()[i])) == "-wait")
-			golauncher.setWait(true);
-		else if((QString(app.argv()[i])) == "-dumpoutput")
-			golauncher.setDumpOutput(true);
-		else if((QString(app.argv()[i])) == "-keepdatafiles")
-			golauncher.setKeepDataFiles(true);
-		else if((QString(app.argv()[i]) == "-workingdir") && (i+1 < app.argc()))
-			golauncher.setWorkingDirectory(app.argv()[i+1]);
-	}
 	
+	GoArgParser arg_parser(argc,argv);
+	
+	while(arg_parser.notDone())
+	{
+		if(arg_parser.parse("-argumentsfile",true))
+			golauncher.setArgumentsFile(arg_parser.getParameter());
+		else if(arg_parser.parse("-desktopentryfile",true))
+			golauncher.setDesktopEntryFile(arg_parser.getParameter());
+		else if(arg_parser.parse("-envvarsfile",true))
+			golauncher.setEnvVarsFile(arg_parser.getParameter());
+		else if(arg_parser.parse("-optargsfile",true))
+			golauncher.setOptionalArgumentsFile(arg_parser.getParameter());
+		else if(arg_parser.parse("-xmode"))
+			golauncher.setXMode(true);
+		else if(arg_parser.parse("-xstart"))
+			golauncher.setXStart(true);
+		else if(arg_parser.parse("-wait"))
+			golauncher.setWait(true);
+		else if(arg_parser.parse("-dumpoutput"))
+			golauncher.setDumpOutput(true);
+		else if(arg_parser.parse("-keepdatafiles"))
+			golauncher.setKeepDataFiles(true);
+		else if(arg_parser.parse("-workingdir",true))
+			golauncher.setWorkingDirectory(arg_parser.getParameter());
+		else if(arg_parser.parse("-xoptions",true))
+			golauncher.setXOptions(arg_parser.getParameter());
+		
+		arg_parser.increment();
+	}
+
 	golauncher.launch();
 	return 0;
 }
@@ -238,7 +267,7 @@ void Golauncher::setWait(bool b)
 
 int Golauncher::getNumberOfRunningXServers()
 {
-	(GofunMisc::shellCall("ps -Ac | grep X | wc -l").stripWhiteSpace()).toInt();
+	(GofunShellOperations::shellCall("ps -Ac | grep X | wc -l").stripWhiteSpace()).toInt();
 }
 
 void Golauncher::setDumpOutput(bool b)
@@ -298,4 +327,73 @@ void Golauncher::setKeepDataFiles(bool b)
 {
 	keep_data_files = b;
 }
+
+void Golauncher::setXOptions(const QString& s)
+{
+	x_options = s;
+}
+
+void Golauncher::setOptionalArgumentsFile(const QString& file)
+{
+	optargsfile = file;
+}
+
+void Golauncher::startInNewX()
+{
+		QProcess* proc = new QProcess;
+		proc->addArgument("xinit");
+		proc->addArgument(GofunMisc::binDir() + "golauncher");
+		proc->addArgument("-xmode");
+		proc->addArgument("-argumentsfile");
+		proc->addArgument(argumentsfile);
+		proc->addArgument("-envvarsfile");
+		proc->addArgument(envvarsfile);
+		proc->addArgument("-optargsfile");
+		proc->addArgument(optargsfile);
+		proc->addArgument("--");
+		int xservnum = getNumberOfRunningXServers();
+		proc->addArgument(":"+QString::number(xservnum));
+		if(!x_options.isEmpty())
+			GofunMisc::addSplittedProcArgument(proc,x_options);
+		proc->start();
+
+		sleep(2000);
+}
+
+GoArgParser::GoArgParser(int _argc, char** _argv) : argc(_argc), argv(_argv), i(0)
+{}
+
+bool GoArgParser::notDone()
+{
+	return (i < argc);
+}
+
+bool GoArgParser::increment()
+{
+	++i;
+}
+
+bool GoArgParser::parse(const QString& arg, bool expect_parameter)
+{
+	if(QString(argv[i]) == arg)
+	{
+		if(expect_parameter && (i+1 < argc))
+			parameter = argv[i+1];
+		else
+			parameter = "";
+		return true;
+	}
+	return false;
+}
+
+QString GoArgParser::getParameter()
+{
+	return parameter;
+}
+
+
+
+
+
+
 
