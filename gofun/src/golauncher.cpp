@@ -78,8 +78,10 @@ void Golauncher::launch()
 	if(!optargsfile.isEmpty())
 	{
 		QFile file(QFileInfo(optargsfile).dirPath() + "/tmp_opt_newx");
-		if(file.exists())
+		if(file.open(IO_ReadOnly))
 		{
+			file.readLine(x_options,1024);
+			file.close();
 			file.remove();
 			setXStart(true);
 		}
@@ -205,7 +207,7 @@ void Golauncher::getOptionalArgumentsFromOptionalArgumentsFile(const QString& fi
 	QStringList tmp;
 	getStringListFromNullTerminatedStringListFile(file,&tmp);
 	working_directory = tmp[0];
-	x_options = tmp[1];
+	GofunShellOperations::shellCall("echo "+x_options+" > /home/tobgle/xoptions");
 }
 
 void Golauncher::launchWidget()

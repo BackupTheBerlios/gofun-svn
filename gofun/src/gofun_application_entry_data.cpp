@@ -148,12 +148,19 @@ QString GofunApplicationEntryData::saveOptionalArguments()
 {
 	QStringList optional_arguments;
 	optional_arguments += Path;
-	optional_arguments += X_GoFun_XOptions;
 
 	saveStringListToFile(QDir::homeDirPath() + "/.gofun/tmp_opt_args",&optional_arguments);
 
 	if(GofunMisc::stringToBool(X_GoFun_NewX))
-		QFile(QDir::homeDirPath() + "/.gofun/tmp_opt_newx").open(IO_WriteOnly);
+	{
+		QFile file(QDir::homeDirPath() + "/.gofun/tmp_opt_newx");
+		if(file.open(IO_WriteOnly))
+		{
+        		QTextStream stream( &file );
+			stream <<  X_GoFun_XOptions;
+			file.close();
+		}
+	}
 }
 
 QString GofunApplicationEntryData::saveStringListToFile(const QString& _file,QStringList* stringlist)
