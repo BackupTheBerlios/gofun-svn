@@ -207,7 +207,6 @@ void Golauncher::getOptionalArgumentsFromOptionalArgumentsFile(const QString& fi
 	QStringList tmp;
 	getStringListFromNullTerminatedStringListFile(file,&tmp);
 	working_directory = tmp[0];
-	GofunShellOperations::shellCall("echo "+x_options+" > /home/tobgle/xoptions");
 }
 
 void Golauncher::launchWidget()
